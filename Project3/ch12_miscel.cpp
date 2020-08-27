@@ -3,6 +3,7 @@
 
 using namespace std;
 
+#if 1
 CGoodDynamicMatrix::CGoodDynamicMatrix(int i, int j) {
 	colum = i;
 	row = j;
@@ -60,6 +61,10 @@ void CGoodDynamicMatrix::fill(char c) {
 char* CGoodDynamicMatrix::operator [] (int i) {
 	return matrix[i];
 }
+const char* CGoodDynamicMatrix::operator [](int i) const {
+	return matrix[i];
+}
+
 CGoodDynamicMatrix& CGoodDynamicMatrix::operator= (const CGoodDynamicMatrix& source) {
 	fullCopy(source);
 	return *this;
@@ -82,3 +87,54 @@ void CGoodDynamicMatrix::fullCopy(const CGoodDynamicMatrix& source) {
 	return;
 }
 
+#endif
+
+#if 1
+cQueue::cQueue(int qs):queueSize(qs){
+	queueMenber = 0;
+	queueStart = new node;
+	queueEnd = queueStart;
+	return;
+}
+cQueue::~cQueue() {
+	char tmp;
+	while (this->subQueue(tmp));
+	return;
+}
+bool cQueue::isEmpty() const {
+	return queueMenber == 0;
+}
+bool cQueue::isFull() const {
+	return queueMenber == queueSize;
+}
+int cQueue::queueCnt() const {
+	return queueMenber;
+}
+bool cQueue::addQueue(const ITEM& item) {
+	if (isFull()) {
+		return false;
+	}
+	else {
+		queueEnd->next = new node;
+		queueEnd = queueEnd->next;
+		queueEnd->next = 0;
+		queueEnd->item = item;
+		queueMenber++;
+		return true;
+	}
+}
+bool cQueue::subQueue(ITEM& item) {
+	node* tmp;
+	if (isEmpty()) {
+		return false;
+	}
+	else {
+		tmp = queueStart;
+		queueStart = queueStart->next;
+		item = queueStart->item;
+		queueMenber--;
+		delete tmp;
+		return true;
+	}
+}
+#endif
