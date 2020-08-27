@@ -1,4 +1,4 @@
-#if 1
+#if 0
 
 #if 1
 #include <iostream>
@@ -9,7 +9,7 @@ using namespace std;
 
 
 
-#if 1
+#if 0
 
 
 
@@ -62,9 +62,20 @@ int main(int argc, char* argv[]) {
 
 
 
-#if 0
+#if 1
 int main(int argc, char* argv[]) {
-
+	cout << atan2(10, 0) * rad2degConst << endl;
+	cout << tan(45 * deg2radConst) << endl;
+	cMyVector vtr1(1,0);
+	cMyVector vtr2(0, 1);
+	cMyVector vtr = vtr1 + vtr2;
+	vtr = vtr1 - vtr2;
+	vtr = vtr1 * 2;
+	vtr = 3 * vtr1;
+	vtr += vtr1;
+	vtr -= vtr1;
+	double vtrMul = vtr1 * vtr2;
+	cout << vtr << endl;
 	return 0;
 }
 #endif

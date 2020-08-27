@@ -1,5 +1,9 @@
 #include "ch11_header.h"
 #include <iostream>
+#include <cmath>
+
+//cTime
+#if 1
 cTime::cTime() {
 	hour = 8;
 	mint = 0;
@@ -67,15 +71,15 @@ void cTime::tic() {
 	return;
 }
 void cTime::resetTime(int i) {
-	switch (i){
-		case 3:
-			hour = 0;
-		case 2:
-			mint = 0;
-		case 1:
-			sec = 0;
-		default:
-			return;
+	switch (i) {
+	case 3:
+		hour = 0;
+	case 2:
+		mint = 0;
+	case 1:
+		sec = 0;
+	default:
+		return;
 	}
 }
 cTime cTime:: operator +(const cTime& op) const {
@@ -130,3 +134,94 @@ ostream& operator << (ostream& os, cTime& time) {
 	//os << time.hour << endl;
 	return os;
 }
+#endif
+//cVector
+#if 1
+//////////////////////////public/////////////////////////////////
+cMyVector::cMyVector() {
+	cordX = cordY = ang = mag = 0;
+	return;
+}
+cMyVector::cMyVector(double op1, double op2, char c) {
+	if (c == 'c') {
+		cordX = op1;
+		cordY = op2;
+		updatePloar();
+		return;
+	}
+	else {
+		mag = op1;
+		ang = op2 * deg2radConst;
+		updateCord();
+		return;
+	}
+}
+cMyVector::~cMyVector() {
+	return;
+}
+cMyVector cMyVector::operator+ (const cMyVector& vtr) const {
+	double op1, op2;
+	op1 = op2 = 0;
+	op1 = this->cordX + vtr.cordX;
+	op2 = this->cordY + vtr.cordY;
+	return cMyVector(op1, op2);
+}
+cMyVector cMyVector::operator- (const cMyVector& vtr) const {
+	double op1, op2;
+	op1 = op2 = 0;
+	op1 = this->cordX - vtr.cordX;
+	op2 = this->cordY - vtr.cordY;
+	return cMyVector(op1, op2);
+}
+cMyVector& cMyVector::operator+= (const cMyVector& vtr) {
+	this->cordX += vtr.cordX;
+	this->cordY += vtr.cordY;
+	updatePloar();
+	return *this;
+}
+cMyVector& cMyVector::operator-= (const cMyVector& vtr) {
+	this->cordX -= vtr.cordX;
+	this->cordY -= vtr.cordY;
+	updatePloar();
+	return *this;
+}
+double cMyVector::operator* (const cMyVector& vtr) const {
+	return this->cordX * vtr.cordX + this->cordY * vtr.cordY;
+}
+cMyVector cMyVector::operator* (const double& mul) const {
+	double op1, op2;
+	op1 = op2 = 0;
+	op1 = this->cordX * mul;
+	op2 = this->cordY * mul;
+	return cMyVector(op1, op2);
+}
+////////////////////////////private////////////////////////////////
+double cMyVector::deg2rad(double i) {
+	return i * deg2radConst;
+}
+double cMyVector::red2deg(double i) {
+	return i * rad2degConst;
+}
+void cMyVector::updateCord() {
+	cordX = mag * cos(ang);
+	cordY = mag * sin(ang);
+	return;
+}
+void cMyVector::updatePloar() {
+	mag = sqrt(cordX * cordX + cordY * cordY);
+	ang = atan2(cordY, cordX);
+	return;
+}
+ostream& operator<< (ostream& os, const cMyVector& vtr) {
+	os.width(5);
+	os.fill('0');
+	os << "MAG: " << vtr.mag << "\t";
+	os.width(5);
+	os.fill('0');
+	os << "ANG: " << vtr.ang * rad2degConst;
+	return os;
+}
+cMyVector operator* (double mul, cMyVector& vtr) {
+	return vtr * mul;
+}
+#endif
