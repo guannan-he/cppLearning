@@ -148,6 +148,7 @@
     <ClCompile Include="ch11_main.cpp" />
     <ClCompile Include="ch11_miscel.cpp" />
     <ClCompile Include="ch12_main.cpp" />
+    <ClCompile Include="ch12_miscel.cpp" />
     <ClCompile Include="ch3_main.cpp" />
     <ClCompile Include="ch4_dynamicMatrix.cpp" />
     <ClCompile Include="ch4_main.cpp" />
@@ -159,7 +160,9 @@
   <ItemGroup>
     <ClInclude Include="ch10_header.h" />
     <ClInclude Include="ch11_header.h" />
+    <ClInclude Include="ch12_header.h" />
     <ClInclude Include="ch4_dynamicMatrix.h" />
+    <ClInclude Include="template.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

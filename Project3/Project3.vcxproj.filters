@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="template.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ch3_main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -51,6 +48,12 @@
     <ClCompile Include="ch12_main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ch12_miscel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="template.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ch4_dynamicMatrix.h">
@@ -60,6 +63,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ch11_header.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="template.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ch12_header.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

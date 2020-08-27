@@ -4,6 +4,7 @@
 #define deg2radConst 0.0175
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 
