@@ -54,6 +54,15 @@
     <ClCompile Include="template.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ch13_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ch13_miscel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ch13_header.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ch4_dynamicMatrix.h">

@@ -26,9 +26,22 @@ private:
 	char** newDynamicMatrix(int, int);
 	void fullCopy(const CGoodDynamicMatrix&);
 };
-
+class cCustomer {
+public:
+	cCustomer();
+	~cCustomer();
+	void set(long);
+	long when() const;
+	int proctm() const;
+	friend ostream& operator<< (ostream&, cCustomer&);
+private:
+	long arriveTime;
+	int processTime;
+	//cCustomer(const cCustomer&) {}//禁止复制构造
+	//cCustomer& operator= (const cCustomer&) {}//禁止赋值构造
+};
 //单向链表
-typedef char ITEM;
+typedef cCustomer ITEM;
 class cQueue {
 public:
 	cQueue(int qs = qSize);
@@ -50,4 +63,6 @@ private:
 	cQueue(const cQueue&):queueSize(0) {};
 	cQueue& operator= (const cQueue&) {};
 };
+
+
 #endif

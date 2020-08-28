@@ -2,7 +2,7 @@
 #include <iostream>
 
 using namespace std;
-
+//带复制构造和赋值的动态数组
 #if 1
 CGoodDynamicMatrix::CGoodDynamicMatrix(int i, int j) {
 	colum = i;
@@ -88,16 +88,16 @@ void CGoodDynamicMatrix::fullCopy(const CGoodDynamicMatrix& source) {
 }
 
 #endif
-
+//单项队列
 #if 1
-cQueue::cQueue(int qs):queueSize(qs){
+cQueue::cQueue(int qs):queueSize(qs){//队列初始化
 	queueMenber = 0;
 	queueStart = new node;
 	queueEnd = queueStart;
 	return;
 }
-cQueue::~cQueue() {
-	char tmp;
+cQueue::~cQueue() {//从队首读取然后销毁
+	ITEM tmp;
 	while (this->subQueue(tmp));
 	return;
 }
@@ -110,7 +110,7 @@ bool cQueue::isFull() const {
 int cQueue::queueCnt() const {
 	return queueMenber;
 }
-bool cQueue::addQueue(const ITEM& item) {
+bool cQueue::addQueue(const ITEM& item) {//队尾添加，建立->转移->写元素
 	if (isFull()) {
 		return false;
 	}
@@ -123,7 +123,7 @@ bool cQueue::addQueue(const ITEM& item) {
 		return true;
 	}
 }
-bool cQueue::subQueue(ITEM& item) {
+bool cQueue::subQueue(ITEM& item) {//队首删除：转移->读取->删除
 	node* tmp;
 	if (isEmpty()) {
 		return false;
@@ -136,5 +136,36 @@ bool cQueue::subQueue(ITEM& item) {
 		delete tmp;
 		return true;
 	}
+}
+#endif
+//
+#if 1
+cCustomer::cCustomer() {
+	arriveTime = 0;
+	processTime = 0;
+	return;
+}
+cCustomer::~cCustomer() {
+	return;
+}
+void cCustomer::set(long time) {
+	arriveTime = time;
+	processTime = rand() % 3 + 1;
+	return;
+}
+long cCustomer::when() const {
+	return arriveTime;
+}
+int cCustomer::proctm() const {
+	return processTime;
+}
+
+
+
+
+
+ostream& operator<< (ostream& os, cCustomer& csmr) {
+	os << "arrive time: " << csmr.arriveTime << "\tprocess time: " << csmr.processTime;
+	return os;
 }
 #endif
