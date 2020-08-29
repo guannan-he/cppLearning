@@ -149,7 +149,7 @@
     <ClCompile Include="ch11_miscel.cpp" />
     <ClCompile Include="ch12_main.cpp" />
     <ClCompile Include="ch12_miscel.cpp" />
-    <ClCompile Include="ch13_header.cpp" />
+    <ClCompile Include="ch13_header.h" />
     <ClCompile Include="ch13_main.cpp" />
     <ClCompile Include="ch13_miscel.cpp" />
     <ClCompile Include="ch3_main.cpp" />
