@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 
 
 
-#if 1
+#if 0
 int main(int argc, char* argv[]) {
 	cBrassAccount hgn("hgn", "88000088", 500);
 	cBrassAccount hgn1;

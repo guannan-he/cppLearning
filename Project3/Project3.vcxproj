@@ -152,6 +152,8 @@
     <ClCompile Include="ch13_header.h" />
     <ClCompile Include="ch13_main.cpp" />
     <ClCompile Include="ch13_miscel.cpp" />
+    <ClCompile Include="ch14_main.cpp" />
+    <ClCompile Include="ch14_miscel.cpp" />
     <ClCompile Include="ch3_main.cpp" />
     <ClCompile Include="ch4_dynamicMatrix.cpp" />
     <ClCompile Include="ch4_main.cpp" />
@@ -164,6 +166,7 @@
     <ClInclude Include="ch10_header.h" />
     <ClInclude Include="ch11_header.h" />
     <ClInclude Include="ch12_header.h" />
+    <ClInclude Include="ch14_header.h" />
     <ClInclude Include="ch4_dynamicMatrix.h" />
     <ClInclude Include="template.h" />
   </ItemGroup>

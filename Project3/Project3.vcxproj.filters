@@ -63,6 +63,12 @@
     <ClCompile Include="ch13_header.h">
       <Filter>头文件</Filter>
     </ClCompile>
+    <ClCompile Include="ch14_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ch14_miscel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ch4_dynamicMatrix.h">
@@ -78,6 +84,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ch12_header.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ch14_header.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
