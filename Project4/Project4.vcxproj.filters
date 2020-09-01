@@ -18,12 +18,18 @@
     <ClInclude Include="template.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ch03.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="template.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ch01.cpp">
+    <ClCompile Include="ch03_miscel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ch03.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
