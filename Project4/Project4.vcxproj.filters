@@ -21,6 +21,9 @@
     <ClInclude Include="ch03.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ch04.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="template.cpp">
@@ -30,6 +33,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ch03.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ch04.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ch04_miscel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

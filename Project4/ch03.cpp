@@ -1,4 +1,4 @@
-#if 1
+#if 0
 
 #if 1
 #include <iostream>
@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
 	list.rearAdd('f');
 	list.frontAdd('f');
 	cout << list.rearSub() << endl;
+	cout << list;
 	return 0;
 }
 #endif
