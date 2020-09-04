@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="ch03.h" />
     <ClInclude Include="ch04.h" />
+    <ClInclude Include="ch06.h" />
     <ClInclude Include="template.h" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +150,8 @@
     <ClCompile Include="ch04.cpp" />
     <ClCompile Include="ch04_miscel.cpp" />
     <ClCompile Include="ch05.cpp" />
+    <ClCompile Include="ch06.cpp" />
+    <ClCompile Include="ch06miscel.cpp" />
     <ClCompile Include="template.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

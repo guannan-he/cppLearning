@@ -1,8 +1,17 @@
 //KMP
-#include <string>
+#if 0
+
+#if 1
 #include <iostream>
+#include <string>
 
 using namespace std;
+#endif
+
+
+
+#if 1
+
 
 int* getNext(string str) {
 	int* next = new int[str.length()];
@@ -15,7 +24,7 @@ int* getNext(string str) {
 					break;
 				}
 			}
-			if (k ==j && k > tmpK) {//到缀尾且目前队尾最长
+			if (k == j && k > tmpK) {//到缀尾且目前队尾最长
 				tmpK = k;
 			}
 		}
@@ -35,7 +44,7 @@ int main(int argc, char* argv[]) {
 	int i, j, cnt, pos, limit;
 	limit = ((strS.length() - strP.length() + 1) * strP.length());
 	cnt = 0;
-	for (i = j = 0; i < strS.length();cnt++) {//i自增在循环体中
+	for (i = j = 0; i < strS.length(); cnt++) {//i自增在循环体中
 		if (strS[i] == strP[j]) {//匹配
 			i++;
 			j++;
@@ -59,3 +68,30 @@ int main(int argc, char* argv[]) {
 	delete next;
 	return i - j;
 }
+
+
+
+
+
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+#if 0
+int main(int argc, char* argv[]) {
+
+	return 0;
+}
+#endif
+
+#endif
