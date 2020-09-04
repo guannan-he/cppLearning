@@ -148,6 +148,7 @@
     <ClCompile Include="ch03_miscel.cpp" />
     <ClCompile Include="ch04.cpp" />
     <ClCompile Include="ch04_miscel.cpp" />
+    <ClCompile Include="ch05.cpp" />
     <ClCompile Include="template.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

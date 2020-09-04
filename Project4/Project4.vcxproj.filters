@@ -41,5 +41,8 @@
     <ClCompile Include="ch04_miscel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ch05.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
