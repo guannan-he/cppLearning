@@ -22,6 +22,7 @@ int main(int argc, char* argv[]) {
 	node<char> newEle;
 	newEle.item = 'c';
 	cLinearList<char> list;
+	cLinearList<char> list3('l');
 	cLinearList<char>* list2 = new cLinearList<char>;
 	(*list2).frontAdd('5');
 	delete list2;

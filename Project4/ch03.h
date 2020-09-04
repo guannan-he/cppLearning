@@ -36,7 +36,7 @@ cLinearList<IT>::cLinearList() {//不好，多用了一个没有用的根节点
 }
 template<class IT>
 cLinearList<IT>::cLinearList(IT item) {
-	cLinearList<IT>::cLinearList();
+	cLinearList<IT>::cLinearList();//这里有错，作用域不一样
 	this->rearAdd(item);
 	return;
 }
