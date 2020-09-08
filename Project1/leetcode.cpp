@@ -1,7 +1,7 @@
 #define NULL 0
 #include <string>
 using namespace std;
-#if 0
+#if 1
  //Definition for singly-linked list.
  struct ListNode {
      int val;
@@ -48,6 +48,33 @@ public:
         }
 
     }
+    
+    
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* tmpA, * tmpB, * lastA, * tmp, * rootNode;
+        rootNode = new ListNode(0);
+        rootNode->next = l1;
+        tmpA = l1;
+        tmpB = l2;
+        lastA = rootNode;
+        while (tmpA && tmpB) {
+            if (tmpA->val >= tmpB->val) {
+                tmp = tmpB;
+                tmpB = tmpB->next;
+                tmp->next = tmpA;
+                lastA->next = tmp;
+                lastA = lastA->next;
+            }
+            else {
+                lastA = tmpA;
+                tmpA = tmpA->next;
+            }
+        }
+        tmp = rootNode->next;
+        delete rootNode;
+        return tmp;
+    }
+
 };
 
 ListNode* listGen(string& str) {
@@ -64,16 +91,18 @@ ListNode* listGen(string& str) {
 }
 
 int main(int argc, char* argv[]) {
-    string str("1324321");
-    ListNode* newList = listGen(str);
+    string str1("124");
+    string str2("134");
+    ListNode* newList1 = listGen(str1);
+    ListNode* newList2 = listGen(str2);
     Solution newSolution;
-    bool isP = newSolution.isPalindrome(newList);
+    ListNode* res = newSolution.mergeTwoLists(newList1, newList2);
     return 0;
 }
 
 #endif
 
-#if 1
+#if 0
 int main(int argc, char* argv[]) {
 
     return 0;
