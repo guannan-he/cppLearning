@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="date_user.cpp" />
+    <ClCompile Include="leetcode.cpp" />
     <ClCompile Include="source_1.cpp" />
     <ClCompile Include="student.cpp" />
     <ClCompile Include="time_user.cpp" />

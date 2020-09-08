@@ -27,6 +27,9 @@
     <ClInclude Include="ch06.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ch07.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="template.cpp">
@@ -51,6 +54,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ch06miscel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ch07.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ch02.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
