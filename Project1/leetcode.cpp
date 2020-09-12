@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 using namespace std;
+
+//链表
 #if 0
  //Definition for singly-linked list.
  struct ListNode {
@@ -103,7 +105,9 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-#if 1
+
+//数组和字符串
+#if 0
 class Solution {
 public:
     int pivotIndex(vector<int>& nums) {
@@ -211,6 +215,111 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+
+
+
+
+
+
 #endif
 
 
+
+//队列、栈
+#if 1
+
+struct node {
+    int val = 0;
+    node* next = 0;
+};
+class MyCircularQueue {
+public:
+    /** Initialize your data structure here. Set the size of the queue to be k. */
+    MyCircularQueue(int k) {
+        size = k;
+        rootNode = new node[k];
+        currentNode = rootNode;
+        return;
+    }
+
+    /** Insert an element into the circular queue. Return true if the operation is successful. */
+    bool enQueue(int value) {
+        if (isFull()) {
+            return false;
+        }
+        currentNode->next = new node;
+        currentNode = currentNode->next;
+        currentNode->val = value;
+        member++;
+        return true;
+    }
+
+    /** Delete an element from the circular queue. Return true if the operation is successful. */
+    bool deQueue() {
+        if (isEmpty()) {
+            return false;
+        }
+        node* tmp = rootNode->next;
+        rootNode->next = tmp->next;
+        delete tmp;
+        member--;
+        if (isEmpty()) {
+            currentNode = rootNode;
+        }
+        return true;
+    }
+
+    /** Get the front item from the queue. */
+    int Front() {
+        if (isEmpty()) {
+            return -1;
+        }
+        return rootNode->next->val;
+    }
+
+    /** Get the last item from the queue. */
+    int Rear() {
+        if (isEmpty()) {
+            return -1;
+        }
+        return currentNode->val;
+    }
+
+    /** Checks whether the circular queue is empty or not. */
+    bool isEmpty() {
+        return member == 0;
+    }
+
+    /** Checks whether the circular queue is full or not. */
+    bool isFull() {
+        return member == size;
+    }
+private:
+    node* rootNode, * currentNode;
+    int size = 0;
+    int member = 0;
+};
+
+/**
+ * Your MyCircularQueue object will be instantiated and called as such:
+ * MyCircularQueue* obj = new MyCircularQueue(k);
+ * bool param_1 = obj->enQueue(value);
+ * bool param_2 = obj->deQueue();
+ * int param_3 = obj->Front();
+ * int param_4 = obj->Rear();
+ * bool param_5 = obj->isEmpty();
+ * bool param_6 = obj->isFull();
+ */
+
+
+int main(int argc, char* argv[]) {
+    MyCircularQueue* obj = new MyCircularQueue(6);
+    obj->enQueue(6);
+    obj->deQueue();
+    obj->enQueue(5);
+
+    return 0;
+}
+
+
+#endif

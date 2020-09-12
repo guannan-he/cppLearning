@@ -79,7 +79,7 @@ public:
 			deleteMember(pos);//删除元素作为第一个分配元素
 			return true;
 		}
-	}
+	
 private:
 	nodeElement data[MAXELENUM];
 	int member = 0;
