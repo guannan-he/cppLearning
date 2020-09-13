@@ -1,6 +1,8 @@
 #define NULL 0
 #include <string>
 #include <vector>
+#include <queue>
+#include<unordered_set>
 using namespace std;
 
 //链表
@@ -310,13 +312,266 @@ private:
  * bool param_5 = obj->isEmpty();
  * bool param_6 = obj->isFull();
  */
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int colSize = grid.size();
+        if (!colSize) {//无元素则返回
+            return 0;
+        }
+        int rolSize = grid[0].size();
+        int total = colSize * rolSize;
+        char** visited = visitedGen(colSize, rolSize);
+        char** gridCopy = gridCopyFunc(grid, colSize, rolSize);
+        queue<vector<int>> q;//队列保存下标向量
+        int cur = 0;//下标计数
+        int c, r;//下标
+        int cnt = 0;//陆地计数
+        int queueSize;
+        vector<int> pos;
+        pos.push_back(c); pos.push_back(r);
+        while (cur < total) {
+            //未访问过的压入队列
+            c = cur / rolSize;
+            r = cur % rolSize;
+            cur++;
+            //获取下标
+            if (visited[c][r] == '1') {
+                continue;//访问过跳过
+            }
+            visited[c][r] = '1';//根节点标记为访问过
+            if (gridCopy[c][r] == '0') {
+                continue;//跳过陆地
+            }
+            pos[0] = c; pos[1] = r;//保存陆地下标
+            q.push(pos);//压入根节点
+            while (!q.empty()) {
+                queueSize = q.size();
+                while (queueSize) {
+                    pos = q.front();//读取头节点
+                    c = pos[0]; r = pos[1];
+                    if (c > 0 && visited[c - 1][r] == '0') {//上方节点
+                        visited[c - 1][r] = '1';
+                        if (gridCopy[c - 1][r] == '1') {
+                            pos[0] = c - 1;
+                            pos[1] = r;
+                            q.push(pos);
+                        }
+                    }
+                    if (r < rolSize - 1 && visited[c][r + 1] == '0') {//右方节点
+                        visited[c][r + 1] = '1';
+                        if (gridCopy[c][r + 1] == '1') {
+                            pos[0] = c;
+                            pos[1] = r + 1;
+                            q.push(pos);
+                        }
+                    }
+                    if (c < colSize - 1 && visited[c + 1][r] == '0') {//下方节点
+                        visited[c + 1][r] = '1';
+                        if (gridCopy[c + 1][r] == '1') {
+                            pos[0] = c + 1;
+                            pos[1] = r;
+                            q.push(pos);
+                        }
+                    }
+                    if (r > 0 && visited[c][r - 1] == '0') {//左方节点
+                        visited[c][r - 1] = '1';
+                        if (gridCopy[c][r - 1] == '1') {
+                            pos[0] = c;
+                            pos[1] = r - 1;
+                            q.push(pos);
+                        }
+                    }
+
+                    q.pop();//弹出头节点
+                    queueSize--;
+                }
+            }
+            cnt++;
+        }
+        visitedDelete(visited, colSize);
+        visitedDelete(gridCopy, colSize);
+        return cnt;
+    }
+    char** visitedGen(int colSize, int rolSize) {//生成访问标记矩阵
+        char** visited = new char* [colSize];
+        for (int i = 0; i < colSize; i++) {
+            visited[i] = new char[rolSize];
+        }
+        for (int i = 0; i < colSize; i++) {
+            for (int j = 0; j < rolSize; j++) {
+                visited[i][j] = '0';//标记为为访问
+            }
+        }
+        return visited;
+    }
+    void visitedDelete(char** visited, int colSize) {//删除标记矩阵
+        for (int i = 0; i < colSize; i++) {
+            delete[] visited[i];
+        }
+        delete[] visited;
+        return;
+    }
+    char** gridCopyFunc(vector<vector<char>>& grid, int colSize, int rolSize) {
+        char** visited = visitedGen(colSize, rolSize);
+        for (int i = 0; i < colSize; i++) {
+            for (int j = 0; j < rolSize; j++) {
+                visited[i][j] = grid[i][j];
+            }
+        }
+        return visited;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    int openLock(vector<string>& deadends, string target) {
+        int deadEndCnt = deadends.size();
+        int totalCnt = 0;
+        int cur;
+        int inVisit = 0;
+        int tmpNum;
+        queue<string> q;
+        string current = "0000";
+        string tmp = "0000";
+        unordered_set<string> vist;
+        vist.insert(deadends.begin(), deadends.end());
+        q.push(current);//压入根节点
+        vist.emplace(current);
+        while (!q.empty()) {//队列里还有元素
+            int queueLen = q.size();
+            while (queueLen) {//出队列入队列
+                current = q.front();
+                if (vist.count(current)) {
+                    return -1;//不该出现的出现了
+                }
+                if (current == target) {
+                    return totalCnt;//找到目标
+                }
+                //要修改，分为两个方向，现在会数量几何增长
+                for (cur = 0; cur < 4; cur++) {
+                    tmp = current;
+                    tmpNum = current[cur] - '0';
+                    tmpNum = tmpNum < 9 ? (tmpNum + 1) : 0;
+                    tmp[cur] = (tmpNum + '0');
+                    if (!vist.count(tmp)) {
+                        q.push(tmp);
+                        vist.emplace(tmp);
+                    }
+                    tmp = current;
+                    tmpNum = current[cur] - '0';
+                    tmpNum = tmpNum > 0 ? (tmpNum - 1) : 9;
+                    tmp[cur] = (tmpNum + '0');
+                    if (!vist.count(tmp)) {
+                        q.push(tmp);
+                        vist.emplace(tmp);
+                    }
+                }
+                q.pop();
+                queueLen--;
+            }
+            totalCnt++;
+        }
+        return -1;
+    }
+    bool inDeadend(vector<string>& deadends, string current) {
+        int deadEndCnt = deadends.size();
+        for (int i = 0; i < deadEndCnt; i++) {
+            if (current == deadends[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    int numSquares(int n) {
+        queue<int> q;
+        unordered_set<int> calculated;
+        q.push(n);
+        calculated.emplace(n);
+        int qLen = 0;
+        int current = 0;
+        int res = 0;
+        int max = 0;
+        int tmp;
+        while (!q.empty()) {
+            qLen = q.size();
+            while (qLen) {//出队列入队列
+                current = q.front();
+                if (current == 0) {
+                    return res;
+                }
+                max = int(sqrt(current));
+                while (max >= 0) {
+                    tmp = current - max * max;
+                    if (!calculated.count(tmp)) {
+                        q.push(tmp);
+                        calculated.emplace(tmp);
+                    }
+                    max--;
+                }
+                q.pop();
+                qLen--;
+            }
+            res++;
+        }
+        return -1;
+    }
+};
+
+void inptGen(vector<vector<char>>& inpt) {
+    vector<char> tmp;
+    //string s = "11000 11000 00100 00011 ";
+    //string s = "11110 11010 11000 00000 ";
+    string s = "8888";
+    int sLen = s.size();
+    int cur = 0;
+    while (cur < sLen) {
+        if (s[cur] == ' ') {
+            inpt.push_back(tmp);
+            tmp.clear();
+        }
+        else {
+            tmp.push_back(s[cur]);
+        }
+        cur++;
+    }
+    return;
+}
+void deadEndGen(vector<string>& inpt) {
+    string s = "0201 0101 0102 1212 2002 ";
+    //string s = "8887 8889 8878 8898 8788 8988 7888 9888 ";
+    int sLen = s.size();
+    int cur = 0;
+    string tmp;
+    while (cur < sLen) {
+        if (s[cur] == ' ') {
+            inpt.push_back(tmp);
+            tmp.clear();
+        }
+        else {
+            tmp.push_back(s[cur]);
+        }
+        cur++;
+    }
+    return;
+}
 
 
 int main(int argc, char* argv[]) {
-    MyCircularQueue* obj = new MyCircularQueue(6);
+    /*MyCircularQueue* obj = new MyCircularQueue(6);
     obj->enQueue(6);
     obj->deQueue();
-    obj->enQueue(5);
+    obj->enQueue(5);*/
+    Solution mySolution;
+    //vector<vector<char>> inpt;
+    vector<string> inpt;
+    //inptGen(inpt);
+    //mySolution.numIslands(inpt);
+    deadEndGen(inpt);
+    string target = "0009";
+    //mySolution.openLock(inpt, target);
+    mySolution.numSquares(8935);
+
+
 
     return 0;
 }
