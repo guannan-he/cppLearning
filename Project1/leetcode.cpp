@@ -3,6 +3,8 @@
 #include <vector>
 #include <queue>
 #include<unordered_set>
+#include<unordered_map>
+#include<stack>
 using namespace std;
 
 //链表
@@ -227,8 +229,8 @@ int main(int argc, char* argv[]) {
 
 
 
-//队列、栈
-#if 1
+//队列
+#if 0
 
 struct node {
     int val = 0;
@@ -576,5 +578,121 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+
+#endif
+
+
+
+//栈
+#if 0
+class Solution {
+public:
+    vector<vector<int>> updateMatrix(vector<vector<int>>& matrix) {
+        int colSize = matrix.size();
+        if (!colSize) {//无元素则返回
+            return matrix;
+        }
+        int rolSize = matrix[0].size();
+        
+        //可释放变量
+        char** visited = visitedGen(colSize, rolSize);//访问标记
+        queue<pair<int, int>>* q = new queue<pair<int, int>>;//下标队列
+
+        //将所有零纳入到当问过数组中
+        int c, r;
+        for (c = 0; c < colSize; c++){
+            for (r = 0; r < rolSize; r++) {
+                if (matrix[c][r] == 0) {
+                    q->emplace(c, r);
+                    visited[c][r] = '1';
+                }
+            }
+        }
+
+        //DFS
+        int tmpC, tmpR;
+        int dirs[4][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+        while (!q->empty()) {
+            c = q->front().first;
+            r = q->front().second;
+            for (int i = 0; i < 4; i++) {
+                tmpC = c + dirs[i][0];
+                tmpR = r + dirs[i][1];
+                if (tmpC >= 0 && tmpC < colSize && tmpR >= 0 && tmpR < rolSize && visited[tmpC][tmpR] == '0') {
+                    matrix[tmpC][tmpR] = matrix[c][r] + 1;
+                    q->emplace(tmpC, tmpR);
+                    visited[tmpC][tmpR] = '1';
+                }
+            }
+            q->pop();
+        }
+
+        //后处理，释放
+        visitedDelete(visited, colSize);
+        delete q;
+        return matrix;
+    }
+    char** visitedGen(int colSize, int rolSize) {//生成访问标记矩阵
+        char** visited = new char* [colSize];
+        for (int i = 0; i < colSize; i++) {
+            visited[i] = new char[rolSize];
+        }
+        for (int i = 0; i < colSize; i++) {
+            for (int j = 0; j < rolSize; j++) {
+                visited[i][j] = '0';//标记为为访问
+            }
+        }
+        return visited;
+    }
+    void visitedDelete(char** visited, int colSize) {//删除标记矩阵
+        for (int i = 0; i < colSize; i++) {
+            delete[] visited[i];
+        }
+        delete[] visited;
+        return;
+    }
+};
+
+void inptGen(vector<vector<int>>& inpt) {
+    vector<int> tmp;
+    //string s = "11000 11000 00100 00011 ";
+    //string s = "11110 11010 11000 00000 ";
+    //string s = "000 010 000 ";
+    string s = "01011 11001 00010 10111 10001 ";
+    //string s = "000 010 111 ";
+    //string s = "8888";
+    int sLen = s.size();
+    int cur = 0;
+    while (cur < sLen) {
+        if (s[cur] == ' ') {
+            inpt.push_back(tmp);
+            tmp.clear();
+        }
+        else {
+            tmp.push_back(s[cur] - '0');
+        }
+        cur++;
+    }
+    return;
+}
+
+int main(int argc, char* argv[]) {
+    Solution mySolution;
+    vector<vector<int>> inpt;
+    inptGen(inpt);
+    mySolution.updateMatrix(inpt);
+    return 0;
+}
+#endif
+
+
+#if 1
+
+int main(int argc, char* argv[]) {
+
+
+
+    return 0;
+}
 
 #endif
