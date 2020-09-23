@@ -686,12 +686,146 @@ int main(int argc, char* argv[]) {
 #endif
 
 
-#if 1
+#if 0
+
+
+
+ struct TreeNode {
+     int val;
+     TreeNode *left;
+     TreeNode *right;
+     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ };
+
+ class Codec {
+ public:
+
+     // Encodes a tree to a single string.
+     string serialize(TreeNode* root) {
+         string res;
+         queue<TreeNode*> que;
+         que.push(root);
+         while (!que.empty()) {
+             int siz = que.size();
+             while (siz--) {
+                 TreeNode* cur = que.front();
+                 que.pop();
+                 if (cur == nullptr) {
+                     res += "null,";
+                 }
+                 else {
+                     string str_val = to_string(cur->val) + ",";
+                     res += str_val;
+                     que.push(cur->left);
+                     que.push(cur->right);
+                 }
+             }
+         }
+         return res;
+     }
+
+     // Decodes your encoded data to tree.
+     TreeNode* deserialize(string data) {
+         queue<int>* valStack = pushStrVal(data);
+         if (!valStack->size()) {
+             return nullptr;
+         }
+         TreeNode* currentNode;
+         int currentVal = valStack->front();
+         if (currentVal == -888) {
+             return nullptr;
+         }
+         valStack->pop();
+         TreeNode* root = new TreeNode(currentVal);
+         queue<TreeNode*> q;
+         q.push(root);
+         while (!q.empty()) {
+             int qLen = q.size();
+             while (qLen) {
+                 currentNode = q.front();
+                 q.pop();
+                 qLen--;
+                 if (currentNode == nullptr) {
+                     continue;
+                 }
+                 currentVal = -888;
+                 if (!valStack->empty()) {
+                     currentVal = valStack->front();
+                     valStack->pop();
+                 }
+                 if (currentVal != -888) {
+                     currentNode->left = new TreeNode(currentVal);
+                 }
+                 q.push(currentNode->left);
+                 currentVal = -888;
+                 if (!valStack->empty()) {
+                     currentVal = valStack->front();
+                     valStack->pop();
+                 }
+                 if (currentVal != -888) {
+                     currentNode->right = new TreeNode(currentVal);
+                 }
+                 q.push(currentNode->right);
+             }
+         }
+
+         return root;
+     }
+     queue<int>* pushStrVal(string& data) {
+         queue<int>* valStack = new queue<int>;
+         int dataLen = data.size();
+         int cur = 0;
+         int tmpVal;
+         int sign;
+         while (cur < dataLen) {
+             if (data[cur] == '[') {
+                 cur++;
+                 continue;
+             }
+             if (data[cur] == ']') {
+                 cur++;
+                 continue;
+             }
+             if (data[cur] == ',') {
+                 cur++;
+                 continue;
+             }
+             if (data[cur] == 'n') {
+                 valStack->push(-888);
+                 cur += 4;
+                 continue;
+             }
+             sign = 1;
+             tmpVal = 0;
+             while (data[cur] != ',' && data[cur] != ']') {
+                 if (data[cur] == '-') {
+                     sign = -1;
+                     cur++;
+                     continue;
+                 }
+                 tmpVal = tmpVal * 10 + data[cur] - '0';
+                 cur++;
+             }
+             tmpVal *= sign;
+             valStack->push(tmpVal);
+         }
+         return valStack;
+     }
+ };
+
+ // Your Codec object will be instantiated and called as such:
+ // Codec ser, deser;
+ // TreeNode* ans = deser.deserialize(ser.serialize(root));
+
+// Your Codec object will be instantiated and called as such:
+// Codec ser, deser;
+// TreeNode* ans = deser.deserialize(ser.serialize(root));
 
 int main(int argc, char* argv[]) {
-
-
-
+    Codec myCodec;
+    string str = "[4,-7,-3,null,null,-9,-3,9,-7,-4,null,6,null,-6,-6,null,null,0,6,5,null,9,null,null,-1,-4,null,null,null,-2]";
+    TreeNode* root = myCodec.deserialize(str);
+    string res = myCodec.serialize(root);
     return 0;
 }
 
