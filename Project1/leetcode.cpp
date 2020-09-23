@@ -685,7 +685,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-
+//二叉树
 #if 0
 
 
@@ -826,6 +826,95 @@ int main(int argc, char* argv[]) {
     string str = "[4,-7,-3,null,null,-9,-3,9,-7,-4,null,6,null,-6,-6,null,null,0,6,5,null,9,null,null,-1,-4,null,null,null,-2]";
     TreeNode* root = myCodec.deserialize(str);
     string res = myCodec.serialize(root);
+    return 0;
+}
+
+#endif
+
+//前缀树
+#if 1
+
+class KthLargest {
+public:
+    KthLargest(int k, vector<int>& nums) {
+        target = k;
+        int numsLen = nums.size();
+        int cur;
+        for (cur = 0; cur < numsLen; cur++) {
+            root = addToTree(root, nums[cur]);
+        }
+        return;
+    }
+
+    int add(int val) {
+        root = addToTree(root, val);
+        return getThLarge();
+    }
+private:
+    struct treeNode {
+        int val = 0;
+        int cnt = 0;
+        treeNode* left = nullptr;
+        treeNode* right = nullptr;
+    };
+    int target = 0;
+    treeNode* root = nullptr;
+    treeNode* addToTree(treeNode* root, int val) {//递归二叉搜索树向添加
+        if (root == nullptr) {
+            treeNode* ans = new treeNode;
+            ans->val = val;
+            ans->cnt += 1;
+            return ans;
+        }
+        int nodeVal = root->val;
+        root->cnt += 1;
+        if (val < nodeVal) {
+            root->left = addToTree(root->left, val);
+        }
+        if (val > nodeVal) {
+            root->right = addToTree(root->right, val);
+        }
+        return root;
+    }
+    int getThLarge() {//返回第几大的元素
+        treeNode* cur = root;
+        int k = target;
+        int lCnt, rCnt, curCnt;
+        while (1) {
+            rCnt = (cur->right != nullptr) ? cur->right->cnt : 0;
+            lCnt = (cur->left != nullptr) ? cur->left->cnt : 0;
+            curCnt = cur->cnt - lCnt - rCnt;
+            if (k > rCnt + curCnt) {
+                k = k - curCnt - rCnt;
+                cur = cur->left;
+            }
+            else if (k <= rCnt) {
+                cur = cur->right;
+            }
+            else {
+                return cur->val;
+            }
+        }
+        return -1;
+    }
+};
+
+/**
+ * Your KthLargest object will be instantiated and called as such:
+ * KthLargest* obj = new KthLargest(k, nums);
+ * int param_1 = obj->add(val);
+ */
+
+
+int main(int argc, char* argv[]) {
+    int val = 2;
+    vector<int> nums = {0};
+    KthLargest kthLargest(val, nums);
+    kthLargest.add(-1);
+    kthLargest.add(1);
+    kthLargest.add(-2);
+    kthLargest.add(-4);
+    kthLargest.add(3);
     return 0;
 }
 
