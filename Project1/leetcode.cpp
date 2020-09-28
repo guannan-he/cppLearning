@@ -831,8 +831,8 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//Ç°×ºÊ÷
-#if 1
+//¶þ²æËÑË÷Ê÷
+#if 0
 
 class KthLargest {
 public:
@@ -915,6 +915,275 @@ int main(int argc, char* argv[]) {
     kthLargest.add(-2);
     kthLargest.add(-4);
     kthLargest.add(3);
+    return 0;
+}
+
+#endif
+
+//Ç°×ºÊ÷
+#if 1
+
+class Trie {
+public:
+    /** Initialize your data structure here. */
+    Trie() {
+        rootNode = new node;
+    }
+
+    /** Inserts a word into the trie. */
+    void insert(string word) {
+        int wordLen = word.size();
+        node* cur = rootNode;
+        char currentChar;
+        for (int i = 0; i < wordLen; i++) {
+            currentChar = word[i];
+            if (!cur->children.count(currentChar)) {
+                node* tmp = new node;
+                tmp->val = currentChar;
+                if (i == wordLen - 1) {
+                    tmp->isWord = true;
+                }
+                cur->children.emplace(currentChar, tmp);
+                cur = tmp;
+            }
+            else {
+                cur = cur->children.find(currentChar)->second;
+                if (i == wordLen - 1) {
+                    cur->isWord = true;
+                }
+            }
+        }
+        return;
+    }
+
+    /** Returns if the word is in the trie. */
+    bool search(string word) {
+        node* cur = rootNode;
+        int wordLen = word.size();
+        for (int i = 0; i < wordLen; i++) {
+            if (!cur->children.count(word[i])) {
+                return false;
+            }
+            cur = cur->children.find(word[i])->second;
+        }
+        return cur->isWord;
+    }
+
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    bool startsWith(string prefix) {
+        node* cur = rootNode;
+        int wordLen = prefix.size();
+        for (int i = 0; i < wordLen; i++) {
+            if (!cur->children.count(prefix[i])) {
+                return false;
+            }
+            cur = cur->children.find(prefix[i])->second;
+        }
+        return true;
+    }
+private:
+    struct node {
+        char val;
+        bool isWord = false;
+        unordered_map<char, node*> children;
+    };
+    node* rootNode;
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
+
+
+class Solution {
+public:
+    string replaceWords(vector<string>& dictionary, string sentence) {
+        rootNode = new node;
+        pushIntoTrie(dictionary);
+        string ans;
+        string inptTmp, ouptTmp;
+        int sentenceLen = sentence.size();
+        int i, j;
+        i = j = 0;
+        while (i < sentenceLen && j < sentenceLen) {
+            while (j < sentenceLen && sentence[j] != ' ') {
+                j++;
+            }
+            inptTmp = sentence.substr(i, j - i);
+            ouptTmp = longToShort(inptTmp);
+            if (!ouptTmp.size()) {
+                ans = ans + inptTmp;
+            }
+            else {
+                ans = ans + ouptTmp;
+            }
+            ans.push_back(' ');
+            j++;
+            i = j;
+        }
+        
+        ans.pop_back();
+        return ans;
+    }
+private:
+    struct node {
+        char val;
+        bool isEnd = false;
+        node* next[26] = {nullptr};
+    };
+    node* rootNode;
+    void pushIntoTrie(vector<string>& dictionary) {//Ìí¼Óµ½Ç°×ºÊ÷
+        string tmpStr;
+        int dictLen = dictionary.size();
+        int i, j, tmpStrLen;
+        node* cur,* tmpNode;
+        char currentChar;
+        for (j = 0; j < dictLen; j++) {
+            cur = rootNode;
+            tmpStr = dictionary[j];
+            tmpStrLen = tmpStr.size();
+            for (i = 0; i < tmpStrLen; i++) {
+                currentChar = tmpStr[i];
+                if (!cur->next[currentChar - 'a']) {
+                    tmpNode = new node;
+                    tmpNode->val = currentChar;
+                    if (i == tmpStrLen - 1) {
+                        tmpNode->isEnd = true;
+                    }
+                    cur->next[currentChar - 'a'] = tmpNode;
+                    cur = tmpNode;
+                }
+                else {
+                    cur = cur->next[currentChar - 'a'];
+                    if (i == tmpStrLen - 1) {
+                        cur->isEnd = true;
+                    }
+                }
+            }
+        }
+        return;
+    }
+    string longToShort(string& str) {
+        string ans;
+        int strLen = str.size();
+        node* cur = rootNode;
+        char currentChar;
+        int i;
+        for (i = 0; i < strLen; i++) {
+            currentChar = str[i];
+            if (!cur->next[currentChar - 'a']) {
+                string nullstr;
+                return nullstr;
+            }
+            cur = cur->next[currentChar - 'a'];
+            ans = ans + cur->val;
+            if (cur->isEnd) {
+                break;
+            }
+        }
+        return ans;
+    }
+};
+
+class WordDictionary {
+public:
+    /** Initialize your data structure here. */
+    WordDictionary() {
+        rootNode = new node;
+    }
+
+    /** Adds a word into the data structure. */
+    void addWord(string word) {
+        int wordLen = word.size();
+        node* cur = rootNode;
+        node* tmp;
+        char currentChar;
+        for (int i = 0; i < wordLen; i++) {
+            currentChar = word[i];
+            if (!cur->next[currentChar - 'a']) {
+                tmp = new node;
+                tmp->val = word[i];
+                if (i == wordLen - 1) {
+                    tmp->isEnd = true;
+                }
+                cur->next[currentChar - 'a'] = tmp;
+                cur = tmp;
+            }
+            else {
+                cur = cur->next[currentChar - 'a'];
+                if (i == wordLen - 1) {
+                    cur->isEnd = true;
+                }
+            }
+        }
+        return;
+    }
+
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    bool search(string word) {
+        bool status = findSub(rootNode, word);
+        return status;
+    }
+private:
+    struct node {
+        char val;
+        bool isEnd = false;
+        node* next[26] = { nullptr };
+    };
+    node* rootNode;
+    bool findSub(node* root, string& str) {
+        int strLen = str.size();
+        if (strLen == 0) {
+            if (root->isEnd) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        char currentChar = str[0];
+        string nextStr = str.substr(1);
+        if (currentChar == '.') {
+            bool status = false;
+            for (int i = 0; i < 26; i++) {
+                if (root->next[i]) {
+                    status = status || findSub(root->next[i], nextStr);
+                }
+            }
+            return status;
+        }
+        else if (root->next[currentChar - 'a']) {
+            return findSub(root->next[currentChar - 'a'], nextStr);
+        }
+        else {
+            return false;
+        }
+        return false;
+    }
+};
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary* obj = new WordDictionary();
+ * obj->addWord(word);
+ * bool param_2 = obj->search(word);
+ */
+
+
+int main(int argc, char* argv[]) {
+    //Solution mySolution;
+    //string inpt = "the cattle was rattled by the battery";
+    //vector<string> dict = { "cat","bat","rat" };
+    //mySolution.replaceWords(dict, inpt);
+    WordDictionary myWordDictionary;
+    myWordDictionary.addWord("bad");
+    myWordDictionary.addWord("dad");
+    myWordDictionary.addWord("mad");
+    myWordDictionary.search(".ad");
     return 0;
 }
 
