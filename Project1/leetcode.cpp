@@ -920,8 +920,8 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//前缀树
-#if 1
+//前缀树Trie
+#if false
 
 class Trie {
 public:
@@ -1184,6 +1184,313 @@ int main(int argc, char* argv[]) {
     myWordDictionary.addWord("dad");
     myWordDictionary.addWord("mad");
     myWordDictionary.search(".ad");
+    return 0;
+}
+
+#endif
+
+
+#if false
+
+class Solution {
+public:
+    Solution() {
+        rootNode = new node;
+        return;
+    }
+    int findMaximumXOR(vector<int>& nums) {
+        int numsLen = nums.size();
+        for (int i = 0; i < numsLen; i++) {
+            pushIntoBinaryTree(nums[i]);
+        }
+        node* cur, *curL, *curR;
+        cur = rootNode;
+        while (!cur->left || !cur->right) {
+            if (cur->left) {
+                cur = cur->left;
+            }
+            else if (cur->right) {
+                cur = cur->right;
+            }
+            else {
+                return 0;
+            }
+        }//修剪主干，直到第一个分岔
+        curL = cur->left;
+        curR = cur->right;
+        unsigned int ans = 1;
+        searchMax(curL, curR, ans);
+        return ans;
+    }
+private:
+    struct node {
+        node* left = nullptr;//0
+        node* right = nullptr;//1
+    };
+    node* rootNode;
+    void pushIntoBinaryTree(unsigned int num) {
+        node* cur = rootNode;
+        for (int i = 0; i < 32; i++) {
+            int tmp = num & 0x80000000;
+            num = num << 1;
+            if (tmp == 0) {
+                if (!cur->left) {
+                    cur->left = new node;
+                }
+                cur = cur->left;
+            }
+            else {
+                if (!cur->right) {
+                    cur->right = new node;
+                }
+                cur = cur->right;
+            }
+        }
+        return;
+    }
+    void searchMax(node* curL, node* curR, unsigned int& ans) {
+        if (!curL->left && !curL->right && !curR->left && !curR->right) {
+            return;
+        }
+        int r1 = 0, r2 = 0, r3 = 0;
+        int tmp = ans;
+        //异或右侧添加1
+        if (curL->left && curR->right) {//01
+            ans = ans << 1;
+            ans++;
+            searchMax(curL->left, curR->right, ans);
+            r1 = ans;
+            ans = tmp;
+        }
+        if (curL->right && curR->left) {//10
+            ans = ans << 1;
+            ans++;
+            searchMax(curL->right, curR->left, ans);
+            r2 = ans;
+            ans = tmp;
+        }
+        //否则添加0
+        if (!((curL->left && curR->right) || (curL->right && curR->left))) {//00
+            if (curL->left && curR->left) {
+                ans = ans << 1;
+                searchMax(curL->left, curR->left, ans);
+                r3 = ans;
+                ans = tmp;
+            }
+            if (curL->right && curR->right) {//11
+                ans = ans << 1;
+                searchMax(curL->right, curR->right, ans);
+            }
+        }
+        if (r1 > ans) {
+            ans = r1;
+        }
+        if (r2 > ans) {
+            ans = r2;
+        }
+        if (r3 > ans) {
+            ans = r3;
+        }
+        return;
+    }
+};
+
+
+int main(int argc, char* argv[]) {
+    vector<int> nums = { 3, 10, 5, 25, 2, 8 };
+    //vector<int> nums = { 2, 4 };
+    Solution mySolution;
+    int res = mySolution.findMaximumXOR(nums);
+    return 0;
+}
+
+#endif
+
+
+#if false
+
+class Solution {
+public:
+    Solution() {
+        rootNode = new node;
+        return;
+    }
+    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+        int wordsNum = words.size();
+        colSize = board.size();
+        rolSize = colSize ? board[0].size() : 0;
+        if (colSize == 0 || rolSize == 0) {
+            return ans;
+        }
+        for (int i = 0; i < wordsNum; i++) {
+            pushIntoTrie(words[i]);
+        }
+        for (int i = 0; i < colSize; i++) {
+            for (int j = 0; j < rolSize; j++) {
+                dfs(board, rootNode, i, j);
+            }
+        }
+
+        return ans;
+    }
+private:
+    struct node {
+        string word;
+        bool isWord = false;
+        node* next[26] = { nullptr };
+    };
+    node* rootNode;
+    int colSize = 0;
+    int rolSize = 0;
+    vector<string> ans;
+    void pushIntoTrie(string& str) {
+        int strLen = str.size();
+        node* cur = rootNode;
+        int nextCur;
+        for (int i = 0; i < strLen; i++) {
+            nextCur = str[i]; - 'a';
+            if (!cur->next[nextCur]) {
+                cur->next[nextCur] = new node;
+            }
+            cur = cur->next[nextCur];
+        }
+        cur->isWord = true;
+        cur->word = str;
+        return;
+    }
+    void dfs(vector<vector<char>>& board, node* root, int c, int r) {
+        char currentChar = board[c][r];
+        if (currentChar == '-' || root->next[currentChar - 'a'] == nullptr) {//访问过或者不存在子节点
+            return;
+        }
+        root = root->next[currentChar - 'a'];
+        if (root->isWord) {
+            ans.push_back(root->word);
+            root->isWord = false;
+        }
+        board[c][r] = '-';//同一个单词内不能重复使用
+        if (c > 0) {
+            dfs(board, root, c - 1, r);
+        }
+        if (r > 0) {
+            dfs(board, root, c, r - 1);
+        }
+        if (c + 1 < colSize) {
+            dfs(board, root, c + 1, r);
+        }
+        if (r + 1 < rolSize) {
+            dfs(board, root, c, r + 1);
+        }
+        board[c][r] = currentChar;
+        return;
+    }
+};
+
+int main(int argc, char* argv[]) {
+    Solution mySolution;
+    string str1 = "cock";
+    string str2 = "cocks";
+    //mySolution.pushIntoTrie(str1);
+    //mySolution.pushIntoTrie(str2);
+    return 0;
+}
+
+#endif
+
+#if true
+
+class Solution {
+public:
+    vector<vector<int>> palindromePairs(vector<string>& words) {
+        int wordsNum = words.size();
+        int i, j;
+        vector<vector<int>> res;
+        vector<int> tmp = { 0, 0 };
+        for (i = 0; i < wordsNum; i++) {
+            for (j = 0; j < wordsNum; j++) {
+                if (i == j) {
+                    continue;
+                }
+                bool push = false;
+                int iLen = words[i].size();
+                int jLen = words[j].size();
+                if (iLen == jLen) {
+                    int iCur = 0;
+                    int jCur = jLen - 1;
+                    while (iCur < iLen) {
+                        if (words[i][iCur] != words[j][jCur]) {
+                            break;
+                        }
+                        iCur++;
+                        jCur--;
+                    }
+                    if (iCur == iLen) {
+                        push = true;
+                    }
+                }
+                else if (iLen > jLen) {
+                    int iCur = 0;
+                    int jCur = jLen - 1;
+                    while (jCur >= 0) {
+                        if (words[i][iCur] != words[j][jCur]) {
+                            break;
+                        }
+                        iCur++;
+                        jCur--;
+                    }
+                    if (jCur < 0) {
+                        jCur = iLen - 1;
+                        while (iCur < jCur) {
+                            if (words[i][iCur] != words[i][jCur]) {
+                                break;
+                            }
+                            iCur++;
+                            jCur--;
+                        }
+                        if (iCur >= jCur) {
+                            push = true;
+                        }
+                    }
+                }
+                else {
+                    int iCur = 0;
+                    int jCur = jLen - 1;
+                    while (iCur < iLen) {
+                        if (words[i][iCur] != words[j][jCur]) {
+                            break;
+                        }
+                        iCur++;
+                        jCur--;
+                    }
+                    if (iCur == iLen) {
+                        iCur = 0;
+                        while (iCur < jCur) {
+                            if (words[j][jCur] != words[j][iCur]) {
+                                break;
+                            }
+                            iCur++;
+                            jCur--;
+                        }
+                        if (jCur <= iCur) {
+                            push = true;
+                        }
+                    }
+                }
+                if (push) {
+                    tmp[0] = i;
+                    tmp[1] = j;
+                    res.emplace_back(tmp);
+                }
+            }
+        }
+        return res;
+    }
+};
+
+int main(int argc, char* argv[]) {
+    vector<string> inpt = { "a","b","c","ab","ac","aa" };
+    Solution mySolution;
+    mySolution.palindromePairs(inpt);
     return 0;
 }
 
