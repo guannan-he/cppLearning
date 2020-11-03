@@ -1348,7 +1348,7 @@ private:
         node* cur = rootNode;
         int nextCur;
         for (int i = 0; i < strLen; i++) {
-            nextCur = str[i]; - 'a';
+            nextCur = str[i] - 'a';
             if (!cur->next[nextCur]) {
                 cur->next[nextCur] = new node;
             }
@@ -1397,7 +1397,7 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-#if true
+#if false
 
 class Solution {
 public:
@@ -1494,4 +1494,205 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+#endif
+
+//hash ¹þÏ£±í
+#if true
+
+class MyHashSet {
+public:
+    struct node {
+        node* left = 0;
+        node* right = 0;
+        int val = 0;
+        bool isDeleted = false;
+    };
+    /** Initialize your data structure here. */
+    MyHashSet() {
+        rootNode = nullptr;
+    }
+
+    void add(int key) {
+        rootNode = addToTree(rootNode, key);
+    }
+
+    void remove(int key) {
+        deleteElement(rootNode, key);
+    }
+
+    /** Returns true if this set contains the specified element */
+    bool contains(int key) {
+        return quary(rootNode, key);
+    }
+private:
+    node* rootNode;
+    node* addToTree(node* currentNode, int val) {
+        if (currentNode == nullptr) {
+            currentNode = new node;
+            currentNode->val = val;
+            return currentNode;
+        }
+        int nodeVal = currentNode->val;
+        if (val < nodeVal) {
+            currentNode->left = addToTree(currentNode->left, val);
+        }
+        if (val > nodeVal) {
+            currentNode->right = addToTree(currentNode->right, val);
+        }
+        if (val == nodeVal) {
+            currentNode->isDeleted = false;
+        }
+        return currentNode;
+    }
+    bool quary(node* currentNode, int val) {
+        if (currentNode == nullptr) {
+            return false;
+        }
+        if (currentNode->val == val) {
+            if (currentNode->isDeleted) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        if (val < currentNode->val) {
+            return quary(currentNode->left, val);
+        }
+        else {
+            return quary(currentNode->right, val);
+        }
+    }
+    void deleteElement(node* currentNode, int val) {
+        if (currentNode == nullptr) {
+            return;
+        }
+        if (currentNode->val == val) {
+            currentNode->isDeleted = true;
+        }
+        if (val < currentNode->val) {
+            deleteElement(currentNode->left, val);
+        }
+        else {
+            deleteElement(currentNode->right, val);
+        }
+    }
+};
+
+class MyHashMap {
+public:
+    struct node {
+        node* left = 0;
+        node* right = 0;
+        int key = -1;
+        int val = -1;
+        bool isDeleted = false;
+    };
+    /** Initialize your data structure here. */
+    MyHashMap() {
+        rootNode = nullptr;
+    }
+
+    /** value will always be non-negative. */
+    void put(int key, int value) {
+        rootNode = addToTree(rootNode, key, value);
+    }
+
+    /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
+    int get(int key) {
+        return getFromTree(rootNode, key);
+    }
+
+    /** Removes the mapping of the specified value key if this map contains a mapping for the key */
+    void remove(int key) {
+        removeFromTree(rootNode, key);
+    }
+private:
+    node* rootNode;
+    node* addToTree(node* currentNode, int key, int val) {
+        if (currentNode == nullptr) {
+            currentNode = new node;
+            currentNode->key = key;
+            currentNode->val = val;
+            return currentNode;
+        }
+        int currentKey = currentNode->key;
+        if (key < currentKey) {
+            currentNode->left = addToTree(currentNode->left, key, val);
+        }
+        else if (key > currentKey) {
+            currentNode->right = addToTree(currentNode->right, key, val);
+        }
+        else {
+            currentNode->val = val;
+            currentNode->isDeleted = false;
+        }
+        return currentNode;
+    }
+    int getFromTree(node* currentNode, int key) {
+        if (currentNode == nullptr) {
+            return -1;
+        }
+        int currentKey = currentNode->key;
+        if (key < currentKey) {
+            return getFromTree(currentNode->left, key);
+        }
+        else if (key > currentKey) {
+            return getFromTree(currentNode->right, key);
+        }
+        else {
+            if (currentNode->isDeleted) {
+                return -1;
+            }
+            else {
+                return currentNode->val;
+            }
+        }
+    }
+    void removeFromTree(node* currentNode, int key) {
+        if (currentNode == nullptr) {
+            return;
+        }
+        int currentKey = currentNode->key;
+        if (key == currentKey) {
+            currentNode->isDeleted = true;
+        }
+        else if (key < currentKey) {
+            removeFromTree(currentNode->left, key);
+        }
+        else{
+            removeFromTree(currentNode->right, key);
+        }
+        return;
+    }
+};
+
+/**
+ * Your MyHashMap object will be instantiated and called as such:
+ * MyHashMap* obj = new MyHashMap();
+ * obj->put(key,value);
+ * int param_2 = obj->get(key);
+ * obj->remove(key);
+ */
+
+/**
+ * Your MyHashSet object will be instantiated and called as such:
+ * MyHashSet* obj = new MyHashSet();
+ * obj->add(key);
+ * obj->remove(key);
+ * bool param_3 = obj->contains(key);
+ */
+
+int main(int argc, char* argv[]) {
+    MyHashMap hashMap;
+    hashMap.put(1, 1);
+    hashMap.put(2, 2);
+    hashMap.get(1);
+    hashMap.get(3);
+    hashMap.put(2, 1);
+    hashMap.get(2);
+    hashMap.remove(2);
+    hashMap.get(2);
+    return 0;
+}
 #endif
