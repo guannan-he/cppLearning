@@ -2,9 +2,11 @@
 #include <string>
 #include <vector>
 #include <queue>
-#include<unordered_set>
-#include<unordered_map>
-#include<stack>
+#include <unordered_set>
+#include <unordered_map>
+#include <stack>
+#include <list>
+#include <iostream>
 using namespace std;
 
 //链表
@@ -1667,32 +1669,191 @@ private:
     }
 };
 
-/**
- * Your MyHashMap object will be instantiated and called as such:
- * MyHashMap* obj = new MyHashMap();
- * obj->put(key,value);
- * int param_2 = obj->get(key);
- * obj->remove(key);
- */
+//class Solution { //重复数
+//public:
+//    bool containsDuplicate(vector<int>& nums) {
+//        unordered_set<int> hashSet;
+//        for (auto num : nums) {
+//            if (hashSet.count(num) > 0) {
+//                return true;
+//            }
+//            hashSet.insert(num);
+//        }
+//        return false;
+//    }
+//};
 
-/**
- * Your MyHashSet object will be instantiated and called as such:
- * MyHashSet* obj = new MyHashSet();
- * obj->add(key);
- * obj->remove(key);
- * bool param_3 = obj->contains(key);
- */
+//class Solution { //单一数
+//public:
+//    int singleNumber(vector<int>& nums) {
+//        unordered_set<int> hashSet;
+//        for (auto num : nums) {
+//            if (hashSet.count(num) > 0) {
+//                hashSet.erase(num);
+//                continue;
+//            }
+//            hashSet.emplace(num);
+//        }
+//        return *(hashSet.begin());
+//    }
+//};
+
+//class Solution { //快乐数
+//public:
+//    bool isHappy(int n) {
+//        string tmp;
+//        unordered_set<string> history;
+//        while (true) {
+//            tmp.clear();
+//            while (n != 0) {
+//                tmp.push_back(n % 10);
+//                n /= 10;
+//            }
+//            for (auto bit : tmp) {
+//                n += bit * bit;
+//            }
+//            if (n == 1) {
+//                return true;
+//            }
+//            if (history.count(tmp) > 0) {
+//                return false;
+//            }
+//            history.insert(tmp);
+//        }
+//    }
+//};
+
+//class Solution { //两数之和
+//public:
+//    vector<int> twoSum(vector<int>& nums, int target) {
+//        unordered_map<int, int> numsMap;
+//        vector<int> res;
+//        for (int i = 0; i < nums.size(); i++) {
+//            if (numsMap.count(target - nums[i]) > 0) {
+//                res.push_back(i);
+//                res.push_back(numsMap[target - nums[i]]);
+//                return res;
+//            }
+//            numsMap.emplace(make_pair(nums[i], i));
+//        }
+//        return res;
+//    }
+//};
+
+//class Solution {  //判断字符串结构(abb, cdd)
+//public:
+//    bool isIsomorphic(string s, string t) {
+//        unordered_map<char, int> str1Map, str2Map;
+//        vector<int> str1Key, str2Key;
+//        for (int i = 0; i < s.size(); i++) {
+//            if (str1Map.count(s[i]) > 0) {
+//                str1Key.emplace_back(str1Map[s[i]]);
+//            }
+//            else {
+//                str1Map.emplace(make_pair(s[i], i));
+//                str1Key.emplace_back(i);
+//            }
+//            if (str2Map.count(t[i]) > 0) {
+//                str2Key.emplace_back(str2Map[t[i]]);
+//            }
+//            else {
+//                str2Map.emplace(make_pair(t[i], i));
+//                str2Key.emplace_back(i);
+//            }
+//        }
+//        return str1Key == str2Key;
+//    }
+//};
+
+//class Solution { //最小索引和
+//public:
+//    vector<string> findRestaurant(vector<string>& list1, vector<string>& list2) {
+//        vector<string> res;
+//        int lsit1Len = list1.size();
+//        int lsit2Len = list2.size();
+//        int total = 32767;
+//        int tmp = 0;
+//        unordered_map<string, int> list1Map, resultMap;
+//        for (int i = 0; i < lsit1Len; i++) {  //压入hash图
+//            list1Map.emplace(make_pair(list1[i], i));
+//        }
+//        for (int i = 0; i < lsit2Len; i++) {  //求最小索引和,并把符合要求的压入hash图
+//            if (list1Map.count(list2[i]) > 0) {
+//                tmp = list1Map[list2[i]] + i;
+//                total = (tmp < total) ? tmp : total;
+//                resultMap.emplace(make_pair(list2[i], tmp));
+//            }
+//        }
+//        for (auto resItem : resultMap) {
+//            if (resItem.second == total) {
+//                res.push_back(resItem.first);
+//            }
+//        }
+//
+//        return res;
+//    }
+//};
+
+//class Solution {
+//public:
+//    int firstUniqChar(string s) {
+//        int res = 32768;
+//        int sLen = s.size();
+//        unordered_map<char, int> content;
+//        for (int i = 0; i < sLen; i++) {
+//            if (content.count(s[i]) < 1) {
+//                content[s[i]] = 1;
+//                continue;
+//            }
+//            content[s[i]] += 1;
+//        }
+//        for (auto contentItem : content) {
+//            res = contentItem.second < res ? contentItem.second : res;
+//        }
+//        if (res != 1) {
+//            return -1;
+//        }
+//        for (int i = 0; i < sLen; i++) {
+//            if (content[s[i]] == 1) {
+//                return i;
+//            }
+//        }
+//        return -1;
+//    }
+//};
+
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        vector<vector<string>> res;
+        vector<string> tmp;
+        unordered_map<string, vector<string>> strsMap;
+        string strCopy;
+        for (auto str : strs) {
+            strCopy = sortString(str);
+            if (strsMap.count(strCopy) < 1) {
+                strsMap[strCopy] = tmp;
+            }
+            strsMap[strCopy].emplace_back(str);
+        }
+        for (auto it = strsMap.begin(); it != strsMap.end(); it++) {
+            res.emplace_back((*it).second);
+        }
+        return res;
+    }
+private:
+    string sortString(string s) {
+        sort(s.begin(), s.end());
+        return s;
+    }
+};
 
 int main(int argc, char* argv[]) {
-    MyHashMap hashMap;
-    hashMap.put(1, 1);
-    hashMap.put(2, 2);
-    hashMap.get(1);
-    hashMap.get(3);
-    hashMap.put(2, 1);
-    hashMap.get(2);
-    hashMap.remove(2);
-    hashMap.get(2);
+    Solution mySolution;
+    vector<string> input = { "eat", "tea", "tan", "ate", "nat", "bat" };
+    mySolution.groupAnagrams(input);
+    unordered_set < string> sr;
+    unordered_map<string, vector<string>> strsMap;
     return 0;
 }
 #endif
