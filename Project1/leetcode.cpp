@@ -1499,7 +1499,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //hash 哈希表
-#if true
+#if false
 
 class MyHashSet {
 public:
@@ -1581,7 +1581,7 @@ private:
     }
 };
 
-class MyHashMap {
+class MyHashMap { 
 public:
     struct node {
         node* left = 0;
@@ -1822,38 +1822,128 @@ private:
 //    }
 //};
 
-class Solution {
+//class Solution {
+//public:
+//    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+//        vector<vector<string>> res;
+//        vector<string> tmp;
+//        unordered_map<string, vector<string>> strsMap;
+//        string strCopy;
+//        for (auto str : strs) {
+//            strCopy = sortString(str);
+//            if (strsMap.count(strCopy) < 1) {
+//                strsMap[strCopy] = tmp;
+//            }
+//            strsMap[strCopy].emplace_back(str);
+//        }
+//        for (auto it = strsMap.begin(); it != strsMap.end(); it++) {
+//            res.emplace_back((*it).second);
+//        }
+//        return res;
+//    }
+//private:
+//    string sortString(string s) {
+//        sort(s.begin(), s.end());
+//        return s;
+//    }
+//};
+
+//class Solution { //不重复字符字串
+//public:
+//    int lengthOfLongestSubstring(string s) {
+//        int sLen = s.size();
+//        char currentChar;
+//        int setSize;
+//        int maxLen = 0;
+//        unordered_set<char> charSet;
+//        int cur = 0; //字符串开始地方
+//        for (int i = 0; i < sLen; i++) {
+//            currentChar = s[i];
+//            if (charSet.count(currentChar) < 1) {
+//                charSet.emplace(currentChar);
+//                continue;
+//            }
+//            setSize = charSet.size();
+//            maxLen = setSize > maxLen ? setSize : maxLen;
+//            while (cur < sLen && s[cur] != currentChar) {
+//                charSet.erase(s[cur]);
+//                cur++;
+//            }
+//            if (s[cur] == currentChar) {
+//                cur++;
+//                continue;
+//            }
+//            charSet.emplace(currentChar);
+//        }
+//        setSize = charSet.size();
+//        maxLen = setSize > maxLen ? setSize : maxLen;
+//        return maxLen;
+//    }
+//};
+
+class Solution {//前k个高频词
 public:
-    vector<vector<string>> groupAnagrams(vector<string>& strs) {
-        vector<vector<string>> res;
-        vector<string> tmp;
-        unordered_map<string, vector<string>> strsMap;
-        string strCopy;
-        for (auto str : strs) {
-            strCopy = sortString(str);
-            if (strsMap.count(strCopy) < 1) {
-                strsMap[strCopy] = tmp;
-            }
-            strsMap[strCopy].emplace_back(str);
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        unordered_map<int, int> numsMap;
+        unordered_map<int, vector<int>> freqMap;
+        int maxFreq = 0;
+        vector<int> res(k);
+        for (auto num : nums) {
+            numsMap[num]++;
         }
-        for (auto it = strsMap.begin(); it != strsMap.end(); it++) {
-            res.emplace_back((*it).second);
+        for (auto it = numsMap.begin(); it != numsMap.end(); it++) {
+            freqMap[(*it).second].emplace_back((*it).first);
+            maxFreq = (*it).second > maxFreq ? (*it).second : maxFreq;
+        }
+        while (k > 0) {
+            if (freqMap.count(maxFreq)) {
+                int len = freqMap[maxFreq].size() - 1;
+                while (len > -1) {
+                    res[k - 1] = freqMap[maxFreq][len];
+                    k--;
+                    len--;
+                }
+            }
+            maxFreq--;
         }
         return res;
-    }
-private:
-    string sortString(string s) {
-        sort(s.begin(), s.end());
-        return s;
     }
 };
 
 int main(int argc, char* argv[]) {
     Solution mySolution;
-    vector<string> input = { "eat", "tea", "tan", "ate", "nat", "bat" };
-    mySolution.groupAnagrams(input);
-    unordered_set < string> sr;
-    unordered_map<string, vector<string>> strsMap;
+    vector<int> input = {1, 2};
+    mySolution.topKFrequent(input, 2);
     return 0;
 }
+#endif
+
+#if true
+class Solution {
+public:
+    string replaceSpace(string s) {
+        int slowCur = 0, fastCur = 0;
+        int sLen = s.size();
+        string res;
+        while (fastCur < sLen) {
+            while (fastCur < sLen && s[fastCur] != ' ') {
+                fastCur++;
+            }
+            res += s.substr(slowCur, fastCur - slowCur);
+            if (s[fastCur] == ' ') {
+                res += +"%20";
+            }
+            fastCur++;
+            slowCur = fastCur;
+        }
+        return res;
+    }
+};
+
+int main(int argc, char* argv[]) {
+    Solution mySolution;
+    mySolution.replaceSpace("We are happy.");
+    return 0;
+}
+
 #endif
