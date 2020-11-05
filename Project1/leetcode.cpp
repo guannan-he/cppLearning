@@ -1921,30 +1921,247 @@ int main(int argc, char* argv[]) {
 //图解数据结构
 #if true
 
+//字符串替换
+
+//class Solution {
+//public:
+//    string replaceSpace(string s) {
+//        int slowCur = 0, fastCur = 0;
+//        int sLen = s.size();
+//        string res;
+//        while (fastCur < sLen) {
+//            while (fastCur < sLen && s[fastCur] != ' ') {
+//                fastCur++;
+//            }
+//            res += s.substr(slowCur, fastCur - slowCur);
+//            if (s[fastCur] == ' ') {
+//                res += +"%20";
+//            }
+//            fastCur++;
+//            slowCur = fastCur;
+//        }
+//        return res;
+//    }
+//};
+
+//有限状态自动机
+
+//class Solution {//判断数字是否合法， 确定有限状态自动机
+//public:
+//    bool isNumber(string s) {
+//        int len = s.length();
+//        State st = STATE_INITIAL;
+//        for (int i = 0; i < len; i++) {
+//            CharType typ = toCharType(s[i]);
+//            if (transfer[st].find(typ) == transfer[st].end()) {
+//                return false;
+//            }
+//            else {
+//                st = transfer[st][typ];
+//            }
+//        }
+//        return st == STATE_INTEGER || st == STATE_POINT || st == STATE_FRACTION || st == STATE_EXP_NUMBER || st == STATE_END;
+//    }
+//private:
+//    enum State {
+//        STATE_INITIAL,
+//        STATE_INT_SIGN,
+//        STATE_INTEGER,
+//        STATE_POINT,
+//        STATE_POINT_WITHOUT_INT,
+//        STATE_FRACTION,
+//        STATE_EXP,
+//        STATE_EXP_SIGN,
+//        STATE_EXP_NUMBER,
+//        STATE_END,
+//    };
+//
+//    enum CharType {
+//        CHAR_NUMBER,
+//        CHAR_EXP,
+//        CHAR_POINT,
+//        CHAR_SIGN,
+//        CHAR_SPACE,
+//        CHAR_ILLEGAL,
+//    };
+//
+//    unordered_map<State, unordered_map<CharType, State>> transfer{
+//            {
+//                STATE_INITIAL, {
+//                    {CHAR_SPACE, STATE_INITIAL},
+//                    {CHAR_NUMBER, STATE_INTEGER},
+//                    {CHAR_POINT, STATE_POINT_WITHOUT_INT},
+//                    {CHAR_SIGN, STATE_INT_SIGN},
+//                }
+//            }, {
+//                STATE_INT_SIGN, {
+//                    {CHAR_NUMBER, STATE_INTEGER},
+//                    {CHAR_POINT, STATE_POINT_WITHOUT_INT},
+//                }
+//            }, {
+//                STATE_INTEGER, {
+//                    {CHAR_NUMBER, STATE_INTEGER},
+//                    {CHAR_EXP, STATE_EXP},
+//                    {CHAR_POINT, STATE_POINT},
+//                    {CHAR_SPACE, STATE_END},
+//                }
+//            }, {
+//                STATE_POINT, {
+//                    {CHAR_NUMBER, STATE_FRACTION},
+//                    {CHAR_EXP, STATE_EXP},
+//                    {CHAR_SPACE, STATE_END},
+//                }
+//            }, {
+//                STATE_POINT_WITHOUT_INT, {
+//                    {CHAR_NUMBER, STATE_FRACTION},
+//                }
+//            }, {
+//                STATE_FRACTION,
+//                {
+//                    {CHAR_NUMBER, STATE_FRACTION},
+//                    {CHAR_EXP, STATE_EXP},
+//                    {CHAR_SPACE, STATE_END},
+//                }
+//            }, {
+//                STATE_EXP,
+//                {
+//                    {CHAR_NUMBER, STATE_EXP_NUMBER},
+//                    {CHAR_SIGN, STATE_EXP_SIGN},
+//                }
+//            }, {
+//                STATE_EXP_SIGN, {
+//                    {CHAR_NUMBER, STATE_EXP_NUMBER},
+//                }
+//            }, {
+//                STATE_EXP_NUMBER, {
+//                    {CHAR_NUMBER, STATE_EXP_NUMBER},
+//                    {CHAR_SPACE, STATE_END},
+//                }
+//            }, {
+//                STATE_END, {
+//                    {CHAR_SPACE, STATE_END},
+//                }
+//            }
+//    };
+//
+//    CharType toCharType(char ch) {
+//        if (ch >= '0' && ch <= '9') {
+//            return CHAR_NUMBER;
+//        }
+//        else if (ch == 'e' || ch == 'E') {
+//            return CHAR_EXP;
+//        }
+//        else if (ch == '.') {
+//            return CHAR_POINT;
+//        }
+//        else if (ch == '+' || ch == '-') {
+//            return CHAR_SIGN;
+//        }
+//        else if (ch == ' ') {
+//            return CHAR_SPACE;
+//        }
+//        else {
+//            return CHAR_ILLEGAL;
+//        }
+//    }
+//};
+
+
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    MinStack() {
+        return;
+    }
+
+    void push(int x) {
+        if (x < minVal) {
+            minVal = x;
+            minHist.push(minVal);
+        }
+        data.push(x);
+        return;
+    }
+
+    void pop() {
+        if (minHist.top() == data.top()) {
+            minHist.pop();
+            minVal = minHist.top();
+        }
+        data.pop();
+        return;
+    }
+
+    int top() {
+        return data.top();
+    }
+
+    int min() {
+        return minVal;
+    }
+private:
+    stack<int> data, minHist;
+    int minVal = 2147483647;
+};
+
 class Solution {
 public:
-    string replaceSpace(string s) {
-        int slowCur = 0, fastCur = 0;
-        int sLen = s.size();
-        string res;
-        while (fastCur < sLen) {
-            while (fastCur < sLen && s[fastCur] != ' ') {
-                fastCur++;
+    int strToInt(string str) {
+        int strLen = str.size();
+        int cur = 0;
+        while (str[cur] == ' ') {
+            cur++;
+        }
+        bool neg = false;
+        if (str[cur] == '+') {
+            cur++;
+        }
+        else if (str[cur] == '-') {
+            neg = true;
+            cur++;
+        }
+        while (str[cur] == '0') {
+            cur++;
+        }
+        int lim = cur + 8;
+        long res = 0;
+        while (cur < strLen) {
+            char currentChar = str[cur];
+            if (currentChar > '9' || currentChar < '0') {
+                break;
             }
-            res += s.substr(slowCur, fastCur - slowCur);
-            if (s[fastCur] == ' ') {
-                res += +"%20";
+            currentChar -= '0';
+            if (cur > lim) {
+                if (res > 214748364) {
+                    if (neg) {
+                        return -2147483648;
+                    }
+                    else {
+                        return 2147483647;
+                    }
+                }
+                else if (res == 214748364) {
+                    if (neg && currentChar > 8) {
+                        return -2147483648;
+                    }
+                    if (!neg && currentChar > 7) {
+                        return 2147483647;
+                    }
+                }
             }
-            fastCur++;
-            slowCur = fastCur;
+            res = res * 10 + currentChar;
+            cur++;
+        }
+        if (neg && res > 0) {
+            res *= -1;
         }
         return res;
     }
 };
 
 int main(int argc, char* argv[]) {
-    Solution mySolution;
-    mySolution.replaceSpace("We are happy.");
+    Solution mySoltuion;
+    mySoltuion.strToInt("2147483648");
     return 0;
 }
 
