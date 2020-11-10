@@ -1919,7 +1919,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //图解数据结构
-#if true
+#if false
 
 //字符串替换
 
@@ -2165,4 +2165,242 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+#endif
+
+//初级算法
+#if true
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {//去除重复
+        int numsLen = nums.size();
+        if (numsLen < 2) {
+            return numsLen;
+        }
+        sort(nums.begin(), nums.end());
+        int slowCur = 0, fastCur = 1;
+        while (fastCur < numsLen) {
+            if (nums[slowCur] != nums[fastCur]) {
+                slowCur++;
+                nums[slowCur] = nums[fastCur];
+            }
+        }
+        return slowCur + 1;
+    }
+    int maxProfit(vector<int>& prices) {//股票交易
+        size_t priceLen = prices.size();
+        int res = 0;
+        for (size_t cur = 0; cur < priceLen - 1; cur++) {
+            if (prices[cur + 1] > prices[cur]) {
+                res += prices[cur + 1] - prices[cur];
+            }
+        }
+        return res;
+    }
+    void rotate(vector<int>& nums, int k) {//旋转数组
+        size_t numsLen = nums.size();
+        k = k % numsLen;
+        vector <int> tmp1(nums.end() - k, nums.end());
+        vector <int> tmp2(nums.begin(), nums.end() - k);
+        tmp1.insert(tmp1.end(), tmp2.begin(), tmp2.end());
+        nums = tmp1;
+        return;
+    }
+    vector<int> plusOne(vector<int>& digits) {
+        size_t digitLen = digits.size();
+        int aux = 1;
+        vector<int> res(digits.begin(), digits.end());
+        for (int i = digitLen - 1; i > -1; i--) {
+            res[i] += aux;
+            aux = 0;
+            if (res[i] > 9) {
+                res[i] %= 10;
+                aux = 1;
+            }
+        }
+        if (aux == 1) {
+            vector<int> tmp = { 1 };
+            res.insert(res.begin(), tmp.begin(), tmp.end());
+        }
+        return res;
+    }
+    int reverse(int x) {
+        int res = 0;
+        bool isNeg = false;
+        if (x < 0) {
+            isNeg = true;
+            if (x == -2147483648) {
+                return 0;
+            }
+            x = 0 - x;
+        }
+        int tmp = 0;
+        while (x != 0) {
+            tmp = x % 10;
+            if (res > 214748364) {
+                return 0;
+            }
+            else if (res == 214748364) {
+                if (isNeg) {
+                    if (tmp > 7) {
+                        return 0;
+                    }
+                }
+                else if (tmp > 8) {
+                    return 0;
+                }
+            }
+            x /= 10;
+            res = res * 10 + tmp;
+        }
+        if (isNeg) {
+            res = -res;
+        }
+        return res;
+    }
+    bool isPalindrome(string s) {
+        int sLen = s.size();
+        int frontCur = 0, rearCur = sLen - 1;
+        while (frontCur < rearCur) {
+            char front = s[frontCur], rear = s[rearCur];
+            if (!isalnum(front)) {
+                frontCur++;
+                continue;
+            }
+            if (!isalnum(rear)) {
+                rearCur--;
+                continue;
+            }
+            front = isupper(front) ? front + 32 : front;
+            rear = isupper(rear) ? rear + 32 : rear;
+            if (front != rear) {
+                return false;
+            }
+            frontCur++;
+            rearCur--;
+        }
+        return true;
+    }
+    int myAtoi(string s) {
+        int sLen = s.size();
+        int cur = 0;
+        while (cur < sLen && s[cur] == ' ') {
+            cur++;
+        }
+        bool isNeg = false;
+        if (s[cur] == '-') {
+            isNeg = true;
+            cur++;
+        }
+        else if (s[cur] == '+') {
+            cur++;
+        }
+        if (s[cur] > '9' || s[cur] < '0') {
+            return 0;
+        }
+        int res = 0;
+        while (cur < sLen) {
+            char tmp = s[cur];
+            if (tmp > '9' || tmp < '0') {
+                break;
+            }
+            tmp -= '0';
+            if (res > 214748364) {
+                if (isNeg) {
+                    return -2147483648;
+                }
+                return 2147483647;
+            }
+            if (res == 214748364) {
+                if (isNeg) {
+                    if (tmp > 7) {
+                        return -2147483648;
+                    }
+                }
+                if (!isNeg) {
+                    if (tmp > 7) {
+                        return 2147483647;
+                    }
+                }
+            }
+            res = res * 10 + tmp;
+            cur++;
+        }
+        if (isNeg) {
+            res *= -1;
+        }
+        return res;
+    }
+    int strStr(string haystack, string needle) {
+        int needleLen = needle.size();
+        if (needleLen == 0) {
+            return 0;
+        }
+        int hayLen = haystack.size();
+        vector<int>* next = getNext(haystack);
+        int hCur = 0, nCur = 0;
+        while (hCur < hayLen && nCur < needleLen) {
+            if (nCur == -1 || haystack[hCur] == needle[nCur]) {
+                hCur++;
+                nCur++;
+            }
+            else {
+                nCur = (*next)[nCur];
+            }
+        }
+        if (nCur == needleLen) {
+            return hCur - nCur;
+        }
+        return -1;
+    }
+    vector<int>* getNext(string s) {
+        int sLen = s.size();
+        vector<int>* next = new vector<int>(sLen);
+        (*next)[0] = -1;
+        int pos = 0, cnt = -1;
+        while (pos < sLen - 1) {
+            if (cnt == -1 || s[pos] == s[cnt]) {
+                cnt++;
+                pos++;
+                (*next)[pos] = cnt;
+            }
+            else {
+                cnt = (*next)[cnt];//回到-1
+            }
+        }
+            return next;
+    }
+    string countAndSay(int n) {
+        string res = "1";
+        while (n > 1) {
+            res = describeStr(res);
+            n--;
+        }
+        return res;
+    }
+    string describeStr(string str) {
+        string res;
+        int strLen = str.size();
+        int slowCur = 0, fastCur = 0;
+        while (fastCur < strLen) {
+            if (str[fastCur] == str[slowCur]) {
+                fastCur++;
+                continue;
+            }
+            res.push_back(fastCur - slowCur + '0');
+            res.push_back(str[slowCur]);
+            slowCur = fastCur;
+            fastCur++;
+        }
+        res.push_back(fastCur - slowCur + '0');
+        res.push_back(str[slowCur]);
+        return res;
+    }
+};
+
+int main(int argc, char* argv[]) {
+    vector<int> nums = { 1,2,3,4,5 };
+    Solution mySolution;
+    mySolution.countAndSay(4);
+    return 0;
+}
 #endif
