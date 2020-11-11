@@ -2395,12 +2395,43 @@ public:
         res.push_back(str[slowCur]);
         return res;
     }
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        stack<int> resStack;
+        size_t cur1 = 0, cur2 = 0;
+        int tmp = 0;
+        while (cur1 < m && cur2 < n) {
+            if (nums1[cur1] < nums2[cur2]) {
+                tmp = nums1[cur1];
+                cur1++;
+            }
+            else {
+                tmp = nums2[cur2];
+                cur2++;
+            }
+            resStack.push(tmp);
+        }
+        while (cur1 < m) {
+            tmp = nums1[cur1];
+            resStack.push(tmp);
+            cur1++;
+        }
+        while (cur2 < n) {
+            tmp = nums2[cur2];
+            resStack.push(tmp);
+            cur2++;
+        }
+        for (int i = n + m - 1; i > -1; i--) {
+            nums1[i] = resStack.top();
+            resStack.pop();
+        }
+        return;
+    }
 };
 
 int main(int argc, char* argv[]) {
-    vector<int> nums = { 1,2,3,4,5 };
+    vector<int> nums1 = { 1 }, nums2;
     Solution mySolution;
-    mySolution.countAndSay(4);
+    mySolution.merge(nums1, 1, nums2, 0);
     return 0;
 }
 #endif
