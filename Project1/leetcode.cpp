@@ -111,7 +111,6 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-
 //数组和字符串
 #if 0
 class Solution {
@@ -228,8 +227,6 @@ int main(int argc, char* argv[]) {
 
 
 #endif
-
-
 
 //队列
 #if 0
@@ -582,8 +579,6 @@ int main(int argc, char* argv[]) {
 
 
 #endif
-
-
 
 //栈
 #if 0
@@ -2553,7 +2548,8 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-#if true
+//初级算法-其他
+#if false
 
 class Solution {
 public:
@@ -2682,6 +2678,99 @@ public:
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	mySolution.isValid("()");
+	return 0;
+}
+#endif
+
+//数组类算法
+#if false
+
+class Solution {
+public:
+	int removeDuplicates(vector<int>& nums) {//去除重复项2
+		size_t numsLen = nums.size(), slowCur = 0, fastCur = 1;
+		if (numsLen < 2) {
+			return numsLen;
+		}
+		while (fastCur < numsLen) {
+			if (nums[slowCur] == nums[fastCur]) {
+				if (slowCur > 0 && nums[slowCur - 1] == nums[fastCur]) {
+					fastCur++;
+					continue;
+				}
+			}
+			slowCur++;
+			nums[slowCur] = nums[fastCur];
+			fastCur++;
+		}
+		return slowCur + 1;
+	}
+	void quickSort(vector<int>& inptArray, size_t left, size_t right) {//递归快速排列
+		if (left < right) {
+			size_t mid = partition(inptArray, left, right);
+			if (mid > 1) {
+				quickSort(inptArray, left, mid - 1);
+			}
+			quickSort(inptArray, mid + 1, right);
+		}
+		return;
+	}
+	size_t partition(vector<int>& inptArray, size_t left, size_t right) {
+		int pivot = inptArray[left];
+		size_t i = left + 1, j = right;
+		while (i < j) {
+			if (inptArray[i] <= pivot) {//找左面第一个大于锚点的坐标
+				i++;
+				continue;
+			}
+			if (inptArray[j] >= pivot) {//找右面第一个小于锚点的坐标
+				j--;
+				continue;
+			}
+			//交换
+			int tmp = inptArray[i];
+			inptArray[i] = inptArray[j];
+			inptArray[j] = tmp;
+		}
+		j--;
+		inptArray[left] = inptArray[j];
+		inptArray[j] = pivot;
+		return j;
+	}
+	int maxArea(vector<int>& height) {//最大容量
+		size_t heightLen = height.size(), frontCur = 0, rearCur = heightLen - 1;
+		int res = 0, tmpArea;
+		while (frontCur < rearCur) {
+			tmpArea = (rearCur - frontCur) * min(height[frontCur], height[rearCur]);
+			res = tmpArea > res ? tmpArea : res;
+			if (height[frontCur] < height[rearCur]) {
+				frontCur++;
+			}
+			else {
+				rearCur--;
+			}
+		}
+		return res;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	vector<int> inpt = { 1,8,6,2,5,4,8,3,7 };
+	vector<int> inptSort = { 8, 4, 6, 3, 5, 234, 456, 3, 45, 645, 75, 678, 857 };
+	//mySolution.quickSort(inptSort, 0, inptSort.size() - 1);
+	//mySolution.removeDuplicates(inpt);
+	//priority_queue<int> inptHeap;
+	mySolution.maxArea(inpt);
+	return 0;
+}
+#endif
+
+//查找表类算法
+#if true
+
+int main(int argc, char* argv[]) {
+
 	return 0;
 }
 #endif
