@@ -2767,10 +2767,320 @@ int main(int argc, char* argv[]) {
 #endif
 
 //查找表类算法
-#if true
+#if false
+
+class Solution {
+public:
+	string frequencySort(string s) {//根据字符出现频率排序
+		string res;
+		int sLen = s.size();
+		unordered_map<char, int> freqCnt;
+		unordered_map<int, vector<char>> freqMap;
+		priority_queue<int> freqHeap;
+		vector<char> tmp;
+		for (int i = 0; i < sLen; i++) {
+			freqCnt[s[i]]++;
+		}
+		for (auto it = freqCnt.begin(); it != freqCnt.end(); it++) {
+			if (freqMap.count(it->second) < 1) {
+				freqMap.emplace(make_pair(it->second, tmp));
+			}
+			freqMap[it->second].emplace_back(it->first);
+			freqHeap.push(it->second);
+		}
+		while (!freqHeap.empty()) {
+			int cnt = freqHeap.top();
+			char toAdd = freqMap[cnt].back();
+			freqMap[cnt].pop_back();
+			freqHeap.pop();
+			while (cnt) {
+				res.push_back(toAdd);
+				cnt--;
+			}
+		}
+		return res;
+	}
+	vector<vector<int>> threeSum(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		vector<vector<int>> res;
+		vector<int> tmp(3);
+		sort(nums.begin(), nums.end());
+		for (size_t i = 0; i < numsLen; i++) {
+			if (i > 0 && nums[i] == nums[i - 1]) {//排序过后，所以能确保枚举不同
+				continue;
+			}
+			size_t k = numsLen - 1;
+			for (size_t j = i + 1; j < numsLen; j++) {
+				if (j > i + 1 && nums[j] == nums[j - 1]) {
+					continue;
+				}
+				while (k > j && nums[i] + nums[j] + nums[k] > 0) {
+					k--;
+				}
+				if (j == k) {
+					break;
+				}
+				if (nums[i] + nums[j] + nums[k] == 0) {
+					tmp[0] = nums[i]; tmp[1] = nums[j]; tmp[2] = nums[k];
+					res.emplace_back(tmp);
+				}
+			}
+		}
+		return res;
+	}
+	vector<vector<int>> fourSum(vector<int>& nums, int target) {
+		vector<vector<int>> res;
+		size_t numsLen = nums.size();
+		if (numsLen < 4) {
+			return res;
+		}
+		sort(nums.begin(), nums.end());
+		int sum;
+		for (size_t i = 0; i < numsLen - 3; i++) {
+			if (i > 0 && nums[i] == nums[i - 1]) {
+				continue;
+			}
+			//适当的剪枝操作使得运行事件从~120ms降到~16ms
+			if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] > target) {//剪枝
+				break;
+			}
+			if (nums[i] + nums[numsLen - 1] + nums[numsLen - 2] + nums[numsLen - 3] < target) {//剪枝
+				continue;
+			}
+			for (size_t j = i + 1; j < numsLen - 2; j++) {
+				if (j > i + 1 && nums[j] == nums[j - 1]) {
+					continue;
+				}
+				if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] > target) {//剪枝
+					break;
+				}
+				if (nums[i] + nums[j] + nums[numsLen - 1] + nums[numsLen - 2] < target) {//剪枝
+					continue;
+				}
+				size_t l = numsLen - 1;
+				size_t k = j + 1;
+				while (k < l) {
+					if (l < numsLen - 1 && nums[l] == nums[l + 1]) {
+						l--;
+						continue;
+					}
+					if (k > j + 1 && nums[k] == nums[k - 1]) {
+						k++;
+						continue;
+					}
+					sum = nums[i] + nums[j] + nums[k] + nums[l];
+					if (sum > target) {
+						l--;
+						continue;
+					}
+					if (sum < target) {
+						k++;
+						continue;
+					}
+					res.push_back({ nums[i], nums[j], nums[k], nums[l] });
+					l--;
+				}
+			}
+		}
+		return res;
+	}
+	int numberOfBoomerangs(vector<vector<int>>& points) {
+		size_t pointLen = points.size();
+		unordered_map<int, int> dist;
+		int res = 0;
+		vector<vector<int>> distMap(pointLen, vector<int>(pointLen));
+		for (size_t i = 0; i < pointLen; i++) {
+			dist.clear();
+			for (size_t j = 0; j < pointLen; j++) {
+				if (j == i) {
+					continue;
+				}
+				if (j > i) {
+					int distance = (points[i][0] - points[j][0]) * (points[i][0] - points[j][0]) + (points[i][1] - points[j][1]) * (points[i][1] - points[j][1]);
+					distMap[i][j] = distance;
+					distMap[j][i] = distMap[i][j];
+				}
+				dist[distMap[i][j]]++;
+			}
+			for (auto it = dist.begin(); it != dist.end(); it++) {
+				int cnt = (*it).second;
+				res += cnt * (cnt - 1);
+			}
+		}
+		return res;
+	}
+	int maxPoints(vector<vector<int>>& points) {//最多点在线上
+		size_t pointLen = points.size();
+		int res = 0;
+		if (pointLen < 3) {
+			return pointLen;
+		}
+		unordered_map<string, unordered_set<int>> lineMap;
+		for (size_t i = 0; i < pointLen; i++) {
+			for (size_t j = i + 1; j < pointLen; j++) {
+				string *cur = getID(points[i], points[j]);
+				lineMap[*cur].emplace(i);
+				lineMap[*cur].emplace(j);
+			}
+		}
+		for (auto it = lineMap.begin(); it != lineMap.end(); it++) {
+			res = (*it).second.size() > res ? (*it).second.size() : res;
+		}
+		return res;
+	}
+	inline string* getID(vector<int>& p1, vector<int>& p2) {//求线ID
+		double_t k = 0, b;
+		string* res = new string;
+		int x1 = p1[0], x2 = p2[0], y1 = p1[1], y2 = p2[1], dy = y2 - y1, dx = x2 - x1;
+		if (dx < 0) {
+			dx = -dx;
+			dy = -dy;
+		}
+		int tmp = gcd(dx, dy);
+		if (tmp != 0) {
+			dx /= tmp;
+			dy /= tmp;
+		}
+		if (dx == 0) {
+			b = x1;
+		}
+		else {
+			b = y1 - 1.0 * dy / dx * x1;
+		}
+		*res = to_string(dy) + '/' + to_string(dx) + '@' + to_string(b);
+		return res;
+	}
+	inline int gcd(int a, int b) {//辗转相除求最大公约数
+		if (b == 0) {
+			return a;
+		}
+		return gcd(b, a % b);
+	}
+	
+};
+
+vector<vector<int>> strToMatrix(string s) {
+	int sLen = s.size();
+	vector<int> tmp;
+	vector<vector<int>> res;
+	for (int i = 0; i < sLen; i++) {
+		if (s[i] == '[' || s[i] == ']' || s[i] == ',') {
+			continue;
+		}
+		tmp.emplace_back(s[i] - '0');
+		if (tmp.size() == 2) {
+			res.emplace_back(tmp);
+			tmp.clear();
+		}
+	}
+	return res;
+}
 
 int main(int argc, char* argv[]) {
-
+	Solution mySolution;
+	vector<int> inpt = { 1, 3 };
+	//vector<vector<int>> inptBoom = { {0,0},{1,0},{-1,0}, {0, 1}, {0, -1} };
+	//mySolution.frequencySort("tree");
+	//mySolution.numberOfBoomerangs(inptBoom);
+	//mySolution.mySqrt(46339);
+	//vector<vector<int>> linePoint = { {0,0 }, {1, 1},{1, -1} };
+	//mySolution.maxPoints(linePoint);
+	//vector<int> p1 = { 1,1 };
+	//vector<int> p2 = { 1,2 };
+	//mySolution.getKB(p1, p2);
 	return 0;
 }
+#endif
+
+//二分法
+#if true
+
+class Solution {
+public:
+	//int search(vector<int>& nums, int target) {//二分查找
+	//	int frontCur = 0, rearCur = nums.size() - 1, currentCur = (frontCur + rearCur) / 2;
+	//	while (frontCur <= rearCur) {
+	//		currentCur = (frontCur + rearCur) / 2;
+	//		if (nums[currentCur] > target) {
+	//			rearCur = currentCur - 1;
+	//			continue;
+	//		}
+	//		if (nums[currentCur] < target) {
+	//			frontCur = currentCur + 1;
+	//			continue;
+	//		}
+	//		return currentCur;
+	//	}
+	//	if (nums[currentCur] == target) {
+	//		return currentCur;
+	//	}
+	//	return -1;
+	//}
+	int mySqrt(int x) {//二分查平方根
+		int left = 0, right = x < 46339 ? x : 46339, current = 0;
+		while (left <= right) {
+			current = left + (right - left) / 2;
+			int tmp = current * current;
+			if (tmp == x) {
+				break;
+			}
+			else if (tmp > x) {
+				right = current - 1;
+			}
+			else {
+				left = current + 1;
+			}
+		}
+		if (current * current > x) {
+			return current - 1;
+		}
+		return current;
+	}
+	int search(vector<int>& nums, int target) {
+		size_t numsLen = nums.size(), i;
+		int left, right, mid = 0;
+		for (i = 1; i < numsLen; i++) {
+			if (nums[i] < nums[i - 1]) {
+				break;
+			}
+		}
+		if (i != numsLen) {
+			if (nums[numsLen - 1] < target) {
+				left = 0;
+				right = i - 1;
+			}
+			else {
+				left = i;
+				right = numsLen - 1;
+			}
+		}
+		else {
+			left = 0;
+			right = numsLen - 1;
+		}
+		while (left <= right) {
+			mid = left + (right - left) / 2;
+			if (nums[mid] < target) {
+				left = mid + 1;
+			}
+			else if (nums[mid] > target) {
+				right = mid - 1;
+			}
+			else {
+				return mid;
+			}
+		}
+		if (nums[mid] == target) {
+			return mid;
+		}
+		return -1;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	mySolution.mySqrt(7);
+	return 0;
+}
+
 #endif
