@@ -3075,12 +3075,137 @@ public:
 		}
 		return -1;
 	}
+	vector<int> searchRange(vector<int>& nums, int target) {//右点难，注意结束条件
+		int left = 0, right = nums.size() - 1, mid;
+		vector<int> res(2, -1);
+		if (right == -1) {
+			return res;
+		}
+		if (nums[0] == target) {
+			res[0] = 0;
+		}
+		if (nums[right] == target) {
+			res[1] = right;
+		}
+		if (res[0] == -1) {
+			while (left < right) {
+				mid = left + (right - left) / 2;
+				if (nums[mid] >= target) {
+					right = mid;
+				}
+				else {
+					left = mid + 1;
+				}
+			}
+			if (nums[left] == target) {
+				res[0] = left;
+			}
+		}
+		if (res[0] == -1) {
+			return res;
+		}
+		if (res[1] == -1) {
+			left = res[0]; right = nums.size() - 1;
+			while (left < right) {
+				mid = left + (right - left) / 2;
+				if (nums[mid] > target) {
+					right = mid;
+				}
+				else {
+					left = mid + 1;
+				}
+			}
+			res[1] = left - 1;
+		}
+		return res;
+	}
+	vector<int> findClosestElements(vector<int>& arr, int k, int x) {
+		//https://leetcode-cn.com/problems/find-k-closest-elements/solution/658-zhao-dao-k-ge-zui-jie-jin-de-yuan-su-cer-fen-s/
+		size_t left = 0, right = arr.size() - k, mid;
+		//mid是数组起点
+		while (left < right) {
+			mid = left + (right - left) / 2;
+			if (x - arr[mid] > arr[mid + k] - x) {
+				//增序数组，两边界差相差不大
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		return vector<int>(arr.begin() + left, arr.begin() + left + k);
+	}
+	int findPeakElement(vector<int>& nums) {//求极大值
+		size_t numsLen = nums.size();
+		if (numsLen == 1 || nums[0] > nums[1]) {
+			return 0;
+		}
+		if (nums[numsLen - 1] > nums[numsLen - 2]) {
+			return numsLen - 1;
+		}
+		size_t left = 0, right = numsLen - 1, mid;
+		while (left < right) {
+			mid = left + (right - left) / 2;
+			if (nums[mid] < nums[mid + 1]) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		if (nums[mid] < nums[mid + 1]) {
+			return mid + 1;
+		}
+		return mid;
+	}
+	int getKthLarg(vector<int>& nums1, vector<int>& nums2, int k) {
+		int cur1 = 0, cur2 = 0, nums1Len = nums1.size(), nums2Len = nums2.size();
+		while (true) {
+			//退出机制
+			if (cur1 == nums1Len) {
+				return nums2[cur2 + k - 1];
+			}
+			if (cur2 == nums2Len) {
+				return nums1[cur1 + k - 1];
+			}
+			if (k == 1) {
+				return min(nums1[cur1], nums2[cur2]);
+			}
+			//防止访问越界
+			int cur1Tmp = min(cur1 + k / 2 - 1, nums1Len - 1);
+			int cur2Tmp = min(cur2 + k / 2 - 1, nums2Len - 1);
+			int nums1Tmp = nums1[cur1Tmp], nums2Tmp = nums2[cur2Tmp];
+			//扣除真实偏移
+			if (nums1Tmp <= nums2Tmp) {
+				k -= cur1Tmp - cur1 + 1;
+				cur1 = cur1Tmp + 1;
+			}
+			else {
+				k -= cur2Tmp - cur2 + 1;
+				cur2 = cur2Tmp + 1;
+			}
+		}
+		return 0;
+	}
+	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+		size_t totalLen = nums1.size() + nums2.size();
+		if (totalLen % 2 == 1) {
+			return getKthLarg(nums1, nums2, (totalLen + 1) / 2);
+		}
+		else {
+			return (getKthLarg(nums1, nums2, totalLen / 2) + getKthLarg(nums1, nums2, totalLen / 2 + 1)) / 2.0;
+		}
+		
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	mySolution.mySqrt(7);
+	vector<int> inpt = { 2 };
+	vector<int> inpt2 = { 1, 3, 4 };
+	mySolution.findMedianSortedArrays(inpt, inpt2);
 	return 0;
+
 }
 
 #endif
