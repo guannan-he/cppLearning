@@ -3158,7 +3158,7 @@ public:
 		}
 		return mid;
 	}
-	int getKthLarg(vector<int>& nums1, vector<int>& nums2, int k) {
+	int getKthLarg(vector<int>& nums1, vector<int>& nums2, int k) {//双数组求第几大
 		int cur1 = 0, cur2 = 0, nums1Len = nums1.size(), nums2Len = nums2.size();
 		while (true) {
 			//退出机制
@@ -3187,7 +3187,7 @@ public:
 		}
 		return 0;
 	}
-	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {//双数组求中值
 		size_t totalLen = nums1.size() + nums2.size();
 		if (totalLen % 2 == 1) {
 			return getKthLarg(nums1, nums2, (totalLen + 1) / 2);
@@ -3197,13 +3197,180 @@ public:
 		}
 		
 	}
+	double myPow(double x, int n) {//二分法幂函数
+		if (n == 0) {
+			return 1.0;
+		}
+		bool xIsNeg = x < 0 ? true : false;
+		bool nIsNeg = n < 0 ? true : false;
+		double nCopy;
+		if (xIsNeg) {
+			x = -x;
+			if (n % 2 == 0) {
+				xIsNeg = false;
+			}
+		}
+		if (nIsNeg) {
+			nCopy = -1.0 * n;
+		}
+		else {
+			nCopy = n;
+		}
+		unsigned long powTime = 1;
+		double res = x;
+		while (powTime * 2 < nCopy) {
+			powTime *= 2;
+			res *= res;
+		}
+		if (powTime * 2 - nCopy < nCopy - powTime) {
+			powTime *= 2;
+			res *= res;
+		}
+		while (powTime < nCopy) {
+			powTime++;
+			res *= x;
+		}
+		while (powTime > nCopy) {
+			powTime--;
+			res /= x;
+		}
+		if (nIsNeg) {
+			res = 1 / res;
+		}
+		if (xIsNeg) {
+			res = -res;
+		}
+		return res;
+	}
+	bool isPerfectSquare(int num) {
+		int left = 0, right = num < 46340 ? num : 46340, mid;
+		while (left <= right) {
+			mid = left + (right - left) / 2;
+			int tmp = mid * mid;
+			if (tmp == num) {
+				return true;
+			}
+			else if (tmp > num) {
+				right = mid - 1;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		return false;
+	}
+	char nextGreatestLetter(vector<char>& letters, char target) {
+		int left = 0, right = letters.size() - 1, mid;
+		while (left < right) {
+			mid = left + (right - left) / 2;
+			if (letters[mid] <= target) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		if (left == letters.size() - 1 && letters[left] <= target) {
+			return letters[0];
+		}
+		if (left < letters.size() - 1 && letters[left] <= target) {
+			return letters[left + 1];
+		}
+		return letters[left];
+	}
+	//int smallestDistancePair(vector<int>& nums, int k) {//找出第 k 小的距离对， 暴力算法超时
+	//	sort(nums.begin(), nums.end());
+	//	size_t numsLen = nums.size();
+	//	priority_queue<int, vector<int>, greater<int>> distQue;
+	//	for (size_t i = 0; i < numsLen; i++) {
+	//		for (size_t j = i + 1; j < numsLen; j++) {
+	//			distQue.push(nums[j] - nums[i]);
+	//		}
+	//	}
+	//	while (k > 1) {
+	//		distQue.pop();
+	//		k--;
+	//	}
+	//	return distQue.top();
+	//}
+	unordered_map<int, int>* kthMap;
+	int smallestDistancePair(vector<int>& nums, int k) {
+		sort(nums.begin(), nums.end());
+		int left = 0, right = nums[nums.size() - 1] - nums[0], mid;
+		kthMap = new unordered_map<int, int>;
+		while (left < right) {
+			mid = left + (right - left) / 2;
+			if (getCount(nums, mid) >= k) {
+				right = mid;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		delete kthMap;
+		return left;
+	}
+	int getCount(vector<int>& nums, int val) {
+		//统计差小于k的对数,双指针思想
+		//nums[j] - nums[i] < val, 那么i, j之间所有差都小于val
+		if (kthMap->count(val) > 0) {
+			return (*kthMap)[val];
+		}
+		size_t left = 0, right, res = 0, numsLen = nums.size();
+		for (right = 1; right < numsLen; right++) {
+			while (nums[right] - nums[left] > val) {
+				left++;
+			}
+			res += right - left;
+		}
+		(*kthMap)[val] = res;
+		return res;
+	}
+	int splitArray(vector<int>& nums, int m) {
+		int left = 0, right = 0, mid;
+		size_t numsLen = nums.size();
+		for (size_t i = 0; i < numsLen; i++) {
+			right += nums[i];
+			if (left < nums[i]) {
+				left = nums[i];
+			}
+		}
+		while (left < right) {
+			mid = left + (right - left) / 2;
+			if (check(nums, mid, m)) {
+				//能分割，进一步压缩最大值限制
+				right = mid;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		return left;
+	}
+	bool check(vector<int>& nums, int val, int m) {
+		//检查能不能以val为最大值，将数组分割成m段
+		long sum = 0;
+		int cnt = 1;
+		size_t numsLen = nums.size();
+		for (size_t i = 0; i < numsLen; i++) {
+			//存在性
+			if (sum + nums[i] > val) {
+				cnt++;
+				sum = nums[i];
+			}
+			else {
+				sum += nums[i];
+			}
+		}
+		return cnt <= m;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	vector<int> inpt = { 2 };
-	vector<int> inpt2 = { 1, 3, 4 };
-	mySolution.findMedianSortedArrays(inpt, inpt2);
+	vector<int> inpt = { 7, 2, 5, 10, 8 };
+	vector<char> inpt2 = { 'e', 'e', 'e', 'e', 'n', 'n' };
+	mySolution.splitArray(inpt, 2);
 	return 0;
 
 }
