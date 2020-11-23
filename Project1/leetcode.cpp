@@ -2993,7 +2993,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //二分法
-#if true
+#if false
 
 class Solution {
 public:
@@ -3373,6 +3373,73 @@ int main(int argc, char* argv[]) {
 	mySolution.splitArray(inpt, 2);
 	return 0;
 
+}
+
+#endif
+
+//递归
+#if true
+
+class Solution {
+public:
+	//递归杨辉三角，使用map降低重复计算
+	unordered_map<int, unordered_map<int, int>> dpRes;
+	vector<vector<int>> generate(int numRows) {
+		vector<vector<int>> res;
+		vector<int> tmp;
+		for (size_t i = 0; i < numRows; i++) {
+			tmp.clear();
+			for (size_t j = 0; j < i + 1; j++) {
+				tmp.push_back(pascalNumber(i + 1, j + 1));
+			}
+			res.push_back(tmp);
+		}
+		return res;
+	}
+	int pascalNumber(int i, int j) {
+		if (dpRes.count(i) > 0 && (dpRes[i].count(j) > 0 || dpRes[i].count(i + 1 - j) > 0)) {
+			return dpRes[i][j];
+		}
+		if (i <= 1 || j <= 1 || i == j) {
+			return 1;
+		}
+		int tmp = pascalNumber(i - 1, j - 1) + pascalNumber(i - 1, j);
+		dpRes[i][j] = tmp;
+		dpRes[i][i + 1 - j] = tmp;
+		return tmp;
+	}
+	//递归生成杨辉三角特定行， 直接返回向量
+	vector<int> getRow(int rowIndex) {
+		if (rowIndex == 0) {
+			return vector<int>(1, 1);
+		}
+		vector<int> res = getRow(rowIndex - 1);
+		for (size_t i = rowIndex - 1; i > 0; i--) {
+			res[i] = res[i] + res[i - 1];
+		}
+		res.push_back(1);
+		return res;
+	}
+	//斐波那契数列，带记忆递归
+	unordered_map<int, int> fibMap;
+	int fib(int N) {
+		if (fibMap.count(N) > 0) {
+			return fibMap[N];
+		}
+		if (N < 2) {
+			fibMap[N] = N;
+			return N;
+		}
+		int res = fib(N - 1) + fib(N - 2);
+		fibMap[N] = res;
+		return res;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	mySolution.fib(10);
+	return 0;
 }
 
 #endif
