@@ -3378,7 +3378,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //递归
-#if true
+#if false
 
 class Solution {
 public:
@@ -3487,4 +3487,120 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
+#endif
+
+//中级算法
+#if true
+
+struct TreeNode {
+	int val;
+	TreeNode* left;
+	TreeNode* right;
+	TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+};
+
+class Solution {
+public:
+	//三数之和
+	vector<vector<int>> threeSum(vector<int>& nums) {
+		vector<vector<int>> res;
+		sort(nums.begin(), nums.end());
+		size_t numsLen = nums.size();
+		for (size_t i = 0; i < numsLen; i++) {
+			if (i > 0 && nums[i] == nums[i - 1]) {
+				continue;
+			}
+			size_t k = numsLen - 1;
+			for (size_t j = i + 1; j < numsLen; j++) {
+				if (j > i + 1 && nums[j] == nums[j - 1]) {
+					continue;
+				}
+				while (k > j && nums[i] + nums[j] + nums[k] > 0) {
+					k--;
+				}
+				if (j == k) {
+					break;
+				}
+				if (nums[i] + nums[j] + nums[k] == 0) {
+					res.emplace_back(vector<int>({ nums[i], nums[j], nums[k] }));
+				}
+			}
+		}
+		return res;
+	}
+	//长度为 3 的递增子序列
+	bool increasingTriplet(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		if (numsLen < 3) {
+			return false;
+		}
+		int small = 65535, mid = 65535;
+		for (auto num : nums) {
+			if (num <= small) {
+				small = num;
+			}
+			else if (num <= mid) {
+				mid = num;
+			}
+			else if (num > mid){
+				return true;
+			}
+		}
+		return false;
+	}
+	//中序和前序构造二叉树
+	/*TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+		size_t nodeCnt = preorder.size();
+		if (nodeCnt == 0) {
+			return nullptr;
+		}
+		TreeNode* res = new TreeNode(preorder[0]);
+		if (nodeCnt == 1) {
+			return res;
+		}
+		size_t i;
+		for (i = 0; i < nodeCnt; i++) {
+			if (inorder[i] == preorder[0]) {
+				break;
+			}
+		}
+		vector<int> preleft(preorder.begin() + 1, preorder.begin() + i + 1);
+		vector<int> inleft(inorder.begin(), inorder.begin() + i);
+		vector<int> preright(preorder.begin() + i + 1, preorder.end());
+		vector<int> inright(inorder.begin() + i + 1, inorder.end());
+		res->left = buildTree(preleft, inleft);
+		res->right = buildTree(preright, inright);
+		return res;
+	}*/
+	//中序和前序构造二叉树--优化
+	TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+		size_t nodeCnt = preorder.size();
+		return buildSubTree(preorder, 0, nodeCnt - 1, inorder, 0, nodeCnt - 1);
+	}
+	TreeNode* buildSubTree(vector<int>& preorder, int preLeft, int preRight, vector<int>& inorder, int inLeft, int inRight) {
+		if (preLeft > preRight) {
+			return nullptr;
+		}
+		TreeNode* res = new TreeNode(preorder[preLeft]);
+		if (preLeft == preRight) {
+			return res;
+		}
+		size_t i;
+		for (i = 0; i + inLeft < inRight; i++) {
+			if (inorder[i + inLeft] == preorder[preLeft]) {
+				break;
+			}
+		}
+		res->left = buildSubTree(preorder, preLeft + 1, preLeft + i, inorder, inLeft, inLeft + i - 1);
+		res->right = buildSubTree(preorder, preLeft + i + 1, preRight, inorder, inLeft + i + 1, inRight);
+		return res;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	vector<int> inptF = { 1, 2, 3 }, inptM = { 3, 2, 1 };
+	Solution mySolution;
+	TreeNode* tree = mySolution.buildTree(inptF, inptM);
+	return 0;
+}
 #endif
