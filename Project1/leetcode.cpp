@@ -3434,11 +3434,56 @@ public:
 		fibMap[N] = res;
 		return res;
 	}
+	//尾递归，xor
+	int kthGrammar(int N, int K) {
+		if (N == 1) {
+			return 0;
+		}
+		int bitCnt = 1 << (N - 1);
+		if (K > bitCnt / 2) {
+			return kthGrammar(N - 1, K - bitCnt / 2) ^ 1;
+		}
+		return kthGrammar(N - 1, K);
+	}
+	//生成所有搜索二叉树
+
+
+	struct TreeNode {
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+		TreeNode() : val(0), left(nullptr), right(nullptr) {}
+		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+		TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
+	};
+	vector<TreeNode*> generateTrees(int n) {
+		if (n == 0) {
+			return {};
+		}
+		return generateSubTree(1, n);
+	}
+	vector<TreeNode*> generateSubTree(int start, int end) {
+		if (start > end) {
+			return { nullptr };
+		}
+		vector<TreeNode*> allTree;
+		for (int i = start; i <= end; i++) {
+			vector<TreeNode*> leftTree = generateSubTree(start, i - 1);
+			vector<TreeNode*> rightTree = generateSubTree(i + 1, end);
+			for (auto& left : leftTree) {
+				for (auto& right : rightTree) {
+					TreeNode* currentTree = new TreeNode(i, left, right);
+					allTree.emplace_back(currentTree);
+				}
+			}
+		}
+		return allTree;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	mySolution.fib(10);
+	mySolution.generateTrees(3);
 	return 0;
 }
 
