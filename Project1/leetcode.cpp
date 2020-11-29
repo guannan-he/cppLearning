@@ -3595,12 +3595,195 @@ public:
 		res->right = buildSubTree(preorder, preLeft + i + 1, preRight, inorder, inLeft + i + 1, inRight);
 		return res;
 	}
+	//电话号码字母组合
+	vector<string> letterCombinations(string digits) {
+		vector<string> res;
+		int digitLen = digits.size();
+		if (digitLen < 1) {
+			return res;
+		}
+		unordered_map<char, string> dialMap = {
+			{'2', "abc"},
+			{'3', "def"},
+			{'4', "ghi"},
+			{'5', "jkl"},
+			{'6', "mno"},
+			{'7', "pqrs"},
+			{'8', "tuv"},
+			{'9', "wxyz"}
+		};
+		for (char ch : digits) {
+			string tmp = dialMap[ch];
+			if (res.size() == 0) {
+				for (size_t i = 0; i < tmp.size(); i++) {
+					res.push_back({ tmp[i] });
+				}
+				continue;
+			}
+			vector<string> resCopy = res;
+			res.clear();
+			for (string str : resCopy) {
+				for (char tmpCh : tmp) {
+					res.push_back(str + tmpCh);
+				}
+			}
+		}
+		return res;
+	}
+	//有效括号组合
+	vector<string> generateParenthesis(int n) {
+		vector<string> res;
+		if (n < 1) {
+			return res;
+		}
+		unordered_set<string> resCand;
+		res.push_back("()");
+		resCand.insert("()");
+		while (n > 1) {
+			vector<string> resCopy = res;
+			res.clear();
+			for (string tmp : resCopy) {
+				int tmpLen = tmp.size();
+				for (int i = 1; i < tmpLen + 1; i++) {
+					string tmpRes = tmp.substr(0, i) + "()" + tmp.substr(i, tmpLen - 1);
+					if (resCand.count(tmpRes) > 0) {
+						continue;
+					}
+					resCand.emplace(tmpRes);
+					res.emplace_back(tmpRes);
+				}
+			}
+			n--;
+		}
+		return res;
+	}
+	//没有重复 数字的序列
+	vector<vector<int>> permute(vector<int>& nums) {
+		vector<vector<int>> res;
+		size_t numsLen = nums.size();
+		if (numsLen < 1) {
+			return res;
+		}
+		res.emplace_back(vector<int>{nums[0]});
+		for (size_t i = 1; i < numsLen; i++) {
+			vector<vector<int>> resCopy = res;
+			res.clear();
+			int tmpInt = nums[i];
+			for (vector<int> tmp : resCopy) {
+				size_t tmpLen = tmp.size();
+				for (size_t j = 0; j <= tmpLen; j++) {
+					vector<int> tmpAdd = tmp;
+					tmpAdd.insert(tmpAdd.begin() + j, tmpInt);
+					res.emplace_back(tmpAdd);
+				}
+			}
+		}
+		return res;
+	}
+	//给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）
+	vector<vector<int>> subsets(vector<int>& nums) {
+		vector<vector<int>> res = { {} };
+		size_t numsLen = nums.size();
+		if (numsLen < 1) {
+			return res;
+		}
+		int bitPos = pow(2, numsLen) - 1;
+		vector<int> tmp;
+		while (bitPos > 0) {
+			tmp.clear();
+			int bitPosCopy = bitPos;
+			for (size_t i = 0; i < numsLen; i++) {
+				if (bitPosCopy & 0x1) {
+					tmp.emplace_back(nums[i]);
+				}
+				bitPosCopy /= 2;
+			}
+			res.emplace_back(tmp);
+			bitPos--;
+		}
+		return res;
+	}
+	//单词搜索 这个方法效率太低，虽然可行
+	vector<vector<bool>>* vist;
+	bool exist(vector<vector<char>>& board, string word) {
+		size_t colLen = board.size();
+		if (colLen < 1) {
+			return false;
+		}
+		size_t rolLen = board[0].size();
+		if (rolLen < 1) {
+			return false;
+		}
+		vist = new vector<vector<bool>>(colLen, vector<bool>(rolLen, false));
+		for (size_t i = 0; i < colLen; i++) {
+			for (size_t j = 0; j < rolLen; j++) {
+				if (exploreGrid(board, word, 0, i, j)) {
+					delete vist;
+					return true;
+				}
+			}
+		}
+		delete vist;
+		return false;
+	}
+	// 原先版本， 未剪枝，超时
+	/*bool exploreGrid(vector<vector<char>>& board, string word, int n, int col, int rol) {
+		size_t colLen = board.size(), rolLen = board[0].size();
+		int wordLen = word.size();
+		if (col < 0 || col >= colLen || rol < 0 || rol >= rolLen || board[col][rol] != word[n]) {
+			return false;
+		}
+		if ((*vist)[col][rol]) {
+			return false;
+		}
+		(*vist)[col][rol] = true;
+		if (n == wordLen - 1) {
+			return true;
+		}
+		bool upper = exploreGrid(board, word, n + 1, col - 1, rol);
+		bool lower = exploreGrid(board, word, n + 1, col + 1, rol);
+		bool left = exploreGrid(board, word, n + 1, col, rol - 1);
+		bool right = exploreGrid(board, word, n + 1, col, rol + 1);
+		(*vist)[col][rol] = false;
+		return upper || lower || left || right;
+	}*/
+	// 新版本，找到后立即返回，剪枝，且只有匹配成功的会被标记
+	bool exploreGrid(vector<vector<char>>& board, string& word, int n, int col, int rol) {
+		size_t colLen = board.size(), rolLen = board[0].size();
+		int wordLen = word.size();
+		if (board[col][rol] != word[n]) {
+			return false;
+		}
+		if (n == wordLen - 1) {
+			return true;
+		}
+		(*vist)[col][rol] = true;
+		vector<pair<int, int>> directions{ {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+		for (pair<int, int> dir : directions) {
+			int newCol = col + dir.first, newRol = rol + dir.second;
+			if (newCol >= 0 && newCol < colLen && newRol >= 0 && newRol < rolLen) {
+				if (!(*vist)[newCol][newRol]) {
+					if (exploreGrid(board, word, n + 1, newCol, newRol)) {
+						(*vist)[col][rol] = false;
+						return true;
+					}
+				}
+			}
+		}
+		(*vist)[col][rol] = false;
+		return false;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	vector<int> inptF = { 1, 2, 3 }, inptM = { 3, 2, 1 };
 	Solution mySolution;
-	TreeNode* tree = mySolution.buildTree(inptF, inptM);
+	string digits = "ASF";
+	vector<vector<char>> board = { 
+		{'A','B','C','E'},
+		{'S','F','C','S'},
+		{'A','D','E','E'} };
+	mySolution.exist(board, digits);
 	return 0;
 }
 #endif
