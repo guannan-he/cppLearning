@@ -3773,17 +3773,194 @@ public:
 		(*vist)[col][rol] = false;
 		return false;
 	}
+	//三种颜色分类
+	void sortColors(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		if (numsLen < 2) {
+			return;
+		}
+		size_t frontCur = 0, currentCur = 0, rearCur = numsLen - 1;
+		for (currentCur = 0; currentCur <= rearCur; currentCur++) {
+			while (currentCur <= rearCur && nums[currentCur] == 2) {
+				swapElem(nums, rearCur, currentCur);
+				rearCur--;
+				if (rearCur == 0) {
+					break;
+				}
+			}
+			if (nums[currentCur] == 0) {
+				swapElem(nums, frontCur, currentCur);
+				frontCur++;
+			}
+		}
+		return;
+	}
+	inline void swapElem(vector<int>& nums, int i, int j) {
+		int tmp = nums[i];
+		nums[i] = nums[j];
+		nums[j] = tmp;
+		return;
+	}
+	//在未排序的数组中找到第 k 个最大的元素
+	int findKthLargest(vector<int>& nums, int k) {
+		size_t numsLen = nums.size();
+		quickSort(nums, 0, numsLen - 1);
+		return nums[numsLen - k];
+	}
+	void quickSort(vector<int>& nums, int front, int rear) {
+		if (front >= rear) {
+			return;
+		}
+		int pivot = nums[rear];
+		int cur = front;
+		for (int i = front; i < rear; i++) {
+			if (nums[i] <= pivot) {
+				swapElem(nums, cur, i);
+				cur++;
+			}
+		}
+		swapElem(nums, cur, rear);
+		quickSort(nums, front, cur - 1);
+		quickSort(nums, cur + 1, rear);
+		return;
+	}
+	//搜索二维矩阵 II
+	bool searchMatrix(vector<vector<int>>& matrix, int target) {
+		size_t colSize = matrix.size();
+		if (colSize == 0) {
+			return false;
+		}
+		size_t rolSize = matrix[0].size();
+		if (rolSize == 0) {
+			return false;
+		}
+		size_t col = colSize - 1, rol = 0;
+		while (col >= 0 && rol <= rolSize - 1) {
+			if (target == matrix[col][rol]) {
+				return true;
+			}
+			else if (target < matrix[col][rol]) {
+				col--;
+			}
+			else {
+				rol++;
+			}
+		}
+		return false;
+	}
+	//跳跃游戏--贪心
+	bool canJump(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		if (numsLen < 2) {
+			return true;
+		}
+		size_t maxPos = 0;
+		for (size_t i = 0; i < numsLen; i++) {
+			size_t tmp = i + nums[i];
+			if (i > maxPos) {
+				return false;
+			}
+			maxPos = tmp > maxPos ? tmp : maxPos;
+			if (maxPos >= numsLen - 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+	//不同路径--递归动态规划
+	//机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角
+	//问总共有多少条不同的路径
+	/*unordered_map<int, unordered_map<int, int>> pathVal;
+	int uniquePaths(int m, int n) {
+		if (m == 1 || n == 1) {
+			return 1;
+		}
+		size_t val1, val2;
+		if (pathVal.count(m - 1) > 0 && pathVal[m - 1].count(n) > 0) {
+			val1 = pathVal[m - 1][n];
+		}
+		else if (pathVal.count(n) > 0 && pathVal[n].count(m - 1) > 0) {
+			val1 = pathVal[n][m - 1];
+		}
+		else {
+			val1 = uniquePaths(m - 1, n);
+			pathVal[m - 1][n] = val1;
+		}
+		if (pathVal.count(m) > 0 && pathVal[m].count(n - 1) > 0) {
+			val2 = pathVal[m][n - 1];
+		}
+		else if (pathVal.count(n - 1) > 0 && pathVal[n - 1].count(m) > 0) {
+			val2 = pathVal[n - 1][m];
+		}
+		else {
+			val2 = uniquePaths(m, n - 1);
+			pathVal[m][n - 1] = val2;
+		}
+		return val1 + val2;
+	}*/
+	//不同路径--迭代动态规划
+	//机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角
+	//问总共有多少条不同的路径
+	int uniquePaths(int m, int n) {
+		vector<vector<int>> dp = vector<vector<int>>(m, vector<int>(n, 0));
+		for (size_t i = 0; i < m; i++) {
+			for (size_t j = 0; j < n; j++) {
+				if (i == 0 || j == 0) {
+					dp[i][j] = 1;
+				}
+				else {
+					dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+				}
+			}
+		}
+		return dp[m - 1][n - 1];
+	}
+	//零钱兑换
+	int coinChange(vector<int>& coins, int amount) {
+		vector<int> dp(amount + 1, amount + 1);
+		dp[0] = 0;
+		for (int i = 0; i <= amount; i++) {
+			for (int coin : coins) {
+				if (coin <= i) {
+					dp[i] = min(dp[i], dp[i - coin] + 1);
+				}
+			}
+		}
+		return dp[amount] > amount ? -1 : dp[amount];
+	}
+	//最长上升子序列
+	int lengthOfLIS(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		if (numsLen < 2) {
+			return numsLen;
+		}
+		vector<int> dp(numsLen);
+		int res = 0;
+		for (size_t i = 0; i < numsLen; i++) {
+			dp[i] = 1;
+			for (size_t j = 0; j < i; j++) {
+				if (nums[j] < nums[i]) {
+					dp[i] = max(dp[i], dp[j] + 1);
+				}
+			}
+			res = dp[i] > res ? dp[i] : res;
+		}
+		return res;
+	}
 };
 
 int main(int argc, char* argv[]) {
-	vector<int> inptF = { 1, 2, 3 }, inptM = { 3, 2, 1 };
+	vector<int> inptF = { 3,2,3,1,2,4,5,5,6 }, inptM = { 3, 2, 1 };
+	vector<int> nums = { 10,9,2,5,3,7,101,18 };
 	Solution mySolution;
 	string digits = "ASF";
-	vector<vector<char>> board = { 
-		{'A','B','C','E'},
-		{'S','F','C','S'},
-		{'A','D','E','E'} };
-	mySolution.exist(board, digits);
+	vector<vector<int>> matrix = { 
+		{1,4,7,11,15},
+		{2,5,8,12,19},
+		{3,6,9,16,22},
+		{10,13,14,17,24},
+		{18,21,23,26,30} };
+	mySolution.lengthOfLIS(nums);
 	return 0;
 }
 #endif
