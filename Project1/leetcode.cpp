@@ -3947,6 +3947,228 @@ public:
 		}
 		return res;
 	}
+	//阶乘后的零
+	int trailingZeroes(int n) {
+		int res = 0;
+		int tmp = 5;
+		while (n >= tmp) {
+			res += n / tmp;
+			tmp *= 5;
+		}
+		return res;
+	}
+	//Excel表列序号
+	int titleToNumber(string s) {
+		int sLen = s.size();
+		int res = 0;
+		for (int i = 0; i < sLen; i++){
+			res *= 26;
+			res += s[i] - 'A' + 1;
+		}
+		return res;
+	}
+	//快速幂
+	double myPow(double x, int n) {
+		bool isNeg = n < 0 ? true : false;
+		if (n == 0x7fffffff) {
+			if (x == 1.0 || x == 1.0) {
+				return x;
+			}
+		}
+		int i = 31;
+		double res = 1.0, tmp = x;
+		while (n != 0) {
+			if (n % 2) {
+				res *= tmp;
+			}
+			tmp *= tmp;
+			n = n / 2;
+		}
+		if (isNeg) {
+			res = 1 / res;
+		}
+		return res;
+	}
+	//二分法除法，要求不使用乘法、除法和 mod 运算符
+	int divide(int dividend, int divisor) {
+		long long res = 0;
+		if (divisor == 0) {
+			return 0x7fffffff;
+		}
+		if (dividend == 0) {
+			return 0;
+		}
+		bool isNeg = false;
+		if (dividend < 0 && divisor > 0 || dividend > 0 && divisor < 0) {
+			isNeg = true;
+		}
+		long long dividendCopy = abs(dividend);
+		long long divisorCopy = abs(divisor);
+		while (dividendCopy >= divisorCopy) {
+			long long tmp = divisorCopy;
+			long long cnt = 1;
+			while (tmp << 1 < dividendCopy) {
+				cnt += cnt;
+				tmp = tmp << 1;
+			}
+			dividendCopy -= tmp;
+			res += cnt;
+		}
+		if (isNeg) {
+			if (-res < INT_MIN) {
+				return INT_MIN;
+			}
+			else {
+				return -res;
+			}
+		}
+		if (res > INT_MAX) {
+			return INT_MAX;
+		}
+		return res;
+	}
+	//分数到小数
+	string fractionToDecimal(int numerator, int denominator) {
+		if (denominator == 0) {
+			return "";
+		}
+		if (numerator == 0) {
+			return "0";
+		}
+		string res;
+		if ((numerator > 0) ^ (denominator > 0)) {
+			res.push_back('-');
+		}
+		long long numCopy = abs(numerator), denCopy = abs(denominator);
+		res.append(to_string(numCopy / denCopy));
+		numCopy %= denCopy;
+		if (numCopy == 0) {
+			return res;
+		}
+		res.push_back('.');
+		unordered_map<int, int> fracMap;
+		int index = res.size();
+		while (numCopy != 0 && fracMap.count(numCopy) == 0) {
+			fracMap[numCopy] = index;
+			index++;
+			numCopy *= 10;
+			res += to_string(numCopy / denCopy);
+			numCopy %= denCopy;
+		}
+		if (fracMap.count(numCopy) > 0) {
+			res.insert(fracMap[numCopy], "(");
+			res += ')';
+		}
+		return res;
+	}
+};
+class Codec {
+	//二叉树的序列化与反序列化
+public:
+
+	string serialize(TreeNode* root) {
+		string res;
+		queue<TreeNode*> que;
+		que.push(root);
+		while (!que.empty()) {
+			int siz = que.size();
+			while (siz--) {
+				TreeNode* cur = que.front();
+				que.pop();
+				if (cur == nullptr) {
+					res += "null,";
+				}
+				else {
+					string str_val = to_string(cur->val) + ",";
+					res += str_val;
+					que.push(cur->left);
+					que.push(cur->right);
+				}
+			}
+		}
+		return res;
+	}
+
+	// Decodes your encoded data to tree.
+	TreeNode* deserialize(string data) {
+		queue<int>* valStack = pushStrVal(data);
+		if (!valStack->size()) {
+			return nullptr;
+		}
+		TreeNode* currentNode;
+		int currentVal = valStack->front();
+		if (currentVal == -888) {
+			return nullptr;
+		}
+		valStack->pop();
+		TreeNode* root = new TreeNode(currentVal);
+		queue<TreeNode*> q;
+		q.push(root);
+		while (!q.empty()) {
+			int qLen = q.size();
+			while (qLen) {
+				currentNode = q.front();
+				q.pop();
+				qLen--;
+				if (currentNode == nullptr) {
+					continue;
+				}
+				currentVal = -888;
+				if (!valStack->empty()) {
+					currentVal = valStack->front();
+					valStack->pop();
+				}
+				if (currentVal != -888) {
+					currentNode->left = new TreeNode(currentVal);
+				}
+				q.push(currentNode->left);
+				currentVal = -888;
+				if (!valStack->empty()) {
+					currentVal = valStack->front();
+					valStack->pop();
+				}
+				if (currentVal != -888) {
+					currentNode->right = new TreeNode(currentVal);
+				}
+				q.push(currentNode->right);
+			}
+		}
+
+		return root;
+	}
+	queue<int>* pushStrVal(string& data) {
+		queue<int>* valStack = new queue<int>;
+		int dataLen = data.size();
+		int cur = 0;
+		int tmpVal;
+		int sign;
+		while (cur < dataLen) {
+			char tmp = data[cur];
+			if (tmp == '[' || tmp == ']' || tmp == ',') {
+				cur++;
+				continue;
+			}
+			if (data[cur] == 'n') {
+				valStack->push(-888);
+				cur += 4;
+				continue;
+			}
+			sign = 1;
+			tmpVal = 0;
+			while (data[cur] != ',' && data[cur] != ']') {
+				if (data[cur] == '-') {
+					sign = -1;
+					cur++;
+					continue;
+				}
+				tmpVal = tmpVal * 10 + data[cur] - '0';
+				cur++;
+			}
+			tmpVal *= sign;
+			valStack->push(tmpVal);
+		}
+		return valStack;
+	}
 };
 
 int main(int argc, char* argv[]) {
@@ -3960,7 +4182,9 @@ int main(int argc, char* argv[]) {
 		{3,6,9,16,22},
 		{10,13,14,17,24},
 		{18,21,23,26,30} };
-	mySolution.lengthOfLIS(nums);
+	Codec myCodec;
+	string s = "AB";
+	mySolution.fractionToDecimal(2, 3);
 	return 0;
 }
 #endif
