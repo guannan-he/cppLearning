@@ -4061,6 +4061,76 @@ public:
 		}
 		return res;
 	}
+	int getSum(int a, int b) {
+		while (b) {
+			auto carry = ((unsigned int)(a & b)) << 1;//进位
+			a ^= b;//不进位的结果
+			b = carry;
+		}
+		return a;
+	}
+	int evalRPN(vector<string>& tokens) {
+		stack<int> op;
+		for (auto token : tokens) {
+			if (token.size() == 1 && (token[0] < '0' || token[0] > '9')) {
+				int op1 = op.top();
+				op.pop();
+				int op2 = op.top();
+				op.pop();
+				if (token[0] == '+') {
+					op1 = op1 + op2;
+				}
+				else if (token[0] == '-') {
+					op1 = op2 - op1;
+				}
+				else if (token[0] == '*') {
+					op1 = op1 * op2;
+				}
+				else {
+					op1 = op2 / op1;
+				}
+				op.push(op1);
+			}
+			else {
+				op.push(atoi(token.c_str()));
+			}
+		}
+		return op.top();
+	}
+	//多数元素:Boyer–Moore majority vote algorithm
+	//如果候选人不是maj 则 maj,会和其他非候选人一起反对 会反对候选人,所以候选人一定会下台(maj==0时发生换届选举)
+	//如果候选人是maj, 则maj 会支持自己，其他候选人会反对，同样因为maj 票数超过一半，所以maj 一定会成功当选
+	int majorityElement(vector<int>& nums) {
+		int cand = -1, cnt = 0;
+		for (int num : nums) {
+			if (num == cand) {
+				cnt++;
+			}
+			else if(--cnt < 0) {
+				cand = num;
+				cnt = 1;
+			}
+		}
+		return cand;
+	}
+	//任务调度器
+	int leastInterval(vector<char>& tasks, int n) {
+		unordered_map<char, int> freq;
+		for (char ch : tasks) {
+			freq[ch]++;
+		}
+		int maxExec = 0, maxCnt = 0;
+		for (auto it = freq.begin(); it != freq.end(); it++) {
+			if (it->second > maxExec) {
+				maxExec = it->second;
+				maxCnt = 1;
+			}
+			else if (it->second == maxExec) {
+				maxCnt++;
+			}
+		}
+		return max((maxExec - 1) * (n + 1) + maxCnt, int(tasks.size()));
+	}
 };
 class Codec {
 	//二叉树的序列化与反序列化
@@ -4173,7 +4243,7 @@ public:
 
 int main(int argc, char* argv[]) {
 	vector<int> inptF = { 3,2,3,1,2,4,5,5,6 }, inptM = { 3, 2, 1 };
-	vector<int> nums = { 10,9,2,5,3,7,101,18 };
+	vector<int> nums = { 2,2,1,1,1,2,2 };
 	Solution mySolution;
 	string digits = "ASF";
 	vector<vector<int>> matrix = { 
@@ -4184,7 +4254,9 @@ int main(int argc, char* argv[]) {
 		{18,21,23,26,30} };
 	Codec myCodec;
 	string s = "AB";
-	mySolution.fractionToDecimal(2, 3);
+	vector<string> polInpt = { "10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+" };
+	vector<char> tasks = { 'A','A','A','B','B','B' };
+	mySolution.leastInterval(tasks, 2);
 	return 0;
 }
 #endif
