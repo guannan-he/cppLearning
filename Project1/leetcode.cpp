@@ -3490,7 +3490,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //中级算法
-#if true
+#if false
 
 struct TreeNode {
 	int val;
@@ -4257,6 +4257,370 @@ int main(int argc, char* argv[]) {
 	vector<string> polInpt = { "10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+" };
 	vector<char> tasks = { 'A','A','A','B','B','B' };
 	mySolution.leastInterval(tasks, 2);
+	return 0;
+}
+#endif
+
+//高级算法--字符串数组
+#if true
+
+class Solution {
+public:
+	//除自身以外数组的乘积
+	vector<int> productExceptSelf(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		vector<int> res(numsLen);
+		res[0] = 1;
+		for (size_t i = 1; i < numsLen; i++) {
+			res[i] = res[i - 1] * nums[i - 1];
+		}
+		int tmp = 1;
+		for (int i = numsLen - 1; i >-1; i--) {
+			res[i] *= tmp;
+			tmp *= nums[i];
+		}
+		return res;
+	}
+	//螺旋矩阵
+	vector<int> spiralOrder(vector<vector<int>>& matrix) {
+		size_t colSize = matrix.size();
+		if (colSize == 0) {
+			return {};
+		}
+		size_t rolSize = matrix[0].size();
+		size_t lim = min(colSize, rolSize);
+		if (lim == 1) {
+			lim = 1;
+		}
+		else if (lim % 2 == 1) {
+			lim = lim / 2 + 1;
+		}
+		else {
+			lim = lim / 2;
+		}
+		vector<int> res;
+		for (size_t i = 0; i < lim; i++) {
+			vector<int> tmp = getSub(matrix, i, colSize, rolSize);
+			res.insert(res.end(), tmp.begin(), tmp.end());
+		}
+		return res;
+	}
+	vector<int> getSub(vector<vector<int>>& matrix, size_t nth, size_t col, size_t rol) {
+		vector<int> res;
+		for (size_t i = nth; i < rol - nth; i++) {
+			res.emplace_back(matrix[nth][i]);
+		}
+		if (nth + 1 == col - nth) {//只有一行，剪枝
+			return res;
+		}
+		for (size_t i = nth + 1; i < col - nth; i++) {
+			res.emplace_back(matrix[i][rol - nth - 1]);
+		}
+		if (nth + 1 == rol - nth) {//只有一列，剪枝
+			return res;
+		}
+		for (size_t i = nth + 2; i < rol - nth; i++) {
+			res.push_back(matrix[col - nth - 1][rol - i]);
+		}
+		for (size_t i = nth + 1; i < col - nth; i++) {
+			res.push_back(matrix[col - i][nth]);
+		}
+		return res;
+	}
+	//生命游戏
+	void gameOfLife(vector<vector<int>>& board) {
+		size_t colSize = board.size();
+		if (colSize == 0) {
+			return;
+		}
+		size_t rolSize = board[0].size();
+		vector<vector<int>> boardCopy(board);
+		for (size_t i = 0; i < colSize; i++) {
+			for (size_t j = 0; j < rolSize; j++) {
+				int convRes = conv(boardCopy, i, j, colSize, rolSize);
+				if (convRes > 3 || convRes < 2) {//死亡
+					board[i][j] = 0;
+				}
+				else if (convRes == 3) {//复活
+					board[i][j] = 1;
+				}
+			}
+		}
+		return;
+	}
+	vector<vector<int>> directions = {
+		{-1, -1},
+		{-1, 0},
+		{-1, 1},
+		{0, -1},
+		{0, 1},
+		{1, -1},
+		{1, 0},
+		{1, 1} };
+	int conv(vector<vector<int>>& boardCopy, size_t col, size_t rol, size_t colSize, size_t rolSize) {//卷积
+		int res = 0;
+		for (vector<int>& dir : directions) {
+			int colCur = col + dir[0], rolCur = rol + dir[1];
+			if (colCur < 0 || colCur >= colSize || rolCur < 0 || rolCur >= rolSize) {
+				continue;
+			}
+			res += boardCopy[colCur][rolCur];
+		}
+		return res;
+	}
+	//缺失的第一个正数
+	//自定义哈希表
+	int firstMissingPositive(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		for (size_t i = 0; i < numsLen; i++) {
+			if (nums[i] <= 0) {
+				nums[i] = numsLen + 1;
+			}
+		}
+		for (size_t i = 0; i < numsLen; i++) {
+			int tmp = abs(nums[i]);
+			if (tmp <= numsLen) {
+				nums[tmp - 1] = -abs(nums[tmp - 1]);
+			}
+		}
+		for (size_t i = 0; i < numsLen; i++) {
+			if (nums[i] > 0) {
+				return i + 1;
+			}
+		}
+		return numsLen + 1;
+	}
+	int longestConsecutive(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		unordered_set<int> numsSet;
+		for (int num : nums) {
+			numsSet.emplace(num);
+		}
+		int res = 0;
+		for (auto numElem : numsSet) {
+			if (numsSet.count(numElem - 1) > 0) {
+				continue;
+			}
+			int current = numElem;
+			while (numsSet.count(current + 1) > 0) {
+				current++;
+			}
+			res = (current - numElem + 1) > res ? (current - numElem + 1) : res;
+		}
+		return res;
+	}
+	void myQuickSort(vector<int>& nums, int left, int right) {
+		if (left >= right) {
+			return;
+		}
+		int pivot = nums[right];
+		int cur = left;
+		for (int i = left; i <= right; i++) {
+			if (nums[i] <= pivot) {
+				int tmp = nums[cur];
+				nums[cur] = nums[i];
+				nums[i] = tmp;
+				cur++;
+			}
+		}
+		cur--;
+		myQuickSort(nums, left, cur - 1);
+		myQuickSort(nums, cur + 1, right);
+		return;
+	}
+	//基本计算器
+	//这种垃圾算法还真是第一次遇到（没错，是我写的！）
+	int calculate(string s) {
+		int sLen = s.size();
+		stack<int> opNum;
+		stack<char> oper;
+		for (int i = 0; i < sLen; i++) {//提取操作数和操作符
+			if (s[i] == ' ') {
+				continue;
+			}
+			if (s[i] > '9' || s[i] < '0') {
+				oper.push(s[i]);
+				continue;
+			}
+			int tmp = 0;
+			while (s[i] >= '0' && s[i] <= '9') {
+				tmp *= 10;
+				tmp += s[i] - '0';
+				i++;
+			}
+			i--;
+			opNum.push(tmp);
+		}
+		int res = 0;
+		stack<int> opNumPN;
+		stack<char> operPN;
+		int tmp;
+		//逆序栈
+		while (!oper.empty()) {
+			operPN.push(oper.top());
+			oper.pop();
+		}
+		while (!opNum.empty()) {
+			opNumPN.push(opNum.top());
+			opNum.pop();
+		}
+		while (!operPN.empty()) {//处理乘除法
+			char op = operPN.top();
+			operPN.pop();
+			tmp = opNumPN.top();
+			opNumPN.pop();
+			if (op == '*') {
+				tmp *= opNumPN.top();
+				opNumPN.pop();
+			}
+			else if (op == '/') {
+				tmp /= opNumPN.top();
+				opNumPN.pop();
+			}
+			else {
+				oper.push(op);
+				opNum.push(tmp);
+				continue;
+			}
+			opNumPN.push(tmp);
+		}
+		if (!opNumPN.empty()) {
+			opNum.push(opNumPN.top());
+		}
+		//逆序栈
+		while (!oper.empty()) {
+			operPN.push(oper.top());
+			oper.pop();
+		}
+		while (!opNum.empty()) {
+			opNumPN.push(opNum.top());
+			opNum.pop();
+		}
+		res = opNumPN.top();
+		opNumPN.pop();
+		while (!operPN.empty()) {
+			char op = operPN.top();
+			operPN.pop();
+			tmp = opNumPN.top();
+			opNumPN.pop();
+			if (op == '+') {
+				res += tmp;
+			}
+			else {
+				res -= tmp;
+			}
+		}
+		return res;
+	}
+	//滑动窗口最大值
+	//动态规划
+	vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+		size_t numsLen = nums.size();
+		vector<int> res(numsLen - k + 1), left(numsLen), right(numsLen);
+		int tmpL, tmpR;
+		for (size_t i = 0; i < numsLen; i++) {
+			if (i % k == 0) {
+				tmpL = nums[i];
+			}
+			else {
+				tmpL = nums[i] > tmpL ? nums[i] : tmpL;
+			}
+			left[i] = tmpL;//左侧滑动窗口
+			if (i % k == numsLen % k || i == 0) {
+				tmpR = nums[numsLen - 1 - i];
+			}
+			else {
+				tmpR = nums[numsLen - 1 - i] > tmpR ? nums[numsLen - 1 - i] : tmpR;
+			}
+			right[numsLen - 1 - i] = tmpR;//右侧滑动窗口
+		}
+		for (size_t i = 0; i < numsLen - k + 1; i++) {
+			res[i] = max(right[i], left[i + k - 1]);//到当前窗口结尾，下一个窗口开始到下一个窗口长度
+		}
+		return res;
+	}
+	//最小覆盖子串
+	unordered_map<char, int> tMap, cntMap;
+	bool check(void) {//检查是否包含
+		for (const auto& p : tMap) {
+			if (cntMap[p.first] < p.second) {
+				return false;
+			}
+		}
+		return true;
+	}
+	string minWindow(string s, string t) {
+		int sLen = s.size();
+		for (const char& tCh : t) {
+			tMap[tCh]++;
+		}
+		int lCur = 0, rCur = 0, ansL = -1, ansR = -1, len = sLen + 1;
+		while (rCur < sLen) {
+			if (tMap.count(s[rCur]) > 0) {//是单词中的字母
+				cntMap[s[rCur]]++;
+			}
+			while (check()) {//左侧缩短字符串
+				if (rCur - lCur + 1 < len) {
+					len = rCur - lCur + 1;
+					ansL = lCur;
+				}
+				if (tMap.count(s[lCur]) > 0 && cntMap[s[lCur]] != 0) {//如果是单词中的话就排除
+					cntMap[s[lCur]]--;
+				}
+				lCur++;
+			}
+			rCur++;
+		}
+		if (ansL == -1) {
+			return "";
+		}
+		string res = s.substr(ansL, len);
+		return res;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	vector<int>nums = { 1,3,-1,-3,5,3,6,7 };
+	vector<vector<int>> matrix = {
+		{1,4,7,11,15},
+		{2,5,8,12,19},
+		{3,6,9,16,22},
+		{10,13,14,17,24},
+		{18,21,23,26,30} };
+	vector<vector<int>> matrix2 = { {3}, {2} };
+	vector<vector<int>> matrixlive = {
+		{0, 1, 0},
+		{0, 0, 1},
+		{1, 1, 1},
+		{0, 0, 0} };
+	string inpt = " 1-1+1 ";
+	string s = "A";
+	string t = "AA";
+	mySolution.minWindow(s, t);
+	return 0;
+}
+#endif
+
+//高级算法--链表
+#if true
+
+class Solution {
+	struct ListNode {
+		int val;
+		ListNode* next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
+public:
+	//合并K个排序链表
+	ListNode* mergeKLists(vector<ListNode*>& lists) {
+		return nullptr;
+	}
+};
+
+int main(int argc, char* argv[]) {
 	return 0;
 }
 #endif
