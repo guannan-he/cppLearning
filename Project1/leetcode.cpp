@@ -4262,7 +4262,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //高级算法--字符串数组
-#if true
+#if false
 
 class Solution {
 public:
@@ -4603,7 +4603,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //高级算法--链表
-#if true
+#if false
 
 class Solution {
 	struct ListNode {
@@ -4614,13 +4614,387 @@ class Solution {
 		ListNode(int x, ListNode* next) : val(x), next(next) {}
 	};
 public:
-	//合并K个排序链表
+	////合并K个排序链表 暴力算法~800ms
+	////新建节点版本，效率低（构造函数调用过多）
+	//bool check(vector<ListNode*>& lists) {
+	//	for (const ListNode* listHead : lists) {//换成序列访问，能快10%
+	//		if (listHead != nullptr) {
+	//			return true;
+	//		}
+	//	}
+	//	return false;
+	//}
+	//ListNode* mergeKLists(vector<ListNode*>& lists) {
+	//	ListNode* root, * current;
+	//	root = new ListNode;
+	//	current = root;
+	//	size_t listLen = lists.size();
+	//	while (check(lists)) {
+	//		int minVal = INT_MAX, pos = -1;
+	//		for (size_t i = 0; i < listLen; i++) {
+	//			if (lists[i] == nullptr) {
+	//				continue;
+	//			}
+	//			if (lists[i]->val < minVal) {
+	//				pos = i;
+	//				minVal = lists[i]->val;
+	//			}
+	//		}
+	//		lists[pos] = lists[pos]->next;
+	//		current->next = new ListNode(minVal);
+	//		current = current->next;
+	//		//连接节点版本，内存占用下降
+	//		/*current->next = lists[pos];
+	//		lists[pos] = lists[pos]->next;
+	//		current = current->next;*/
+	//	}
+	//	return root->next;
+	//}
+
+
+	//分治法~80ms
+	//合并两个链表
+	ListNode* mergeTwoLists(ListNode* a, ListNode* b) {
+		if (a == nullptr || b == nullptr) {
+			return a == nullptr ? b : a;
+		}
+		ListNode* root = new ListNode;
+		ListNode* current = root;
+		while (a != nullptr && b != nullptr) {
+			if (a->val < b->val) {
+				current->next = a;
+				a = a->next;
+			}
+			else {
+				current->next = b;
+				b = b->next;
+			}
+			current = current->next;
+		}
+		current->next = a == nullptr ? b : a;
+		return root->next;
+	}
+	ListNode* merge(vector<ListNode*>& lists, int left, int right) {
+		if (left == right) {
+			return lists[left];
+		}
+		if (left > right) {
+			return nullptr;
+		}
+		int mid = (left + right) / 2;
+		return mergeTwoLists(merge(lists, left, mid), merge(lists, mid + 1, right));
+	}
 	ListNode* mergeKLists(vector<ListNode*>& lists) {
-		return nullptr;
+		return merge(lists, 0, lists.size() - 1);
+	}
+
+	//排序链表--快速排序
+	//超出时间限制
+	void listQuickSort(vector<ListNode*>& lists, int left, int right) {
+		if (left >= right) {
+			return;
+		}
+		int pivot = lists[left]->val;
+		int frontCur = left, rearCur = right;
+		while (frontCur != rearCur) {
+			while (frontCur != rearCur && lists[rearCur]->val >= pivot) {
+				rearCur--;
+			}
+			while (frontCur != rearCur && lists[frontCur]->val <= pivot) {
+				frontCur++;
+			}
+			if (frontCur < rearCur) {
+				ListNode* tmp = lists[frontCur];
+				lists[frontCur] = lists[rearCur];
+				lists[rearCur] = tmp;
+			}
+		}
+		ListNode* tmp = lists[left];
+		lists[left] = lists[frontCur];
+		lists[frontCur] = tmp;
+		listQuickSort(lists, left, frontCur - 1);
+		listQuickSort(lists, frontCur + 1, right);
+		return;
+	}
+	/*ListNode* sortList(ListNode* head) {
+		vector<ListNode*> lists;
+		while (head != nullptr) {
+			lists.emplace_back(head);
+			head = head->next;
+		}
+		size_t listLen = lists.size();
+		listQuickSort(lists, 0, listLen - 1);
+		lists.emplace_back(nullptr);
+		for (size_t i = 0; i < listLen; i++) {
+			lists[i]->next = lists[i + 1];
+		}
+		return lists[0];
+	}*/
+	//分治
+	ListNode* sortList(ListNode* head) {
+		vector<ListNode*> lists;
+		while (head != nullptr) {
+			ListNode* tmp = head;
+			lists.emplace_back(head);
+			head = head->next;
+			tmp->next = nullptr;
+		}
+		return merge(lists, 0, lists.size() - 1);
 	}
 };
 
 int main(int argc, char* argv[]) {
+	Solution mySolution;
+	mySolution.sortList(nullptr);
+	return 0;
+}
+#endif
+
+//高级算法--树和图
+#if true
+
+class Solution {
+	struct ListNode {
+		int val;
+		ListNode* next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
+	struct TreeNode {
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+		TreeNode() : val(0), left(nullptr), right(nullptr) {}
+		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+		TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
+	};
+public:
+	//单词接龙
+	unordered_map<string, int> wordID;
+	vector<vector<int>> edge;
+	int nodeCnt = 0;
+	void addWord(string& word) {
+		if (wordID.count(word) < 1) {
+			wordID[word] = nodeCnt;
+			edge.emplace_back();
+			nodeCnt++;
+		}
+		return;
+	}
+	void addEdge(string& word) {
+		addWord(word);
+		int id1 = wordID[word];
+		for (char& ch : word) {
+			char tmp = ch;
+			//替换状态，新建虚拟节点，虚拟节点之间相连，单词之间不直接相连
+			ch = '*';
+			addWord(word);
+			int id2 = wordID[word];
+			edge[id1].emplace_back(id2);
+			edge[id2].emplace_back(id1);
+			//结束替换状态
+			ch = tmp;
+		}
+		return;
+	}
+	//双向搜索平均时间降低25%
+	int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+		for (string& word : wordList) {
+			addEdge(word);
+		}
+		addEdge(beginWord);
+		if (wordID.count(endWord) < 1) {//list 中没有endword
+			return 0;
+		}
+		//前向搜索
+		int beginID = wordID[beginWord];
+		vector<int> disBegin(nodeCnt, INT_MAX);
+		disBegin[beginID] = 0;//记录边数量
+		queue<int> queBegin;
+		queBegin.push(beginID);
+		//反向搜索
+		int endID = wordID[endWord];
+		vector<int> disEnd(nodeCnt, INT_MAX);
+		disEnd[endID] = 0;
+		queue<int> queEnd;
+		queEnd.push(endID);
+		//开始搜索
+		while (!queBegin.empty() && !queEnd.empty()) {
+			//前向搜索
+			int queBeginLen = queBegin.size();
+			for (int i = 0; i < queBeginLen; i++) {
+				int curBegin = queBegin.front();
+				queBegin.pop();
+				if (disEnd[curBegin] != INT_MAX) {//后向搜索到了该点
+					return (disBegin[curBegin] + disEnd[curBegin]) / 2 + 1;
+				}
+				for (int& it : edge[curBegin]) {
+					if (disBegin[it] == INT_MAX) {
+						disBegin[it] = disBegin[curBegin] + 1;
+						queBegin.push(it);
+					}
+				}
+			}
+			//反向搜索
+			int queEndLen = queEnd.size();
+			for (int i = 0; i < queEndLen; i++) {
+				int curEnd = queEnd.front();
+				queEnd.pop();
+				if (disBegin[curEnd] != INT_MAX) {//前向搜索到了该点
+					return (disBegin[curEnd] + disEnd[curEnd]) / 2 + 1;
+				}
+				for (int& it : edge[curEnd]) {
+					if (disEnd[it] == INT_MAX) {
+						disEnd[it] = disEnd[curEnd] + 1;
+						queEnd.push(it);
+					}
+				}
+			}
+		}
+		return 0;
+	}
+	//被围绕的区域
+	//内存占用可以优化：不用vist矩阵，将board修改为其他值
+	vector<vector<int>> direction = {
+		{-1, 0},
+		{0, 1},
+		{1, 0},
+		{0, -1} };
+	void solve(vector<vector<char>>& board) {
+		int colSize = board.size();
+		if (colSize == 0) {
+			return;
+		}
+		int rolSize = board[0].size();
+		vector<vector<bool>> vist(colSize, vector<bool>(rolSize, false));
+		//标记靠边区块
+		for (int i = 0; i < colSize; i++) {
+			for (int j = 0; j < rolSize; j++) {
+				//不是边缘跳过
+				if (i != 0 && j != 0 && i != colSize - 1 && j != rolSize - 1) {
+					continue;
+				}
+				//未访问过的白块，BFS
+				if (board[i][j] == 'O' && vist[i][j] == false) {
+					vist[i][j] = true;
+					queue<pair<int, int>> que;
+					que.push(make_pair(i, j));
+					while (!que.empty()) {
+						int qLen = que.size();
+						while (qLen != 0) {
+							int colCurBase = que.front().first;
+							int rolCurBase = que.front().second;
+							que.pop();
+							qLen--;
+							for (int dirCnt = 0; dirCnt < 4; dirCnt++) {
+								int colCur = colCurBase + direction[dirCnt][0];
+								int rolCur = rolCurBase + direction[dirCnt][1];
+								if (colCur < 0 || rolCur < 0 || colCur >= colSize || rolCur >= rolSize) {
+									continue;
+								}
+								if (vist[colCur][rolCur] == true || board[colCur][rolCur] == 'X') {
+									continue;
+								}
+								vist[colCur][rolCur] = true;
+								que.push(make_pair(colCur, rolCur));
+							}
+						}
+					}
+				}
+			}
+		}
+		//根据vist 标记
+		for (int i = 0; i < colSize; i++) {
+			for (int j = 0; j < rolSize; j++) {
+				if (vist[i][j] == false && board[i][j] == 'O') {
+					board[i][j] = 'X';
+				}
+			}
+		}
+		return;
+	}
+	//二叉树中的最大路径和
+	int maxPathVal = INT_MIN;
+	int maxPathSum(TreeNode* root) {
+		maxGain(root);
+		return maxPathVal;
+	}
+	int maxGain(TreeNode* root) {
+		if (root == nullptr) {
+			return 0;
+		}
+		int leftGain = max(maxGain(root->left), 0);
+		int rightGain = max(maxGain(root->right), 0);
+		int currentGain = leftGain + rightGain + root->val;
+		if (currentGain > maxPathVal) {
+			maxPathVal = currentGain;
+		}
+		return root->val + max(rightGain, leftGain);
+	}
+	//朋友圈
+	//BFS效率稍低，128ms，时间复杂度0(n^2)，空间复杂度0(n)
+	int findCircleNum(vector<vector<int>>& M) {
+		int mSize = M.size();
+		if (mSize < 2) {
+			return mSize;
+		}
+		int res = 0;
+		queue<int> q;
+		for (int i = 0; i < mSize; i++) {
+			for (int j = 0; j < mSize; j++) {
+				if (M[i][j] == 0 || M[i][j] == 2) {
+					continue;
+				}
+				M[i][j] = 2;
+				q.push(j);
+				while (!q.empty()) {
+					int cur = q.front();
+					q.pop();
+					for (int k = 0; k < mSize; k++) {
+						if (M[cur][k] == 0 || M[cur][k] == 2) {
+							continue;
+						}
+						M[cur][k] = 2;
+						q.push(k);
+					}
+				}
+				res++;
+			}
+		}
+		
+		return res;
+	}
+	//课程表
+	bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+		vector<bool> courseTaken(numCourses, false);
+		return true;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	vector<string> wordList = { "bit"};
+	string beginWord = "hit", endWord = "bit";
+	Solution mySolution;
+	vector<vector<char>> matrix = {
+		{'X', 'X', 'X', 'X'},
+		{'X', 'O', 'O', 'X'},
+		{'X', 'X', 'O', 'X'},
+		{'X', 'O', 'X', 'X'} };
+	vector<vector<int>> M = {//2
+		{1, 1, 0},
+		{1, 1, 0},
+		{0, 0, 1} };
+	vector<vector<int>> M2 = {//1
+		{1, 0, 0, 1},
+		{0, 1, 1, 0},
+		{0, 1, 1, 1},
+		{1, 0, 1, 1} };
+	vector<vector<int>> course = {
+		{0, 1},
+		{1, 0}
+	};
+	mySolution.canFinish(2, course);
 	return 0;
 }
 #endif
