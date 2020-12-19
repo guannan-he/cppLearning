@@ -4751,7 +4751,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //高级算法--树和图
-#if true
+#if false
 
 class Solution {
 	struct ListNode {
@@ -4856,11 +4856,11 @@ public:
 	}
 	//被围绕的区域
 	//内存占用可以优化：不用vist矩阵，将board修改为其他值
-	vector<vector<int>> direction = {
+	/*vector<vector<int>> direction = {
 		{-1, 0},
 		{0, 1},
 		{1, 0},
-		{0, -1} };
+		{0, -1} };*/
 	void solve(vector<vector<char>>& board) {
 		int colSize = board.size();
 		if (colSize == 0) {
@@ -4966,9 +4966,227 @@ public:
 		return res;
 	}
 	//课程表
+	//拓扑排序，判断是否存在环：排序后结点数量大于源节点数量
 	bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-		vector<bool> courseTaken(numCourses, false);
-		return true;
+		vector<int> inDegree(numCourses, false);
+		vector<vector<int>> edges(numCourses);
+		for (vector<int>& req : prerequisites) {
+			//0:子节点
+			//1:父节点
+			edges[req[1]].push_back(req[0]);
+			inDegree[req[0]]++;
+		}
+		queue<int> q;
+		for (size_t i = 0; i < numCourses; i++) {
+			if (inDegree[i] == 0) {
+				q.push(i);
+			}
+		}
+		int vistCnt = 0;
+		while (!q.empty()) {
+			int u = q.front();
+			vistCnt++;//模拟出队列
+			q.pop();
+			for (int i : edges[u]) {
+				inDegree[i]--;
+				if (inDegree[i] == 0) {
+					q.push(i);
+				}
+			}
+		}
+		return vistCnt == numCourses;
+	}
+	//课程表 II
+	//靠入度决定顺序
+	vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+		vector<int> inDegree(numCourses, false);
+		vector<vector<int>> edges(numCourses);
+		for (vector<int>& req : prerequisites) {
+			//0:子节点
+			//1:父节点
+			edges[req[1]].push_back(req[0]);
+			inDegree[req[0]]++;
+		}
+		queue<int> q;
+		for (size_t i = 0; i < numCourses; i++) {
+			if (inDegree[i] == 0) {
+				q.push(i);
+			}
+		}
+		vector<int> res;
+		int vistCnt = 0;
+		while (!q.empty()) {
+			int u = q.front();
+			res.push_back(u);
+			vistCnt++;
+			q.pop();
+			for (int i : edges[u]) {
+				inDegree[i]--;
+				if (inDegree[i] == 0) {
+					q.push(i);
+				}
+			}
+		}
+		return vistCnt == numCourses ? res : vector<int>{};
+	}
+	//矩阵中的最长递增路径
+	//DFS，回溯
+	//超出时间限制
+	//加上memo记忆矩阵，完成
+	vector<vector<int>> direction = {
+		{-1, 0},
+		{0, 1},
+		{1, 0},
+		{0, -1} };
+	int longestIncreasingPath(vector<vector<int>>& matrix) {
+		int colSize = matrix.size();
+		if (colSize == 0) {
+			return 0;
+		}
+		int rolSize = matrix[0].size();
+		unordered_set<int> numbers;
+		vector<vector<bool>> vist(colSize, vector<bool>(rolSize, false));
+		vector<vector<int>> memo(colSize, vector<int>(rolSize, 0));
+		int res = 0;
+		for (int i = 0; i < colSize; i++) {
+			for (int j = 0; j < rolSize; j++) {
+				res = max(lipDFS(matrix, vist, colSize, rolSize, i, j, memo), res);
+			}
+		}
+		return res + 1;
+	}
+	int lipDFS(vector<vector<int>>& matrix, vector<vector<bool>>& vist, int colSize, int rolSize, int colCur, int rolCur, vector<vector<int>>& memo) {
+		vist[colCur][rolCur] = true;
+		int current = matrix[colCur][rolCur];
+		int res = -1;
+		for (size_t i = 0; i < 4; i++) {
+			int col = colCur + direction[i][0];
+			int rol = rolCur + direction[i][1];
+			if (col < 0 || rol < 0 || col >= colSize || rol >= rolSize) {
+				continue;
+			}
+			if (vist[col][rol] == true) {
+				continue;
+			}
+			int tmp = matrix[col][rol];
+			if (tmp > current) {
+				if (memo[col][rol] == 0) {
+					memo[col][rol] = lipDFS(matrix, vist, colSize, rolSize, col, rol, memo);
+				}
+				res = max(memo[col][rol], res);
+			}
+		}
+		vist[colCur][rolCur] = false;
+		return res + 1;
+	}
+	//计算右侧小于当前元素的个数
+	//计算节点出度
+	//时间复杂度0(n^2)，超时
+	/*vector<int> countSmaller(vector<int>& nums) {
+		size_t numslen = nums.size();
+		vector<int> res(numslen, 0);
+		for (size_t i = 0; i < numslen; i++) {
+			int tmp = nums[i];
+			for (size_t j = 0; j < i; j++) {
+				if (tmp < nums[j]) {
+					res[j]++;
+				}
+			}
+		}
+		return res;
+	}*/
+	//离散化树状数组
+	//超时而且答案看不懂
+	//vector<int> countSmaller(vector<int>& nums) {
+	//	size_t numslen = nums.size();
+	//	vector<int> res(numslen, 0);
+	//	unordered_map<int, int> numCnt;
+	//	for (int i = numslen - 1; i > -1; i--) {
+	//		numCnt[nums[i]]++;
+	//		for (auto& it : numCnt) {//主要是这里费时间
+	//			if (it.first < nums[i]) {
+	//				res[i] += it.second;
+	//			}
+	//		}
+	//	}
+	//	return res;
+	//}
+
+	//抄的答案
+	//树状数组计算浅醉和，区间和
+	//原数组为nums，
+	//将nums离散化，此处是排序+去重，转化为数组a
+	vector<int> a;
+	//将nums对应a的元素update到树状数组c
+	vector<int> c;
+
+	//resize树状数组大小
+	void init(int len) {
+		c.resize(len);
+	}
+
+	//lowbit为二进制中最低位的1的值
+	int lowbit(int x) {
+		return x & (-x);
+	}
+
+	//单点更新，从子节点更新到所有父节点(祖父节点等一直往上到上限c.size())
+	void update(int pos) {
+		while (pos < c.size()) {
+			c[pos] += 1;
+			pos += lowbit(pos);
+		}
+	}
+
+	//查询，实际是求和[0,...,pos]，即求1~pos的元素数量
+	//如c[8]，在update时，a[1],a[2],a[3],...,a[8]都会使c[8]增加一个value（该题中我们设置为1）
+	//res += c[8]，然后8减去lowbit为0。
+	//也可以拿c[6]举例，c[6] =a[5]+a[6]，lowbit后，c[4] = a[1]+a[2]+a[3]+a[4]
+	int query(int pos) {
+		int res = 0;
+		while (pos) {
+			res += c[pos];
+			pos -= lowbit(pos);
+		}
+		return res;
+	}
+
+	//离散化处理
+	void Discretization(vector<int>& nums) {
+		//拷贝数组 [5,4,5,3,2,1,1,1,1,1]
+		a.assign(nums.begin(), nums.end());
+		//排序[1,1,1,1,1,2,3,4,5,5]
+		sort(a.begin(), a.end());
+		//去重[1,2,3,4,5]
+		a.erase(unique(a.begin(), a.end()), a.end());
+	}
+
+	int getId(int x) {
+		//lower_bound返回第一个不小于x的迭代器
+		//[1,2,3,4,5]中1，减去begin()再加1，得到id（1-5）
+		return lower_bound(a.begin(), a.end(), x) - a.begin() + 1;
+	}
+	vector<int> countSmaller(vector<int>& nums) {
+		vector<int> res;
+		int n = nums.size();
+		//题解是+5，其实+1就够了，树状数组中我们不使用0下标，所以需扩展1位空间
+		//当然直接用n结果也是对的。这里再推敲推敲
+		init(n + 1);
+
+		//将nums转化为a
+		Discretization(nums);
+
+		for (int i = n - 1; i >= 0; --i) {
+			//倒序处理
+			int id = getId(nums[i]);
+			//查询严格小于id的元素数量，所以使用id-1
+			res.push_back(query(id - 1));
+			//更新id，其实更新也可以提前，因为查询是id-1，所以更新操作不影响当前结果
+			update(id);
+		}
+		//倒序处理再倒序回来。如果不是用push_back，直接用下标可以不用在这里再倒序
+		reverse(res.begin(), res.end());
+		return res;
 	}
 };
 
@@ -4992,9 +5210,23 @@ int main(int argc, char* argv[]) {
 		{1, 0, 1, 1} };
 	vector<vector<int>> course = {
 		{0, 1},
-		{1, 0}
+		{1, 0},
+		{1, 2}
 	};
-	mySolution.canFinish(2, course);
+	vector<vector<int>> nums = {
+		{9, 9, 4},
+		{6, 6, 8},
+		{2, 1, 1}
+	};
+	vector<int> inptNums = { 5,2,6,1 };
+	mySolution.countSmaller(inptNums);
+	return 0;
+}
+#endif
+
+//高级算法-回溯
+#if true
+int main(int argc, char* argv[]) {
 	return 0;
 }
 #endif
