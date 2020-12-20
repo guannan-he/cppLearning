@@ -5226,7 +5226,107 @@ int main(int argc, char* argv[]) {
 
 //高级算法-回溯
 #if true
+
+class Solution {
+public:
+	//分割回文串
+	//最耗时地方是判断回文
+	vector<vector<string>> res;
+	vector<string> path;
+	vector<vector<string>> partition(string s) {
+		cutString(s, 0, s.size());
+		return res;
+	}
+	void cutString(string& s, int startIndex, int sLen) {
+		if (startIndex == sLen) {
+			res.push_back(path);
+			return;
+		}
+		for (int i = startIndex; i < sLen; i++) {
+			if (isPalindrome(s, startIndex, i)) {
+				string str = s.substr(startIndex, i - startIndex + 1);
+				path.push_back(str);
+				cutString(s, i + 1, sLen);
+				path.pop_back();
+			}
+		}
+		return;
+	}
+	bool isPalindrome(string& s, int left, int right) {
+		while (left < right) {
+			if (s[left] != s[right]) {
+				return false;
+			}
+			left++;
+			right--;
+		}
+		return true;
+	}
+	//删除无效的括号
+	//去重靠跳过相等字符
+	vector<string> removeInvalidParentheses(string s) {
+		int left = 0, right = 0;
+		vector<string> res;
+		int sLen = 0;
+		for (char& ch : s) {
+			if (ch == '(') {
+				left++;
+			}
+			else if (ch == ')') {
+				if (left > 0) {
+					left--;
+				}
+				else {
+					right++;
+				}
+			}
+			sLen++;
+		}
+		dfs(s, 0, left, right, res);
+		return res;
+	}
+	void dfs(string s, int start, int l, int r, vector<string>& res) {
+		if (l == 0 && r == 0) {//不需要删除的括号为零
+			if (isValid(s)) {
+				res.push_back(s);
+			}
+			return;
+		}
+		size_t sLen = s.size();
+		for (size_t i = start; i < sLen; i++) {
+			if (i != start && s[i] == s[i - 1]) {//去重
+				continue;
+			}
+			if (s[i] == '(' && l > 0) {
+				dfs(s.substr(0, i) + s.substr(i + 1, sLen - i - 1), i, l - 1, r, res);
+			}
+			if (s[i] == ')' && r > 0) {
+				dfs(s.substr(0, i) + s.substr(i + 1, sLen - i - 1), i, l, r - 1, res);
+			}
+		}
+		return;
+	}
+	bool isValid(string& s) {//判断字符串是否有效
+		int cnt = 0;
+		for (char& c : s) {
+			if (c == '(') {
+				cnt++;
+			}
+			else if (c == ')') {
+				cnt--;
+				if (cnt < 0) {
+					return false;
+				}
+			}
+		}
+		return cnt == 0;
+	}
+};
+
 int main(int argc, char* argv[]) {
+	string s = "())((((((((((b))(";
+	Solution mySolution;
+	mySolution.removeInvalidParentheses(s);
 	return 0;
 }
 #endif
