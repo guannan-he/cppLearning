@@ -5225,7 +5225,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //高级算法-回溯
-#if true
+#if false
 
 class Solution {
 public:
@@ -5321,12 +5321,352 @@ public:
 		}
 		return cnt == 0;
 	}
+	//通配符匹配
+	//动态规划
+	//bool isMatch(string s, string p) {
+	//	size_t sLen = s.size(), pLen = p.size();
+	//	vector<vector<bool>> dp(sLen + 1, vector<bool>(pLen + 1, false));
+	//	dp[0][0] = true;//dp[i][j] 表示字符串 s 的前 i 个字符和模式 p 的前 j 个字符是否能匹配
+	//	for (size_t i = 1; i <= pLen; i++) {
+	//		if (p[i - 1] == '*') {
+	//			dp[0][i] = true;
+	//		}
+	//		else {
+	//			break;//找到第一个不是*的p[i]
+	//		}
+	//	}
+	//	for (size_t i = 1; i <= sLen; i++) {
+	//		for (size_t j = 1; j <= pLen; j++) {
+	//			if (p[j - 1] == '*') {
+	//				dp[i][j] = dp[i][j - 1] || dp[i - 1][j];
+	//			}
+	//			else if (p[j - 1] == '?' || s[i - 1] == p[j - 1]) {
+	//				dp[i][j] = dp[i - 1][j - 1];
+	//			}
+	//		}
+	//	}
+	//	return dp[sLen][pLen];
+	//}
+	//正则表达式匹配
+	bool isMatch(string s, string p) {
+		size_t sLen = s.size(), pLen = p.size();
+		vector<vector<bool>> dp(sLen + 1, vector<bool>(pLen + 1, false));
+		dp[0][0] = true;
+		for (size_t i = 1; i <= pLen; i++)
+		{
+			if (i >= 2 && p[i - 1] == '*' && dp[0][i - 2]) // 记得加 i >= 2的判断 
+				dp[0][i] = true;
+		}
+		for (size_t i = 1; i < sLen + 1; i++) {
+			for (size_t j = 1; j < pLen + 1; j++) {
+				if (p[j - 1] == '*' && j > 1) {
+					if (p[j - 2] != s[i - 1] && p[j - 2] != '.')
+						dp[i][j] = dp[i][j - 2];
+					else
+						dp[i][j] = dp[i][j - 2] || dp[i][j - 1] || dp[i - 1][j];
+				}
+				else if (p[j - 1] == '.' || s[i - 1] == p[j - 1]) {//全字符匹配
+					dp[i][j] = dp[i - 1][j - 1];
+				}
+			}
+		}
+		return dp[sLen][pLen];
+	}
 };
 
 int main(int argc, char* argv[]) {
-	string s = "())((((((((((b))(";
+	string s = "aa";
+	string p = "a*";
 	Solution mySolution;
-	mySolution.removeInvalidParentheses(s);
+	mySolution.isMatch(s, p);
+	return 0;
+}
+#endif
+
+//高级算法-搜索和排序
+#if false
+
+class Solution {
+public:
+	//摆动排序 II
+	//其实就是找中位数
+	//抄代码真香
+	void wiggleSort(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		auto midPtr = nums.begin() + numsLen / 2;
+		nth_element(nums.begin(), midPtr, nums.end());
+		int mid = *midPtr;
+		size_t i = 0, j = 0, k = numsLen - 1;
+		while (j < k) {
+			if (nums[j] > mid) {
+				swap(nums[j], nums[k]);
+				k--;
+			}
+			else if (nums[j] < mid) {
+				swap(nums[j], nums[i]);
+				i++;
+				j++;
+			}
+			else {
+				j++;
+			}
+		}
+		if (numsLen % 2 == 1) {
+			midPtr++;
+		}
+		vector<int> tmpL(nums.begin(), midPtr);
+		vector<int> tmpU(midPtr, nums.end());
+		size_t tmpLLen = tmpL.size();
+		size_t tmpULen = tmpU.size();
+		for (size_t i = 0; i < tmpLLen; i++) {
+			nums[2 * i] = tmpL[tmpLLen - 1 - i];
+		}
+		for (size_t i = 0; i < tmpULen; i++) {
+			nums[2 * i + 1] = tmpU[tmpULen - 1 - i];
+		}
+		return;
+	}
+	//有序矩阵中第K小的元素
+	//矩阵行列递增
+	//用二分查找
+	int kthSmallest(vector<vector<int>>& matrix, int k) {
+		int matrixDegree = matrix.size();
+		int lwr = matrix[0][0], upr = matrix[matrixDegree - 1][matrixDegree - 1];
+		while (lwr < upr) {
+			int mid = lwr + (upr - lwr) / 2;
+			if (check(matrix, matrixDegree, mid, k)) {
+				upr = mid;
+			}
+			else {
+				lwr = mid + 1;
+			}
+		}
+		return lwr;
+	}
+	bool check(vector<vector<int>>& matrix, int matrixDegree, int mid, int k) {
+		int colCur = matrixDegree - 1, rolCur = 0, res = 0;
+		while (colCur > -1 && rolCur < matrixDegree) {
+			if (matrix[colCur][rolCur] <= mid) {
+				res += colCur + 1;
+				rolCur++;
+			}
+			else {
+				colCur--;
+			}
+		}
+		return res >= k;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	string s = "aa";
+	string p = "a*";
+	Solution mySolution;
+	vector<int> nums1 = { 1, 5, 1, 1, 6, 4 };
+	vector<int> nums2 = { 1, 3, 2, 2, 3, 1 };
+	vector<vector<int>> marrix = {
+		{1, 5, 9},
+		{10, 11, 13},
+		{12, 13, 15} };
+	mySolution.kthSmallest(marrix, 8);
+	return 0;
+}
+#endif
+
+//高级算法-动态规划
+#if true
+
+class Solution {
+public:
+	//乘积最大子数组
+	int maxProduct(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		int maxVal = nums[0], minVal = nums[0], res = nums[0];
+		for (size_t i = 1; i < numsLen; i++) {
+			int maxTmp = maxVal, minTmp = minVal;
+			maxVal = max(maxTmp * nums[i], max(nums[i], minTmp * nums[i]));
+			minVal = min(minTmp * nums[i], min(nums[i], maxTmp * nums[i]));
+			res = max(maxVal, res);
+		}
+		return res;
+	}
+	//最佳买卖股票时机含冷冻期
+	int maxProfit(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		if (numsLen < 1) {
+			return 0;
+		}
+		//vector<vector<int>> dp(3, vector<int>(numsLen));
+		int dp0 = -nums[0], dp1 = 0, dp2 = 0;
+		//dp[0][0] = -nums[0];//买入负收益,持有状态
+		//dp[1][0] = 0;//冷却期累计收益，非持有
+		//dp[2][0] = 0;//非冷却期累计收益，非持有
+		for (size_t i = 1; i < numsLen; i++) {
+			//dp[0][i] = max(dp[0][i - 1], dp[2][i - 1] - nums[i]);//今天结束时持有，可能是昨天持有或者今天买入的
+			//dp[1][i] = dp[0][i - 1] + nums[i];//今天结束时在冷静期，肯定是今天卖了
+			//dp[2][i] = max(dp[1][i - 1], dp[2][i - 1]);//今天结束时没持有且不在冷静期，昨天可能是冷静期或者不是冷静期
+			int dp0n = max(dp0, dp2 - nums[i]);
+			int dp1n = dp0 + nums[i];
+			int dp2n = max(dp1, dp2);
+			dp0 = dp0n, dp1 = dp1n, dp2 = dp2n;
+		}
+		//return max(dp[1][numsLen - 1], dp[2][numsLen - 1]);
+		return max(dp1, dp2);
+	}
+	//完全平方数
+	//动态规划，转移方程：dp[i] = min(dp[i - k^2]) + 1, 其中i >= k^2
+	int numSquares(int n) {
+		vector<int> dp(n + 1);
+		dp[0] = 0;
+		dp[1] = 1;
+		for (size_t i = 2; i <= n; i++) {
+			int minCnt = 5;
+			size_t tmp = 1;
+			for (tmp = 1; i >= tmp * tmp; tmp++) {
+				minCnt = min(minCnt, dp[i - tmp * tmp]);
+			}
+			dp[i] = minCnt + 1;
+		}
+		return dp[n];
+	}
+	//单词拆分
+	//能拆分的单词总是等于前一个已拆分的加上一个在词典中的单词
+	//如果改成从后往前推可能会更快一些
+	/*bool wordBreak(string s, vector<string>& wordDict) {
+		size_t sLen = s.size();
+		unordered_set<string> dictSet;
+		for (string& str : wordDict) {
+			dictSet.emplace(str);
+		}
+		vector<bool> dp(sLen + 1, false);
+		dp[0] = true;
+		string tmp;
+		for (size_t i = 0; i < sLen; i++) {
+			for (size_t j = 0; j <= i; j++) {
+				if (dp[j]) {
+					tmp = s.substr(j, i + 1 - j);
+					if (dictSet.count(tmp) > 0) {
+						dp[i + 1] = true;
+						break;
+					}
+				}
+			}
+		}
+		return dp[sLen];
+	}*/
+	//单词拆分 II
+	//递归没剪枝
+	/*unordered_set<string>* dictSet;
+	size_t sLen;
+	vector<string> res;
+	string tmp;
+	vector<string> wordBreak(string s, vector<string>& wordDict) {
+		sLen = s.size();
+		dictSet = new unordered_set<string>(wordDict.begin(), wordDict.end());
+		sliceString(s, 0);
+		return res;
+	}
+	void sliceString(string& s, size_t cur) {
+		if (cur >= sLen) {
+			tmp.pop_back();
+			res.emplace_back(tmp);
+			return;
+		}
+		string local;
+		for (size_t i = cur; i <= sLen; i++) {
+			local = s.substr(cur, i - cur);
+			if (dictSet->count(local) > 0) {
+				size_t tmpLen = tmp.size();
+				tmp.append(local);
+				tmp.push_back(' ');
+				sliceString(s, i);
+				tmp = tmp.substr(0, tmpLen);
+			}
+		}
+		return;
+	}*/
+	//优化递归
+	vector<string> wordBreak(string s, vector<string>& wordDict) {
+		unordered_set<string> dict(wordDict.begin(), wordDict.end());
+		vector<string> res;
+		return backtrack(s, 0, dict);
+	}
+	unordered_map<int, vector<string>> memo;//记忆化
+	vector<string> backtrack(string& s, int start, unordered_set<string>& dict) {
+		if (start == s.size()) {
+			return { "" };
+		}
+
+		if (memo.count(start)) {//这个位置以后的所有单词排列组合
+			return memo[start];
+		}
+
+		vector<string> res;
+		for (size_t i = start; i < s.size(); i++) {
+			auto prefix = s.substr(start, i - start + 1);//前缀单词
+			if (dict.count(prefix)) {
+				auto suffixes = backtrack(s, i + 1, dict);//后缀单词表排列组合
+				for (const auto& suffix : suffixes) {
+					auto str = prefix;//新建一个排列
+					if (!suffix.empty()) {
+						str += ' ' + suffix;
+					}
+					res.push_back(str);
+				}
+			}
+		}
+
+		memo[start] = res;//储存后缀排列组合并返回
+		return memo[start];
+	}
+	//戳气球
+	//关键点在于最后一个戳破的气球，开区间中任意一个戳破的气球
+	int maxCoins(vector<int>& nums) {
+		if (nums.size() == 0) {
+			return 0;
+		}
+		vector<int> numsCopy(1, 1);
+		numsCopy.insert(numsCopy.end(), nums.begin(), nums.end());
+		numsCopy.push_back(1);
+		size_t numsLen = numsCopy.size();
+		vector<vector<int>> dp(numsLen, vector<int>(numsLen, 0));//头尾各一个1
+		size_t lenUb = numsLen + 1;
+		for (size_t len = 3; len < lenUb; len++) {//区间长度循环
+			size_t curUb = numsLen - len + 1;
+			for (size_t cur = 0; cur < curUb; cur++) {//起始位置循环
+				size_t posUb = cur + len - 1;
+				int maxVal = -1;
+				for (size_t j = cur + 1; j < posUb; j++) {//区间内循环
+					int left = dp[cur][j];
+					int right = dp[j][posUb];
+					int sum = left + right + numsCopy[cur] * numsCopy[j] * numsCopy[posUb];
+					if (sum > maxVal) {
+						maxVal = sum;
+					}
+				}
+				dp[cur][posUb] = maxVal;
+			}
+		}
+		return dp[0][numsLen - 1];
+	}
+};
+
+int main(int argc, char* argv[]) {
+	string s = "aa";
+	string p = "a*";
+	string word = "catsanddog";
+	string word2 = "a";
+	vector<string> dict = { "cat", "cats", "and", "sand", "dog" };
+	vector<string> dict2 = { "a" };
+	Solution mySolution;
+	vector<int> nums1 = { 1, 5, 1, 1, 6, 4 };
+	vector<int> nums2 = { 1, 3, 2, 2, 3, 1 };
+	vector<int> nums = { 3,1,5,8 };
+	vector<vector<int>> marrix = {
+		{1, 5, 9},
+		{10, 11, 13},
+		{12, 13, 15} };
+	mySolution.maxCoins(nums);
 	return 0;
 }
 #endif
