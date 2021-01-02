@@ -2918,7 +2918,7 @@ public:
 		unordered_map<string, unordered_set<int>> lineMap;
 		for (size_t i = 0; i < pointLen; i++) {
 			for (size_t j = i + 1; j < pointLen; j++) {
-				string *cur = getID(points[i], points[j]);
+				string* cur = getID(points[i], points[j]);
 				lineMap[*cur].emplace(i);
 				lineMap[*cur].emplace(j);
 			}
@@ -2956,7 +2956,7 @@ public:
 		}
 		return gcd(b, a % b);
 	}
-	
+
 };
 
 vector<vector<int>> strToMatrix(string s) {
@@ -3195,7 +3195,7 @@ public:
 		else {
 			return (getKthLarg(nums1, nums2, totalLen / 2) + getKthLarg(nums1, nums2, totalLen / 2 + 1)) / 2.0;
 		}
-		
+
 	}
 	double myPow(double x, int n) {//二分法幂函数
 		if (n == 0) {
@@ -3542,7 +3542,7 @@ public:
 			else if (num <= mid) {
 				mid = num;
 			}
-			else if (num > mid){
+			else if (num > mid) {
 				return true;
 			}
 		}
@@ -3961,7 +3961,7 @@ public:
 	int titleToNumber(string s) {
 		int sLen = s.size();
 		int res = 0;
-		for (int i = 0; i < sLen; i++){
+		for (int i = 0; i < sLen; i++) {
 			res *= 26;
 			res += s[i] - 'A' + 1;
 		}
@@ -4106,7 +4106,7 @@ public:
 			if (num == cand) {
 				cnt++;
 			}
-			else if(--cnt < 0) {
+			else if (--cnt < 0) {
 				cand = num;
 				cnt = 1;
 			}
@@ -4246,7 +4246,7 @@ int main(int argc, char* argv[]) {
 	vector<int> nums = { 2,2,1,1,1,2,2 };
 	Solution mySolution;
 	string digits = "ASF";
-	vector<vector<int>> matrix = { 
+	vector<vector<int>> matrix = {
 		{1,4,7,11,15},
 		{2,5,8,12,19},
 		{3,6,9,16,22},
@@ -4275,7 +4275,7 @@ public:
 			res[i] = res[i - 1] * nums[i - 1];
 		}
 		int tmp = 1;
-		for (int i = numsLen - 1; i >-1; i--) {
+		for (int i = numsLen - 1; i > -1; i--) {
 			res[i] *= tmp;
 			tmp *= nums[i];
 		}
@@ -4962,7 +4962,7 @@ public:
 				res++;
 			}
 		}
-		
+
 		return res;
 	}
 	//课程表
@@ -5191,7 +5191,7 @@ public:
 };
 
 int main(int argc, char* argv[]) {
-	vector<string> wordList = { "bit"};
+	vector<string> wordList = { "bit" };
 	string beginWord = "hit", endWord = "bit";
 	Solution mySolution;
 	vector<vector<char>> matrix = {
@@ -5474,7 +5474,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //高级算法-动态规划
-#if true
+#if false
 
 class Solution {
 public:
@@ -5667,6 +5667,235 @@ int main(int argc, char* argv[]) {
 		{10, 11, 13},
 		{12, 13, 15} };
 	mySolution.maxCoins(nums);
+	return 0;
+}
+#endif
+
+//高级算法-设计问题
+#if false
+
+class LRUCache {//LRU缓存机制
+public:
+	//读取写入都算一次访问
+	LRUCache(int capacity) {//设置缓存容量
+		capLim = capacity;
+		map = new unordered_map<int, node*>;
+		head = new node;
+		tail = new node;
+		head->rear = tail;
+		tail->front = head;
+		return;
+	}
+
+	int get(int key) {
+		if (map->count(key) < 1) {
+			return -1;
+		}
+		moveToFront((*map)[key]);
+		return (*map)[key]->val;
+	}
+
+	void put(int key, int value) {
+		int cnt = map->size();
+		if (map->count(key) < 1) {//添加元素
+			addFront(key, value);
+			if (cnt == capLim) {
+				deleteTail();
+			}
+			(*map)[key] = head->rear;
+		}
+		else {//更新元素
+			(*map)[key]->val = value;
+			moveToFront((*map)[key]);
+		}
+		return;
+	}
+private:
+	struct node {//双向链表，高频访问在前
+		node* front = nullptr, * rear = nullptr;
+		int key = -1;
+		int val = -1;
+	};
+	int capLim = -1;
+	//两个假节点
+	node* head = nullptr;
+	node* tail = nullptr;
+	unordered_map<int, node*>* map;//加速缓存
+	void moveToFront(node* cur) {//访问过就提到最前
+		if (cur == head->rear) {
+			return;
+		}
+		cur->front->rear = cur->rear;
+		cur->rear->front = cur->front;
+		cur->rear = head->rear;
+		head->rear->front = cur;
+		cur->front = head;
+		head->rear = cur;
+		return;
+	}
+	void deleteTail() {//删除最低频访问数据
+		node* tmp = tail->front;
+		tail->front = tmp->front;
+		tmp->front->rear = tail;
+		map->erase(tmp->key);//注意删除节点
+		delete tmp;
+		return;
+	}
+	void addFront(int key, int val) {//添加一个新元素
+		node* tmp = new node;
+		tmp->key = key;
+		tmp->val = val;
+		tmp->rear = head->rear;
+		head->rear->front = tmp;
+		tmp->front = head;
+		head->rear = tmp;
+		return;
+	}
+};
+
+class Trie {//实现 Trie (前缀树)
+public:
+	/** Initialize your data structure here. */
+	Trie() {
+		root = new treeNode;
+		return;
+	}
+
+	/** Inserts a word into the trie. */
+	void insert(string word) {
+		treeNode* current = root;
+		for (char& ch : word) {
+			if (current->next.count(ch) < 1) {
+				current->next[ch] = new treeNode;
+				current->next[ch]->val = ch;
+			}
+			current = current->next[ch];
+		}
+		current->isWord = true;
+	}
+
+	/** Returns if the word is in the trie. */
+	bool search(string word) {
+		treeNode* current = root;
+		for (char& ch : word) {
+			if (current->next.count(ch) > 0) {
+				current = current->next[ch];
+			}
+			else {
+				return false;
+			}
+		}
+		return current->isWord;
+	}
+
+	/** Returns if there is any word in the trie that starts with the given prefix. */
+	bool startsWith(string prefix) {
+		treeNode* current = root;
+		for (char& ch : prefix) {
+			if (current->next.count(ch) > 0) {
+				current = current->next[ch];
+			}
+			else {
+				return false;
+			}
+		}
+		return current->isWord || current->next.size() != 0;
+	}
+private:
+	struct treeNode {
+		char val = '*';
+		bool isWord = false;
+		unordered_map<char, treeNode*> next;
+	};
+	treeNode* root;
+};
+
+class MedianFinder {//数据流的中位数
+public:
+	/** initialize your data structure here. */
+	MedianFinder() {
+		return;
+	}
+
+	void addNum(int num) {
+		lo.push(num);
+		hi.push(lo.top());
+		lo.pop();
+		if (lo.size() < hi.size()) {//只有一个元素的时候
+			lo.push(hi.top());
+			hi.pop();
+		}
+		return;
+	}
+
+	double findMedian() {
+		return lo.size() > hi.size() ? lo.top() : (lo.top() + hi.top()) * 0.5;
+	}
+private:
+	priority_queue<int> lo; //大顶 小数
+	priority_queue<int, vector<int>, greater<int>> hi;//小顶 大数
+};
+
+int main(int argc, char* argv[]) {
+	LRUCache cacheDesign(2);
+	Trie myTrie;
+	myTrie.insert("apple");
+	myTrie.search("apple");
+	myTrie.search("app");
+	myTrie.startsWith("app");
+	myTrie.insert("app");
+	myTrie.search("app");
+	return 0;
+}
+#endif
+
+//高级算法-数学
+#if false
+int Larger(int a, int b) {
+	string s1 = to_string(a);
+	string s2 = to_string(b);
+	return (s1 + s2) > (s2 + s1);
+}
+class Solution {
+public:
+	string largestNumber(vector<int>& nums) {//最大数
+		size_t numsLen = nums.size();
+		string res;
+		if (numsLen == 0) {
+			return res;
+		}
+		if (numsLen == 1) {
+			return to_string(nums[0]);
+		}
+		sort(nums.begin(), nums.end(), Larger);//将函数作为参数
+		if (nums[0] == 0) {
+			return "0";
+		}
+		for (size_t i = 0; i < numsLen; i++) {
+			res += to_string(nums[i]);
+		}
+		return res;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	vector<int> nums = { 3,30,34,5,9 };
+	mySolution.largestNumber(nums);
+	return 0;
+}
+#endif
+
+//高级算法-其他
+#if true
+
+class Solution {
+public:
+	;
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
 	return 0;
 }
 #endif
