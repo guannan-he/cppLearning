@@ -7,6 +7,7 @@
 #include <stack>
 #include <list>
 #include <iostream>
+#include <set>
 using namespace std;
 
 //链表
@@ -5888,14 +5889,173 @@ int main(int argc, char* argv[]) {
 
 //高级算法-其他
 #if true
-
+int compare(vector<int>& a, vector<int>& b) {
+	return a[0] < b[0] || (a[0] == b[0] && a[1] > b[1]);
+}
 class Solution {
 public:
-	;
+	vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+		size_t peopleCnt = people.size();
+		sort(people.begin(), people.end(), compare);
+		vector<vector<int>> res(peopleCnt);
+		for (auto& it : people) {
+			int blnk = it[1] + 1;
+			for (size_t i = 0; i < peopleCnt; i++) {
+				if (res[i].empty()) {
+					blnk--;
+					if (blnk == 0) {
+						res[i] = it;
+						break;
+					}
+				}
+			}
+		}
+		return res;
+	}
+	int trapBrutal(vector<int>& height) {//从低到高灌水超时
+		size_t heitCnt = height.size();
+		if (heitCnt < 3) {
+			return 0;
+		}
+		int res = 0;
+		int currentHeit = height[0];
+		int maxVal = -1, minVal = 65535;
+		for (size_t i = 0; i < heitCnt; i++) {
+			maxVal = max(height[i], maxVal);
+			minVal = min(height[i], minVal);
+		}
+		size_t left = 0, right = heitCnt - 1;
+		for (size_t i = minVal; i <= maxVal; i++) {
+			while (height[left] < i) {
+				left++;
+			}
+			while (height[right] < i) {
+				right--;
+			}
+			for (size_t j = left; j <= right; j++) {
+				if (height[j] < i) {
+					height[j]++;
+					res++;
+				}
+			}
+		}
+		return res;
+	}
+	int trapDualPointer(vector<int>& height) {//双指针
+		size_t heitCnt = height.size();
+		if (heitCnt < 3) {
+			return 0;
+		}
+		int res = 0;
+		size_t leftCur = 0, rightCur = heitCnt - 1;
+		while (leftCur < rightCur) {
+			int heit = min(height[leftCur], height[rightCur]);
+			for (size_t i = leftCur + 1; i < rightCur; i++) {
+				if (height[i] < heit) {
+					res += heit - height[i];
+					height[i] = heit;
+				}
+			}
+			if (height[leftCur] <= height[rightCur]) {
+				leftCur++;
+			}
+			else {
+				rightCur--;
+			}
+		}
+		return res;
+	}
+	int trap(vector<int>& height) {//动态规划接雨水
+		size_t heitCnt = height.size();
+		if (heitCnt < 3) {
+			return 0;
+		}
+		int res = 0;
+		vector<int> left(heitCnt), right(heitCnt);
+		int currentLeft = height[0], currentRight = height[heitCnt - 1];
+		for (size_t i = 0; i < heitCnt; i++) {
+			if (height[i] > currentLeft) {
+				currentLeft = height[i];
+			}
+			left[i] = currentLeft;
+			if (height[heitCnt - i - 1] > currentRight) {
+				currentRight = height[heitCnt - i - 1];
+			}
+			right[heitCnt - i - 1] = currentRight;
+		}
+		for (size_t i = 0; i < heitCnt; i++) {
+			res += min(left[i], right[i]) - height[i];
+		}
+		return res;
+	}
+	vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {
+		vector<vector<int>> res;
+		multiset<pair<int, int>> all;//自动排序可重复
+		for (vector<int>& building : buildings) {
+			all.insert(make_pair(building[0], -building[2]));
+			all.insert(make_pair(building[1], building[2]));
+		}
+		multiset<int> height({0});//保持一个默认值，防止暴雷
+		vector<int> last(2);
+		for (auto& it : all) {
+			if (it.second < 0) {
+				height.insert(-it.second);
+			}
+			else {
+				height.erase(height.find(it.second));
+			}
+			auto maxHeight = *height.rbegin();
+			if (last[1] != maxHeight) {
+				last[0] = it.first;
+				last[1] = maxHeight;
+				res.push_back(last);
+			}
+		}
+		return res;
+	}
+	int largestRectangleArea(vector<int>& heights) {
+		size_t heitCnt = heights.size();
+		if (heitCnt == 1) {
+			return heights[0];
+		}
+		stack<int> stk;
+		int res = 0;
+		for (size_t i = 0; i < heitCnt; i++) {
+			while (!stk.empty() && heights[stk.top()] > heights[i]) {
+				int ht = heights[stk.top()];
+				stk.pop();
+				int len = i;
+				if (!stk.empty()) {
+					len = i - stk.top() - 1;
+				}
+				res = max(res, len * ht);
+			}
+			stk.push(i);
+		}
+		while (!stk.empty()) {
+			int ht = heights[stk.top()];
+			stk.pop();
+			int len = heitCnt;
+			if (!stk.empty()) {
+				len = heitCnt - stk.top() - 1;
+			}
+			res = max(res, len * ht);
+		}
+		return res;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
+	vector<vector<int>> buildings = {
+		{2,9,10},
+		{3,7,15},
+		{5,12,12},
+		{15,20,10},
+		{19,24,8} };
+	vector<int> heit1 = { 2,1,5,6,2,3 };
+	vector<int> heit2 = { 0,1,0,2,1,0,1,3,2,1,2,1 };
+	mySolution.largestRectangleArea(heit1);
 	return 0;
 }
 #endif
