@@ -5888,7 +5888,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //高级算法-其他
-#if true
+#if false
 int compare(vector<int>& a, vector<int>& b) {
 	return a[0] < b[0] || (a[0] == b[0] && a[1] > b[1]);
 }
@@ -6056,6 +6056,130 @@ int main(int argc, char* argv[]) {
 	vector<int> heit1 = { 2,1,5,6,2,3 };
 	vector<int> heit2 = { 0,1,0,2,1,0,1,3,2,1,2,1 };
 	mySolution.largestRectangleArea(heit1);
+	return 0;
+}
+#endif
+
+//目标和-补充
+#if false
+
+class Solution {
+public:
+	int findTargetSumWays(vector<int>& nums, int S) {//目标和--动态规划
+		size_t numsLen = nums.size();
+		vector<vector<int>> dp(numsLen, vector<int>(2001));//dp[i][j]:前i个数和为j的方案数
+		dp[0][1000 + nums[0]] = 1;
+		dp[0][1000 - nums[0]] += 1;
+		for (size_t i = 1; i < numsLen; i++) {
+			for (int j = 0; j < 2001; j++) {
+				int tmpMinus = j - nums[i] >= 0 ? dp[i - 1][j - nums[i]] : 0;
+				int tmpPosit = j + nums[i] < 2001 ? dp[i - 1][j + nums[i]] : 0;
+				dp[i][j] = tmpMinus + tmpPosit;
+			}
+		}
+		return S > 1000 || S < -1000 ? 0 : dp[numsLen - 1][S + 1000];
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	vector<int> nums = { 1, 999 };
+	mySolution.findTargetSumWays(nums, 998);
+	return 0;
+}
+#endif
+
+//算法面试汇总
+#if true
+
+class Solution {
+public:
+	int superEggDrop(int K, int N) {//鸡蛋掉落
+		if (N == 1) {
+			return 1;
+		}
+		vector<vector<int>> dp(N + 1, vector<int>(K + 1));//抛i次， j个鸡蛋能确定的最高楼层
+		for (size_t i = 1; i <= K; i++) {
+			dp[1][i] = 1;
+		}
+		int ans = -1;
+		for (size_t i = 2; i <= N; i++) {
+			for (size_t j = 1; j <= K; j++) {
+				dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j] + 1;
+			}
+			if (dp[i][K] >= N) {
+				ans = i;
+				break;
+			}
+		}
+		return ans;
+	}
+	int longestSubstring(string s, int k) {
+		size_t sLen = s.size();
+		unordered_map<char, int> sMap;
+		for (char& ch : s) {
+			sMap[ch]++;
+		}
+		vector<int> split;
+		for (size_t i = 0; i < sLen; i++) {
+			if (sMap[s[i]] < k) {
+				split.push_back(i);
+			}
+		}
+		split.push_back(sLen);
+		size_t splitLen = split.size();
+		if (splitLen == 1) {
+			return sLen;
+		}
+		int ans = 0, left = 0;
+		for (size_t i = 0; i < splitLen; i++) {
+			int len = split[i] - left;
+			if (len > ans) {
+				ans = max(ans, longestSubstring(s.substr(left, len), k));
+			}
+			left = split[i] + 1;
+		}
+		return ans;
+	}
+	int longestSubstring2(string s, int k) {
+		unordered_map<char, int> umap;
+		for (auto c : s) umap[c]++;
+		vector<int> split;
+		for (int i = 0; i < s.size(); i++) {
+			if (umap[s[i]] < k) split.push_back(i);
+		}
+		if (split.size() == 0) return s.length();
+		int ans = 0, left = 0;
+		split.push_back(s.length());
+		for (int i = 0; i < split.size(); i++) {
+			int len = split[i] - left;
+			if (len > ans) ans = max(ans, longestSubstring2(s.substr(left, len), k));
+			left = split[i] + 1;
+		}
+		return ans;
+	}
+	int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {//加油站-贪心
+		size_t gasCnt = gas.size();
+		int minVal = INT_MAX;
+		int res = 0;
+		int spareGas = 0;
+		for (size_t i = 0; i < gasCnt; i++) {//剩余油量折线图在平面上下左右平移
+			spareGas += gas[i] - cost[i];
+			if (spareGas < minVal) {
+				res = i;
+				minVal = spareGas;
+			}
+		}
+		return spareGas < 0 ? -1 : (res + 1) % gasCnt;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string s = "weitong";
+	vector<int> gas = { 1,2,3,4,5 };
+	vector<int> cost = { 3,4,5,1,2 };
+	mySolution.canCompleteCircuit(gas, cost);
 	return 0;
 }
 #endif
