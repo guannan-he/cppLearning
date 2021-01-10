@@ -4,10 +4,12 @@
 #include <queue>
 #include <unordered_set>
 #include <unordered_map>
+#include <map>
 #include <stack>
 #include <list>
 #include <iostream>
 #include <set>
+#include <numeric>
 using namespace std;
 
 //链表
@@ -5995,7 +5997,7 @@ public:
 			all.insert(make_pair(building[0], -building[2]));
 			all.insert(make_pair(building[1], building[2]));
 		}
-		multiset<int> height({0});//保持一个默认值，防止暴雷
+		multiset<int> height({ 0 });//保持一个默认值，防止暴雷
 		vector<int> last(2);
 		for (auto& it : all) {
 			if (it.second < 0) {
@@ -6089,8 +6091,8 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//算法面试汇总
-#if true
+//面试问题
+#if false
 
 class Solution {
 public:
@@ -6180,6 +6182,924 @@ int main(int argc, char* argv[]) {
 	vector<int> gas = { 1,2,3,4,5 };
 	vector<int> cost = { 3,4,5,1,2 };
 	mySolution.canCompleteCircuit(gas, cost);
+	return 0;
+}
+#endif
+
+#if true //cookBook-数组
+
+class Solution {
+public:
+	int threeSumClosest(vector<int>& nums, int target) {//最接近的三数之和
+		size_t numsLen = nums.size();
+		sort(nums.begin(), nums.end());
+		int diff = INT_MAX;
+		int res = -1;
+		for (size_t i = 0; i < numsLen; i++) {
+			if (i > 0 && nums[i] == nums[i - 1]) {
+				continue;
+			}
+			size_t leftCur = i + 1, rightCur = numsLen - 1;
+			while (leftCur < rightCur) {
+				int sum = nums[i] + nums[leftCur] + nums[rightCur];
+				if (sum == target) {
+					return target;
+				}
+				if (abs(sum - target) < diff) {
+					diff = abs(sum - target);
+					res = sum;
+				}
+				if (sum > target) {
+					size_t rightCurBak = rightCur - 1;
+					while (rightCurBak > leftCur && nums[rightCur] == nums[rightCurBak]) {
+						rightCurBak--;
+					}
+					rightCur = rightCurBak;
+				}
+				else {
+					size_t leftCurBak = leftCur + 1;
+					while (leftCurBak < rightCur && nums[leftCur] == nums[leftCurBak]) {
+						leftCurBak++;
+					}
+					leftCur = leftCurBak;
+				}
+			}
+		}
+		return res;
+	}
+	vector<vector<int>> combinationSum(vector<int>& candidates, int target) {//组合总和--回溯
+		sort(candidates.begin(), candidates.end());
+		size_t candLen = candidates.size();
+		vector<int> tmp;
+		vector<vector<int>> res;
+		dfs1(res, candidates, 0, tmp, target, candLen);
+		return res;
+	}
+	void dfs1(vector<vector<int>>& res, vector<int>& candidates, int cur, vector<int>& combine, int target, size_t candLen) {
+		if (cur == candLen) {
+			return;
+		}
+		if (target == 0) {
+			res.emplace_back(combine);
+			return;
+		}
+		dfs1(res, candidates, cur + 1, combine, target, candLen);//不取当前的
+		if (target - candidates[cur] >= 0) {
+			combine.emplace_back(candidates[cur]);
+			dfs1(res, candidates, cur, combine, target - candidates[cur], candLen);
+			combine.pop_back();
+		}
+		return;
+	}
+	//与上一题一样，有重复元素， 结果不允许重复
+	vector<pair<int, int>> freq;
+	vector<vector<int>> res;
+	vector<int> tmp;
+	vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+		sort(candidates.begin(), candidates.end());
+		for (int& num : candidates) {
+			if (freq.empty() || freq.back().first != num) {
+				freq.push_back(make_pair(num, 1));
+			}
+			else {
+				freq.back().second++;
+			}
+		}
+		size_t freqLen = freq.size();
+		dfs2(0, freqLen, target);
+		return res;
+	}
+	void dfs2(size_t pos, size_t freqLen, int target) {
+		if (target == 0) {
+			res.push_back(tmp);
+			return;
+		}
+		if (pos == freqLen || freq[pos].first > target) {
+			return;
+		}
+		dfs2(pos + 1, freqLen, target);
+		int most = min(target / freq[pos].first, freq[pos].second) + 1;//重复数量上限
+		for (size_t i = 1; i < most; i++) {
+			tmp.push_back(freq[pos].first);
+			dfs2(pos + 1, freqLen, target - i * freq[pos].first);
+		}
+		for (size_t i = 1; i < most; i++) {
+			tmp.pop_back();
+		}
+		return;
+	}
+	vector<vector<int>> generateMatrix(int n) {//螺旋矩阵输出
+		vector<vector<int>> res(n, vector<int>(n));
+		int start = 1;
+		for (size_t i = 0; i < n / 2; i++) {
+			start = buildMatrix(i, n, start, res);
+		}
+		if (n % 2 == 1) {
+			res[n / 2][n / 2] = start;
+		}
+		return res;
+	}
+	int buildMatrix(size_t cur, size_t dim, int begin, vector<vector<int>>& res) {
+		for (size_t i = cur; i < dim - cur - 1; i++) {
+			res[cur][i] = begin++;
+		}
+		for (size_t i = cur; i < dim - cur - 1; i++) {
+			res[i][dim - cur - 1] = begin++;
+		}
+		for (size_t i = dim - cur - 1; i > cur; i--) {
+			res[dim - cur - 1][i] = begin++;
+		}
+		for (size_t i = dim - cur - 1; i > cur; i--) {
+			res[i][cur] = begin++;
+		}
+		return begin;
+	}
+	int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {//不同路径 II--动态规划
+		size_t col = obstacleGrid.size(), rol = obstacleGrid[0].size();
+		for (size_t i = 0; i < col; i++) {
+			for (size_t j = 0; j < rol; j++) {
+				if (obstacleGrid[i][j] == 1) {
+					obstacleGrid[i][j] = -1;
+				}
+			}
+		}
+		for (size_t i = 0; i < col; i++) {
+			if (obstacleGrid[i][0] == -1) {
+				break;
+			}
+			obstacleGrid[i][0] = 1;
+		}
+		for (size_t j = 0; j < rol; j++) {
+			if (obstacleGrid[0][j] == -1) {
+				break;
+			}
+			obstacleGrid[0][j] = 1;
+		}
+		for (size_t i = 1; i < col; i++) {
+			for (size_t j = 1; j < rol; j++) {
+				if (obstacleGrid[i][j] == -1) {
+					continue;
+				}
+				int op1 = obstacleGrid[i - 1][j] == -1 ? 0 : obstacleGrid[i - 1][j];
+				int op2 = obstacleGrid[i][j - 1] == -1 ? 0 : obstacleGrid[i][j - 1];
+				obstacleGrid[i][j] = op1 + op2;
+			}
+		}
+		return obstacleGrid[col - 1][rol - 1] == -1 ? 0 : obstacleGrid[col - 1][rol - 1];
+	}
+	int minPathSum(vector<vector<int>>& grid) {//最小路径和
+		size_t col = grid.size(), rol = grid[0].size();
+		for (size_t i = 1; i < col; i++) {
+			grid[i][0] += grid[i - 1][0];
+		}
+		for (size_t i = 1; i < rol; i++) {
+			grid[0][i] += grid[0][i - 1];
+		}
+		for (size_t i = 1; i < col; i++) {
+			for (size_t j = 1; j < rol; j++) {
+				grid[i][j] += min(grid[i][j - 1], grid[i - 1][j]);
+			}
+		}
+		return grid[col - 1][rol - 1];
+	}
+	bool searchMatrix(vector<vector<int>>& matrix, int target) {//搜索二维矩阵, 二分法
+		size_t col = matrix.size();
+		if (col == 0) {
+			return false;
+		}
+		size_t rol = matrix[0].size();
+		int left = 0, right = col * rol - 1;
+		while (left <= right) {
+			int mid = left + (right - left) / 2;
+			int val = matrix[mid / rol][mid % rol];
+			if (val == target) {
+				return true;
+			}
+			else if (val > target) {
+				right = mid - 1;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		return false;
+	}
+	bool search(vector<int>& nums, int target) {//搜索旋转排序数组 II--二分法
+		int numsLen = nums.size();
+		int pivot = 0;
+		for (int i = 1; i < numsLen; i++) {
+			if (nums[i - 1] > nums[i]) {
+				pivot = i - 1;
+				break;
+			}
+		}
+		int left = 0, right = pivot;
+		while (left <= right) {
+			int mid = left + (right - left) / 2;
+			int val = nums[mid];
+			if (val == target) {
+				return true;
+			}
+			else if (val > target) {
+				right = mid - 1;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		left = pivot + 1;
+		right = numsLen - 1;
+		while (left <= right) {
+			int mid = left + (right - left) / 2;
+			int val = nums[mid];
+			if (val == target) {
+				return true;
+			}
+			else if (val > target) {
+				right = mid - 1;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		return false;
+	}
+	vector<vector<int>> subsetsWithDup(vector<int>& nums) {//子集 II--位操作
+		sort(nums.begin(), nums.end());
+		size_t numsLen = nums.size();
+		size_t curReg = 1 << numsLen;//表
+		vector<int> tmp;
+		vector<vector<int>> res;
+		for (size_t i = 0; i < curReg; i++) {
+			tmp.clear();
+			bool flag = true;
+			for (size_t j = 0; j < numsLen; j++) {
+				if (i & (1 << j)) {//取每一位
+					if (j != 0 && nums[j] == nums[j - 1] && ((i & (1 << (j - 1))) == 0)) {//确保取的是100，110，111这种
+						flag = false;
+						break;
+					}
+					tmp.push_back(nums[j]);
+				}
+			}
+			if (flag) {
+				res.push_back(tmp);
+			}
+		}
+		return res;
+	}
+	int minimumTotal(vector<vector<int>>& triangle) {//三角形最小路径和--dp
+		size_t triStep = triangle.size();
+		for (size_t i = 1; i < triStep; i++) {
+			triangle[i][0] += triangle[i - 1][0];
+			triangle[i][i] += triangle[i - 1][i - 1];
+			for (size_t j = 1; j < i; j++) {
+				triangle[i][j] += min(triangle[i - 1][j], triangle[i - 1][j - 1]);
+			}
+		}
+		int res = INT_MAX;
+		for (size_t i = 0; i < triStep; i++) {
+			res = min(res, triangle[triStep - 1][i]);
+		}
+		return res;
+	}
+	vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {//单词接龙 II--BFS
+		int id = 0;
+		size_t sLen = wordList[0].size();
+		size_t wordCnt = wordList.size();
+		for (string& str : wordList) {
+			if (nodeMap.count(str) < 1) {//入库并分配ID
+				nodeMap[str] = id++;
+				idWord.push_back(str);
+			}
+		}
+		if (nodeMap.count(endWord) < 1) {
+			return {};
+		}
+		if (nodeMap.count(beginWord) < 1) {
+			nodeMap[beginWord] = id++;
+			idWord.push_back(beginWord);
+		}
+		//添加边
+		edges.resize(idWord.size());
+		for (size_t i = 0; i < id; i++) {
+			for (size_t j = i + 1; j < id; j++) {
+				if (checkSibil(idWord[i], idWord[j], sLen)) {
+					edges[i].push_back(j);
+					edges[j].push_back(i);
+				}
+			}
+		}
+		int endID = nodeMap[endWord];
+		vector<vector<string>> res;
+		queue<vector<int>> q;
+		vector<int> cost(id, 1 << 10);
+		q.push(vector<int>{nodeMap[beginWord]});//挤一个进去，开始ID
+		cost[nodeMap[beginWord]] = 0;//储存begin变换到位所需次数
+		while (!q.empty()) {
+			vector<int> current = q.front();
+			q.pop();
+			int last = current.back();
+			if (last == endID) {//跳到了就没必要往下跳了
+				vector<string> tmp;//结果
+				for (int index : current) {
+					tmp.push_back(idWord[index]);
+				}
+				res.push_back(tmp);
+			}
+			else {
+				size_t lastSize = edges[last].size();
+				for (size_t i = 0; i < lastSize; i++) {//只有找到了更近的距离，cost才会更新
+					int to = edges[last][i];
+					if (cost[last] + 1 <= cost[to]) {
+						cost[to] = cost[last] + 1;
+						vector<int> tmp(current);//保存整个过程ID
+						tmp.push_back(to);
+						q.push(tmp);
+					}
+				}
+			}
+		}
+		return res;
+	}
+	bool checkSibil(string& str1, string& str2, size_t sLen) {
+		int diff = 0;
+		for (size_t i = 0; i < sLen && diff < 2; i++) {
+			if (str1[i] != str2[i]) {
+				diff++;
+			}
+		}
+		return diff == 1;
+	}
+	unordered_map<string, int> nodeMap;
+	vector<string> idWord;
+	vector<vector<int>> edges;
+	vector<vector<int>> combinationSum3(int k, int n) {//组合总和 III
+		vector<vector<int>> res;
+		vector<int> tmp;
+		combinationSum3DFS(1, 9, k, n, res, tmp);//当前枚举，枚举上限，数量，总和
+		return res;
+	}
+	void combinationSum3DFS(int cur, int n, int k, int sum, vector<vector<int>>& res, vector<int>& tmp) {
+		if (tmp.size() + (n - cur + 1) < k || tmp.size() > k) {//数量不够或数量多了
+			return;
+		}
+		if (tmp.size() == k && accumulate(tmp.begin(), tmp.end(), 0) == sum) {
+			res.push_back(tmp);
+			return;
+		}
+		tmp.push_back(cur);
+		combinationSum3DFS(cur + 1, n, k, sum, res, tmp);
+		tmp.pop_back();
+		combinationSum3DFS(cur + 1, n, k, sum, res, tmp);
+		return;
+	}
+	vector<int> majorityElement(vector<int>& nums) {//求众数 II--投票法
+		int num1 = -1, num2 = -1;
+		int num1Cnt = 0, num2Cnt = 0;
+		for (int& num : nums) {
+			if (num == num1) {
+				num1Cnt++;
+			}
+			else if (num == num2) {
+				num2Cnt++;
+			}
+			else if (num1Cnt == 0) {
+				num1 = num;
+				num1Cnt++;
+			}
+			else if (num2Cnt == 0) {
+				num2 = num;
+				num2Cnt++;
+			}
+			else {
+				num1Cnt--;
+				num2Cnt--;
+			}
+		}
+		vector<int> res;
+		num1Cnt = 0;
+		num2Cnt = 0;
+		for (int& num : nums) {
+			if (num == num1) {
+				num1Cnt++;
+			}
+			else if (num == num2) {
+				num2Cnt++;
+			}
+		}
+		if (num1Cnt > nums.size() / 3) {
+			res.push_back(num1);
+		}
+		if (num2Cnt > nums.size() / 3) {
+			res.push_back(num2);
+		}
+		return res;
+	}
+	int thirdMax(vector<int>& nums) {//第三大的数
+		int max3 = INT_MIN, max2 = INT_MIN, max1 = INT_MIN;
+		int tmp1 = nums[0], tmp2 = nums[0], tmp3 = nums[0];
+		for (int& num : nums) {
+			if (num != tmp1) {//得到3个不同的数
+				if (tmp1 != tmp2) {
+					tmp3 = num;
+				}
+				else {
+					tmp2 = num;
+				}
+			}
+			if (num == max1 || num == max2 || num == max3) {
+				continue;
+			}
+			if (num > max1) {
+				max3 = max2;
+				max2 = max1;
+				max1 = num;
+			}
+			else if (num > max2) {
+				max3 = max2;
+				max2 = num;
+			}
+			else if (num > max3) {
+				max3 = num;
+			}
+		}
+		if (tmp1 == tmp2 || tmp2 == tmp3 || tmp1 == tmp3) {
+			return max1;
+		}
+		return max3;
+	}
+	vector<int> findDisappearedNumbers(vector<int>& nums) {//找到所有数组中消失的数字
+		size_t numsLen = nums.size();
+		for (size_t i = 0; i < numsLen; i++) {
+			int cur = abs(nums[i]) - 1;
+			nums[cur] = -abs(nums[cur]);
+		}
+		vector<int> res;
+		for (int i = 0; i < numsLen; i++) {
+			if (nums[i] > 0) {
+				res.push_back(i + 1);
+			}
+		}
+		return res;
+	}
+	bool circularArrayLoop(vector<int>& nums) {//环形数组循环
+		const size_t numsLen = nums.size();
+		for (int i = 0; i < numsLen; i++) {
+			if (nums[i] == 0) {
+				continue;
+			}
+			int dir = nums[i] > 0 ? 1 : -1;
+			if (circularArrayLoopDFS(nums, i, numsLen, dir)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	bool circularArrayLoopDFS(vector<int>& nums, int i, int numsLen, int dir) {
+		if (nums[i] == 0) {//
+			return false;
+		}
+		if (nums[i] == INT_MAX) {//形成闭环
+			return true;
+		}
+		int ndir = nums[i] > 0 ? 1 : -1;
+		if (ndir == dir) {
+			int j = (numsLen + (nums[i] + i) % numsLen) % numsLen;
+			nums[i] = INT_MAX;//考察过程中
+			if (j != i && circularArrayLoopDFS(nums, j, numsLen, dir)) {
+				return true;
+			}
+			else {
+				nums[i] = 0;//确定不符合条件不能成环
+				return false;
+			}
+		}
+		return false;
+	}
+	int islandPerimeterBFS(vector<vector<int>>& grid) {//岛屿的周长--BFS
+		size_t col = grid.size();
+		if (col == 0) {
+			return 0;
+		}
+		size_t rol = grid[0].size();
+		queue<pair<int, int>> q;
+		for (size_t i = 0; i < col; i++) {
+			for (size_t j = 0; j < rol; j++) {
+				if (grid[i][j] == 1) {
+					q.push(make_pair(i, j));//从一个角开始
+					break;
+				}
+			}
+			if (!q.empty()) {
+				break;
+			}
+		}
+		int res = 0;
+		vector<vector<int>> dir = {
+			{-1, 0},
+			{0, 1},
+			{1, 0},
+			{0, -1} };
+		while (!q.empty()) {
+			int colCur = q.front().first;
+			int rolCur = q.front().second;
+			q.pop();
+			int remain = 4;
+			if (grid[colCur][rolCur] == 2) {
+				continue;
+			}
+			grid[colCur][rolCur] = 2;
+			for (size_t i = 0; i < 4; i++) {
+				int tmpCol = colCur + dir[i][0];
+				int tmpRol = rolCur + dir[i][1];
+				if (tmpCol < 0 || tmpCol >= col || tmpRol < 0 || tmpRol >= rol) {
+					continue;
+				}
+				if (grid[tmpCol][tmpRol] == 2) {
+					remain--;
+					continue;
+				}
+				if (grid[tmpCol][tmpRol] == 1) {
+					remain--;
+					q.push(make_pair(tmpCol, tmpRol));
+				}
+			}
+			res += remain;
+		}
+		return res;
+	}
+	int islandPerimeter(vector<vector<int>>& grid) {//岛屿的周长--暴力法
+		size_t col = grid.size();
+		if (col == 0) {
+			return 0;
+		}
+		size_t rol = grid[0].size();
+		int res = 0;
+		vector<vector<int>> dir = {
+			{-1, 0},
+			{0, 1},
+			{1, 0},
+			{0, -1} };
+		for (int i = 0; i < col; i++) {
+			for (int j = 0; j < rol; j++) {
+				if (grid[i][j] == 1) {
+					int remain = 4;
+					for (size_t k = 0; k < 4; k++) {
+						int tmpCol = i + dir[k][0];
+						int tmpRol = j + dir[k][1];
+						if (tmpCol < 0 || tmpCol >= col || tmpRol < 0 || tmpRol >= rol) {
+							continue;
+						}
+						if (grid[tmpCol][tmpRol] == 2) {
+							remain--;
+							continue;
+						}
+						if (grid[tmpCol][tmpRol] == 1) {
+							remain--;
+						}
+					}
+					res += remain;
+				}
+			}
+		}
+		return res;
+	}
+	int findPairs(vector<int>& nums, int k) {//数组中的 k-diff 数对
+		unordered_map<int, int> numMap;
+		for (int& num : nums) {
+			numMap[num]++;
+		}
+		int res = 0;
+		if (k != 0) {
+			for (auto& it : numMap) {
+				if (numMap.count(it.first + k) > 0) {
+					res++;
+				}
+			}
+		}
+		else {
+			for (auto& it : numMap) {
+				if (it.second > 1) {
+					res++;
+				}
+			}
+		}
+		return res;
+	}
+	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {//重塑矩阵
+		size_t rol = nums.size();
+		if (rol == 0) {
+			return nums;
+		}
+		size_t col = nums[0].size();
+		if (c >= col && r >= rol) {
+			return nums;
+		}
+		vector<vector<int>> res(r, vector<int>(c));
+		size_t total = col * rol;
+		for (size_t i = 0; i < total; i++) {
+			res[i / c][i % c] = nums[i / col][i % col];
+		}
+		return res;
+	}
+	int maximumProductBak(vector<int>& nums) {//三个数的最大乘积--暴力排序
+		sort(nums.begin(), nums.end());
+		size_t numsLen = nums.size();
+		return max(nums[0] * nums[1] * nums[numsLen - 1], nums[numsLen - 1] * nums[numsLen - 2] * nums[numsLen - 3]);
+	}
+	int maximumProduct(vector<int>& nums) {//三个数的最大乘积--维护3个最大值和两个最小值
+		int max1 = INT_MIN, max2 = INT_MIN, max3 = INT_MIN;
+		int min1 = INT_MAX, min2 = INT_MAX;
+		for (int& num : nums) {
+			if (num > max1) {
+				max3 = max2;
+				max2 = max1;
+				max1 = num;
+			}
+			else if (num > max2) {
+				max3 = max2;
+				max2 = num;
+			}
+			else if (num > max3) {
+				max3 = num;
+			}
+			if (num < min1) {
+				min2 = min1;
+				min1 = num;
+			}
+			else if (num < min2) {
+				min2 = num;
+			}
+		}
+		return max(max1 * max2 * max3, max1 * min1 * min2);
+	}
+	vector<vector<int>> imageSmoother(vector<vector<int>>& M) {//图片平滑器(卷积核)--可以优化，分区处理，不处理了
+		size_t rol = M.size();
+		if (rol == 0) {
+			return M;
+		}
+		size_t col = M[0].size();
+		vector<vector<int>> res(M);
+		for (int i = 0; i < rol; i++) {
+			for (int j = 0; j < col; j++) {
+				int core = 0;
+				int cnt = 0;
+				for (int tmpRol = i - 1; tmpRol < i + 2; tmpRol++) {
+					for (int tmpCol = j - 1; tmpCol < j + 2; tmpCol++) {
+						if (tmpRol < 0 || tmpRol >= rol || tmpCol < 0 || tmpCol >= col) {
+							continue;
+						}
+						core += M[tmpRol][tmpCol];
+						cnt++;
+					}
+				}
+				res[i][j] = core / cnt;
+			}
+		}
+		return res;
+	}
+	int maxAreaOfIsland(vector<vector<int>>& grid) {
+		int rol = grid.size();
+		if (rol == 0) {
+			return 0;
+		}
+		int col = grid[0].size();
+		int res = 0;
+		for (size_t i = 0; i < rol; i++) {
+			for (size_t j = 0; j < col; j++) {
+				res = max(res, maxAreaOfIslandBFS(grid, i, j, rol, col));
+			}
+		}
+		return res;
+	}
+	vector<vector<int>> dir = {
+			{-1, 0},
+			{0, 1},
+			{1, 0},
+			{0, -1} };
+	int maxAreaOfIslandBFS(vector<vector<int>>& grid, int rolCur, int colCur, int rol, int col) {
+		if (grid[rolCur][colCur] == 2 || grid[rolCur][colCur] == 0) {
+			return 0;
+		}
+		int res = 0;
+		queue<pair<int, int>> q;
+		q.push(make_pair(rolCur, colCur));
+		while (!q.empty()) {
+			rolCur = q.front().first;
+			colCur = q.front().second;
+			q.pop();
+			if (grid[rolCur][colCur] == 2) {//有可能在入队列过程中被其他人访问
+				continue;
+			}
+			res++;
+			grid[rolCur][colCur] = 2;
+			for (size_t i = 0; i < 4; i++) {
+				int tmpRol = rolCur + dir[i][0];
+				int tmpCol = colCur + dir[i][1];
+				if (tmpRol < 0 || tmpRol >= rol || tmpCol < 0 || tmpCol >= col) {
+					continue;
+				}
+				if (grid[tmpRol][tmpCol] == 1) {
+					q.push(make_pair(tmpRol, tmpCol));
+				}
+			}
+		}
+		return res;
+	}
+	int findShortestSubArray(vector<int>& nums) {//数组的度
+		unordered_map<int, int> numMap;
+		for (int& num : nums) {
+			numMap[num]++;
+		}
+		int cnt = 0;
+		vector<int> cand;
+		for (auto& it : numMap) {
+			if (it.second > cnt) {
+				cand.clear();
+				cnt = it.second;
+			}
+			if (it.second == cnt) {
+				cand.push_back(it.first);
+			}
+		}
+		int res = INT_MAX;
+		size_t numsLenLim = nums.size() - 1;
+		for (int& it : cand) {
+			size_t left = 0, right = numsLenLim;
+			while (nums[left] != it) {
+				left++;
+			}
+			while (nums[right] != it) {
+				right--;
+			}
+			int current = right - left + 1;
+			res = min(res, current);
+		}
+		return res;
+	}
+	int numSubarrayProductLessThanKBAK(vector<int>& nums, int k) {//乘积小于K的子数组--动态规划n^2
+		size_t numsLen = nums.size();
+		vector<vector<int>> dp(numsLen, vector<int>(numsLen, k));
+		for (size_t i = 0; i < numsLen; i++) {
+			if (nums[i] < k) {
+				dp[i][i] = nums[i];
+			}
+		}
+		for (size_t i = 0; i < numsLen; i++) {
+			for (size_t j = i + 1; j < numsLen; j++) {
+				if (dp[i][j - 1] > k) {//剪枝
+					break;
+				}
+				dp[i][j] = dp[i][j - 1] * dp[j][j];
+			}
+		}
+		int res = 0;
+		for (size_t i = 0; i < numsLen; i++) {
+			for (size_t j = i; j < numsLen; j++) {
+				res += dp[i][j] < k ? 1 : 0;
+			}
+		}
+		return res;
+	}
+	int numSubarrayProductLessThanK(vector<int>& nums, int k) {//双指针
+		if (k < 2) {
+			return 0;
+		}
+		size_t numsLen = nums.size();
+		int tmp = 1, res = 0;
+		size_t left = 0;
+		for (size_t right = 0; right < numsLen; right++) {
+			tmp *= nums[right];
+			while (tmp >= k) {
+				tmp /= nums[left++];
+			}
+			res += right - left + 1;//右到左相乘的都小于
+		}
+		return res;
+	}
+	int maxProfitBAK(vector<int>& prices, int fee) {//买卖股票的最佳时机含手续费--动态规划
+		size_t pricesCnt = prices.size();
+		vector<vector<int>> dp(2, vector<int>(pricesCnt));//当天只有两种操作，买入和卖出
+		//只有交易时才会计算价值变动
+		dp[0][0] = 0;//没有股票收益
+		dp[1][0] = -prices[0];//持有股票收益
+		for (size_t i = 1; i < pricesCnt; i++) {
+			dp[0][i] = max(dp[0][i - 1], dp[1][i - 1] + prices[i] - fee);
+			dp[1][i] = max(dp[0][i - 1] - prices[i], dp[1][i - 1]);
+		}
+		return dp[0][pricesCnt - 1];
+	}
+	int maxProfit(vector<int>& prices, int fee) {//买卖股票的最佳时机含手续费--动态规划--空间优化
+		size_t pricesCnt = prices.size();
+		//当天只有两种操作，买入和卖出
+		//只有交易时才会计算价值变动
+		int noStock = 0;//没有股票收益
+		int haveStock = -prices[0];//持有股票收益
+		for (size_t i = 1; i < pricesCnt; i++) {
+			int noStockBak = noStock;
+			int haveStockBak = haveStock;
+			noStock = max(noStockBak, haveStockBak + prices[i] - fee);
+			haveStock = max(noStockBak - prices[i], haveStockBak);
+		}
+		return noStock;
+	}
+	bool isOneBitCharacter(vector<int>& bits) {//1比特与2比特字符,跳位
+		size_t bitsCnt = bits.size();
+		size_t cur = 0;
+		while (cur < bitsCnt - 1) {
+			if (bits[cur] == 1) {
+				cur++;
+			}
+			cur++;
+		}
+		return cur == bitsCnt - 1;
+	}
+	int minCostClimbingStairs(vector<int>& cost) {//使用最小花费爬楼梯--动态规划
+		size_t costCnt = cost.size();
+		int dp_1 = 0;
+		int dp_2 = 0;
+		int dp = 0;
+		for (size_t i = 2; i <= costCnt; i++) {
+			dp = min(dp_1 + cost[i - 1], dp_2 + cost[i - 2]);
+			dp_2 = dp_1;
+			dp_1 = dp;
+		}
+		return dp;
+	}
+	bool isToeplitzMatrix(vector<vector<int>>& matrix) {//托普利茨矩阵
+		size_t rol = matrix.size();
+		size_t col = matrix[0].size();
+		size_t limL = min(rol, col);
+		size_t limU = max(rol, col);
+		for(size_t i = 0; i < rol; i++) {
+			if (!exploreThis(matrix, i, 0, rol, col)) {//验证竖着的
+				return false;
+			}
+		}
+		for (size_t i = 1; i < col; i++) {
+			if (!exploreThis(matrix, 0, i, rol, col)) {//验证横着的
+				return false;
+			}
+		}
+		return true;
+	}
+	bool exploreThis(vector<vector<int>>& matrix, size_t rolCur, size_t colCur, size_t rol, size_t col) {
+		int target = matrix[rolCur][colCur];
+		while (rolCur < rol && colCur < col) {
+			if (matrix[rolCur][colCur] != target) {
+				return false;
+			}
+			rolCur++;
+			colCur++;
+		}
+		return true;
+	}
+};
+class MyCalendar {
+public:
+	MyCalendar() {
+		return;
+	}
+	bool book(int start, int end) {
+		auto it = timeMap.lower_bound(start);//k <= ?的迭代器,迭代器指向->?
+		if (it != timeMap.end() && it->first < end) {
+			return false;
+		}
+		if (it != timeMap.begin() && (--it)->second > start) {
+			return false;
+		}
+		timeMap[start] = end;//添加或更新
+		return true;
+	}
+private:
+	map<int, int> timeMap;//红黑树
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	vector<int> nums = { 1, 100, 1, 1, 1, 100, 1, 1, 100, 1 };
+	vector<int> candidates = { 10,1,2,7,6,1,5 };
+	vector<vector<int>> obstacleGrid = {
+		{0, 0, 0},
+		{0, 1, 0},
+		{0, 0, 0} };
+	vector<vector<int>> grid = {
+		{1, 1, 0, 0, 0},
+		{1, 1, 0, 0, 0},
+		{0, 0, 0, 1, 1},
+		{0, 0, 0, 1, 1} };
+	vector<vector<int>> matrix = {
+		{1, 2},
+		{3, 4} };
+	vector<vector<int>> triangle = {
+		{2},
+		{3, 4},
+		{6, 5, 7},
+		{4, 1, 8, 3} };
+	vector<string> wordList = { "hot","dot","dog","lot","log","cog" };
+	vector<vector<int>> tmp = { {1, 1}, {1, 1} };
+	mySolution.minCostClimbingStairs(nums);
 	return 0;
 }
 #endif
