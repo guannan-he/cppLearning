@@ -10,6 +10,7 @@
 #include <iostream>
 #include <set>
 #include <numeric>
+#include <algorithm>
 using namespace std;
 
 //链表
@@ -7055,6 +7056,390 @@ public:
 		}
 		return true;
 	}
+	vector<vector<int>> flipAndInvertImage(vector<vector<int>>& A) {//翻转图像
+		int rol = A.size();
+		int col = A[0].size();
+		for (int i = 0; i < rol; i++) {
+			int left = 0, right = col - 1;
+			while (left <= right) {
+				if (A[i][left] == A[i][right]) {
+					A[i][left] = A[i][left] == 0;
+					A[i][right] = A[i][left];
+				}
+				left++;
+				right--;
+			}
+		}
+		return A;
+	}
+	vector<int> fairCandySwap(vector<int>& A, vector<int>& B) {//公平的糖果交换
+		unordered_set<int> ASet, BSet;
+		int ASum = 0, BSum = 0;
+		for (int& num : A) {
+			ASet.emplace(num);
+			ASum += num;
+		}
+		for (int& num : B) {
+			BSet.emplace(num);
+			BSum += num;
+		}
+		int target = (ASum - BSum) / 2;
+		vector<int> res(2);
+		for (const int& num : ASet) {
+			if (BSet.count(num - target)) {
+				res[0] = num;
+				res[1] = num - target;
+				break;
+			}
+		}
+		return res;
+	}
+	int sumSubseqWidths(vector<int>& nums) {//子序列宽度之和
+		sort(nums.begin(), nums.end());//排序不改变结果
+		//A[i]是左侧2^i个区间的右边界，右侧2^N-i-1个左边界，右边界贡献为正，左边界贡献为负
+		size_t numsLen = nums.size();
+		size_t left = 0, right = 1;
+		int res = 0;
+		vector<long> pow2(numsLen);
+		pow2[0] = 1;
+		for (size_t i = 1; i < numsLen; i++) {
+			pow2[i] = pow2[i - 1] * 2 % 1000000007;
+		}
+		for (size_t i = 0; i < numsLen; i++) {
+			res = (res + nums[i] * (pow2[i] - pow2[numsLen - i - 1])) % 1000000007;
+		}
+		return res;
+	}
+	bool isMonotonic(vector<int>& nums) {//单调数列
+		size_t numsLen = nums.size();
+		if (numsLen < 2) {//单个元素
+			return true;
+		}
+		size_t i = 1;
+		while (i < numsLen && nums[i] == nums[i - 1]) {//去除开头重复
+			i++;
+		}
+		if (i == numsLen) {//全相等
+			return true;
+		}
+		bool grater = nums[i] > nums[i - 1];
+		while (i < numsLen) {//主业务
+			if (nums[i] == nums[i - 1]) {
+				i++;
+				continue;
+			}
+			if (grater ^ (nums[i] > nums[i - 1])) {
+				return false;
+			}
+			i++;
+		}
+		return true;
+	}
+	int sumSubarrayMins(vector<int>& nums) {//子数组的最小值之和
+		int numsLen = nums.size();
+		vector<int> left(numsLen), right(numsLen);//最小值区间下标
+		for (int i = 0; i < numsLen; i++) {
+			left[i] = right[i] = i;
+		}
+		stack<int> stk;
+		for (int i = numsLen - 1; i > -1; i--) {
+			while (!stk.empty() && nums[stk.top()] >= nums[i]) {
+				right[i] = right[stk.top()];
+				stk.pop();
+			}
+			stk.push(i);
+		}
+		while (!stk.empty()) {
+			stk.pop();
+		}
+		for (int i = 0; i < numsLen; i++) {
+			while (!stk.empty() && nums[stk.top()] > nums[i]) {
+				left[i] = left[stk.top()];
+				stk.pop();
+			}
+			stk.push(i);
+		}
+		int res = 0;
+		for (int i = 0; i < numsLen; i++) {
+			res = (res + 1LL * (i - left[i] + 1) * (right[i] - i + 1) * nums[i]) % 1000000007;
+		}
+		return res;
+	}
+	bool hasGroupsSizeX(vector<int>& deck) {
+		unordered_map<int, int> cardSet;
+		int minCnt = INT_MAX;
+		for (int& card : deck) {
+			cardSet[card]++;
+		}
+		int g = 0;
+		for (auto& it : cardSet) {
+			if (g != 0) {
+				g = gcd(g, it.second);
+			}
+			else {
+				g = it.second;
+			}
+		}
+		return g > 1;
+	}
+	inline int gcd(int a, int b) {//求最大公约数
+		int r;
+		while (b > 0) {
+			r = a % b;
+			a = b;
+			b = r;
+		}
+		return a;
+	}
+	int maxSubarraySumCircularBAK(vector<int>& A) {//环形子数组的最大和--暴力动态规划--超时
+		vector<int> B(A);
+		vector<int> dp(A);
+		size_t numsLen = A.size();
+		A.insert(A.end(), B.begin(), B.end());
+		int res = INT_MIN;
+		for (size_t i = 0; i < numsLen; i++) {
+			size_t lim = i + numsLen;
+			int current = A[i];
+			int last = A[i];
+			for (size_t cur = i + 1; cur < lim; cur++) {
+				current = max(A[cur], A[cur] + current);
+				last = max(last, current);
+			}
+			dp[i] = max(current, last);
+		}
+		for (int& num : dp) {
+			res = max(res, num);
+		}
+		return res;
+	}
+	int maxSubarraySumCircular(vector<int>& A) {//环形子数组的最大和
+		int maxVal = A.front(), currentMax = A.front(), minVal = A.front(), currentMin = A.front(), sum = A.front();
+		size_t numsLen = A.size();
+		for (size_t i = 1; i < numsLen; i++) {//最大和最小子列和
+			currentMax = max(A[i], currentMax + A[i]);
+			maxVal = max(maxVal, currentMax);
+			currentMin = min(A[i], currentMin + A[i]);
+			minVal = min(minVal, currentMin);
+			sum += A[i];
+		}
+		if (sum == minVal) {
+			return maxVal;
+		}
+		return max(maxVal, sum - minVal);
+	}
+	vector<int> sortArrayByParityII(vector<int>& nums) {//按奇偶排序数组 II
+		size_t numsLen = nums.size();
+		size_t eveCur = 0, oddCur = 1;
+		vector<int> res(nums);
+		for (size_t i = 0; i < numsLen; i++) {
+			if (nums[i] % 2 == 0) {
+				res[eveCur] = nums[i];
+				eveCur += 2;
+			}
+			else {
+				res[oddCur] = nums[i];
+				oddCur += 2;
+			}
+		}
+		return res;
+	}
+	vector<int> sortedSquares(vector<int>& nums) {//有序数组的平方
+		vector<int> res;
+		int aproixZeroCur = 0;
+		int numsLen = nums.size();
+		for (int i = 0; i < numsLen; i++) {
+			if (abs(nums[i]) > abs(nums[aproixZeroCur])) {
+				break;
+			}
+			else {
+				aproixZeroCur = i;
+			}
+		}
+		res.push_back(nums[aproixZeroCur] * nums[aproixZeroCur]);
+		int left = aproixZeroCur - 1, right = aproixZeroCur + 1;
+		while (left > -1 || right < numsLen) {
+			if (left == -1) {
+				res.push_back(nums[right] * nums[right]);
+				right++;
+				continue;
+			}
+			if (right == numsLen) {
+				res.push_back(nums[left] * nums[left]);
+				left--;
+				continue;
+			}
+			int minVal;
+			if (abs(nums[left]) < abs(nums[right])) {
+				minVal = abs(nums[left]);
+				left--;
+			}
+			else {
+				minVal = abs(nums[right]);
+				right++;
+			}
+			res.push_back(minVal * minVal);
+		}
+		return res;
+	}
+	vector<int> sumEvenAfterQueries(vector<int>& A, vector<vector<int>>& queries) {//查询后的偶数和
+		int sum = 0;
+		for (int& num : A) {
+			if (num % 2 == 0) {
+				sum += num;
+			}
+		}
+		vector<int> res;
+		for (vector<int>& qur : queries) {
+			int val = qur[0];
+			size_t index = qur[1];
+			if (A[index] % 2 != 0) {//未改变前为奇数
+				if (val % 2 != 0) {//改完变成偶数
+					A[index] += val;
+					sum += A[index];
+				}
+				else {//改完还是奇数
+					A[index] += val;
+				}
+			}
+			else {//未改变前是偶数
+				if (val % 2 != 0) {//改完变奇数了
+					sum -= A[index];
+					A[index] += val;
+				}
+				else {//改完还是偶数
+					sum += val;
+					A[index] += val;
+				}
+			}
+			res.push_back(sum);
+		}
+		return res;
+	}
+	int numRookCaptures(vector<vector<char>>& board) {//可以被一步捕获的棋子数
+		int res = 0;
+		int rol = 0, col = 0;
+		bool done = false;
+		for (int i = 0; i < 8; i++) {//找车
+			for (int j = 0; j < 8; j++) {
+				if (board[i][j] == 'R') {
+					done = true;
+					rol = i;
+					col = j;
+					break;
+				}
+			}
+			if (done) {
+				break;
+			}
+		}
+		int tmpRol = rol;
+		while (tmpRol < 8) {
+			if (board[tmpRol][col] == 'B') {
+				break;
+			}
+			if (board[tmpRol][col] == 'p') {
+				res++;
+				break;
+			}
+			tmpRol++;
+		}
+		tmpRol = rol;
+		while (tmpRol > -1) {
+			if (board[tmpRol][col] == 'B') {
+				break;
+			}
+			if (board[tmpRol][col] == 'p') {
+				res++;
+				break;
+			}
+			tmpRol--;
+		}
+		int tmpCol = col;
+		while (tmpCol < 8) {
+			if (board[rol][tmpCol] == 'B') {
+				break;
+			}
+			if (board[rol][tmpCol] == 'p') {
+				res++;
+				break;
+			}
+			tmpCol++;
+		}
+		tmpCol = col;
+		while (tmpCol > -1) {
+			if (board[rol][tmpCol] == 'B') {
+				break;
+			}
+			if (board[rol][tmpCol] == 'p') {
+				res++;
+				break;
+			}
+			tmpCol--;
+		}
+		return res;
+	}
+	int maxTurbulenceSize(vector<int>& nums) {//最长湍流子数组
+		size_t numsLen = nums.size();
+		vector<int> dp(numsLen);
+		dp[0] = 0;
+		for (size_t i = 1; i < numsLen; i++) {
+			if (nums[i - 1] < nums[i]) {
+				dp[i] = 1;
+			}
+			if (nums[i - 1] > nums[i]) {
+				dp[i] = -1;
+			}
+		}
+		int res = 0;
+		int current = 0;
+		for (size_t i = 0; i < numsLen; i++) {
+			if (dp[i] == 0) {
+				current = 1;
+			}
+			else if (dp[i] == -dp[i - 1] || dp[i - 1] == 0) {
+				current++;
+			}
+			else {
+				current = 2;
+			}
+			res = max(res, current);
+		}
+		return res;
+	}
+	int threeSumMulti(vector<int>& nums, int target) {//三数之和的多种可能--三指针
+		sort(nums.begin(), nums.end());
+		int mod = 1000000007;
+		int res = 0;
+		int numsLen = nums.size();
+		for (int i = 0; i < numsLen - 2 && nums[i] <= target; i++) {
+			int left = i + 1, right = numsLen - 1;
+			while (nums[left] < nums[right]) {//left,right数不相等
+				if (nums[i] + nums[left] + nums[right] == target) {
+					int leftBak = left, rightBak = right;
+					while (nums[left] == nums[leftBak]) {
+						left++;
+					}
+					while (nums[right] == nums[rightBak]) {
+						right--;
+					}
+					res += (left - leftBak) * (rightBak - right);
+					res %= mod;
+				}
+				else if (nums[i] + nums[left] + nums[right] < target) {
+					left++;
+				}
+				else {
+					right--;
+				}
+			}
+			if (nums[left] == nums[right] && nums[i] + nums[left] + nums[right] == target) {
+				int d = right - left + 1;
+				res += d * (d - 1) / 2;
+				res %= mod;
+			}
+		}
+		return res;
+	}
 };
 class MyCalendar {
 public:
@@ -7078,17 +7463,22 @@ private:
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	vector<int> nums = { 1, 100, 1, 1, 1, 100, 1, 1, 100, 1 };
+	vector<int> nums = { 1,1,2,2,3,3,4,4,5,5 };
 	vector<int> candidates = { 10,1,2,7,6,1,5 };
-	vector<vector<int>> obstacleGrid = {
-		{0, 0, 0},
-		{0, 1, 0},
-		{0, 0, 0} };
-	vector<vector<int>> grid = {
-		{1, 1, 0, 0, 0},
-		{1, 1, 0, 0, 0},
-		{0, 0, 0, 1, 1},
-		{0, 0, 0, 1, 1} };
+	vector<vector<int>> qury = {
+		{1, 0},
+		{-3, 1},
+		{-4, 0},
+		{2, 3} };
+	vector<vector<char>> grid = {
+		{'.','.','.','.','.','.','.','.'},
+		{'.','.','.','p','.','.','.','.'},
+		{'.','.','.','R','.','.','.','p'},
+		{'.','.','.','.','.','.','.','.'},
+		{'.','.','.','.','.','.','.','.'},
+		{'.','.','.','p','.','.','.','.'},
+		{'.','.','.','.','.','.','.','.'},
+		{'.','.','.','.','.','.','.','.'} };
 	vector<vector<int>> matrix = {
 		{1, 2},
 		{3, 4} };
@@ -7099,7 +7489,7 @@ int main(int argc, char* argv[]) {
 		{4, 1, 8, 3} };
 	vector<string> wordList = { "hot","dot","dog","lot","log","cog" };
 	vector<vector<int>> tmp = { {1, 1}, {1, 1} };
-	mySolution.minCostClimbingStairs(nums);
+	mySolution.threeSumMulti(nums, 8);
 	return 0;
 }
 #endif
