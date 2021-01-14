@@ -7673,45 +7673,123 @@ public:
 private:
 	map<int, int> timeMap;//红黑树
 };
-class MajorityChecker {//子数组中占绝大多数的元素--摩尔投票+线段树
+class MajorityChecker {//子数组中占绝大多数的元素--摩尔投票+线段树,赞数超时
 	//解答思路：
 	//线段树是把一个大的区间拆分成很多个小区间
 	//每个小区间内使用摩尔投票，最终把所有小区间合并起来再用一次摩尔投票
 public:
 	MajorityChecker(vector<int>& arr) {
 		nums = arr;
+		numsLen = nums.size();
+		for (size_t i = 0; i < numsLen; i++) {
+			curMap[arr[i]].push_back(i);
+		}
+		root = buildTree(0, numsLen - 1);
 		return;
 	}
-
-	int query(int left, int right, int threshold) {//暴力法(投票法)超时
-		if (threshold > right - left + 1) {
+	int query(int left, int right, int threshold) {//线段树
+		//vector<int> tmp = queryTree(left, right, root);
+		int key = 0;
+		int count = 0;
+		queryTree(left, right, root, key, count);
+		if (key == 0 || curMap[key].size() < threshold) {
 			return -1;
 		}
-		vector<int> tmp(nums.begin() + left, nums.begin() + right + 1);
-		sort(tmp.begin(), tmp.end());
-		int tmpLen = tmp.size();
-		int target = tmp[threshold - 1];
-		left = threshold - 1;
-		while (left > 0 && tmp[left - 1] == target) {
-			left--;
-		}
-		right = threshold - 1;
-		while (right < tmpLen - 1 && tmp[right + 1] == target) {
-			right++;
-		}
-		return right - left + 1 >= threshold ? target : -1;
-
+		auto it_l = lower_bound(curMap[key].begin(), curMap[key].end(), left);
+		auto it_r = upper_bound(curMap[key].begin(), curMap[key].end(), right);
+		int cnt = it_r - it_l;
+		return cnt >= threshold ? key : -1;
 	}
+private:
+	struct node {
+		int val = -1;//胜选者ID
+		int cnt = -1;//胜选票数
+		int leftCur = -1;//区间开始小标
+		int rightCur = -1;//区间结束下标
+		node* left = nullptr;
+		node* right = nullptr;
+	};
 	vector<int> nums;
+	unordered_map<int, vector<int>> curMap;
+	size_t numsLen;
+	node* root = nullptr;
+	node* buildTree(int left, int right) {//递归构造线段树
+		if (left > right) {
+			return nullptr;
+		}
+		if (left == right) {
+			node* retNode = new node;
+			retNode->cnt = 1;
+			retNode->val = nums[left];
+			retNode->leftCur = left;
+			retNode->rightCur = right;
+			return retNode;
+		}
+		node* retNode = new node;
+		int mid = (left + right) / 2;
+		retNode->left = buildTree(left, mid);
+		retNode->right = buildTree(mid + 1, right);
+		retNode->leftCur = left;
+		retNode->rightCur = right;
+		//存在单边没有
+		if (retNode->left == nullptr) {//右侧获胜，左侧没人
+			retNode->val = retNode->right->val;
+			retNode->cnt = retNode->right->cnt;
+		}
+		else if (retNode->right == nullptr) {//左侧获胜，右侧没人
+			retNode->val = retNode->left->val;
+			retNode->cnt = retNode->left->cnt;
+		}
+		//两边都有
+		else if (retNode->left->val == retNode->right->val) {//两侧胜选者相同
+			retNode->val = retNode->left->val;
+			retNode->cnt = retNode->left->cnt + retNode->right->cnt;
+		}
+		else if (retNode->left->cnt > retNode->right->cnt) {//左侧获胜
+			retNode->val = retNode->left->val;
+			retNode->cnt = retNode->left->cnt - retNode->right->cnt;
+		}
+		else {//左侧没获胜
+			retNode->val = retNode->right->val;
+			retNode->cnt = retNode->right->cnt - retNode->left->cnt;
+		}
+		return retNode;
+	}
+	bool queryTree(int left, int right, node* root, int& key, int& count) {//查询线段树
+		if (root == nullptr || left > right) {
+			return false;
+		}
+		if (root->rightCur < left || root->leftCur > right) {//完全不重合区间
+			return false;
+		}
+		int mid = (root->leftCur + root->rightCur) / 2;
+		if (root->leftCur >= left && root->rightCur <= right) {//节点区间是所求区间的子空间
+			if (root->val == key) {
+				count += root->cnt;
+			}
+			else if (root->cnt > count) {
+				key = root->val;
+				count = root->cnt;
+			}
+			else if (root->cnt <= count) {
+				count -= root->cnt;
+			}
+			return true;//不用将节点区间向下分解了
+		}
+		if (mid >= left) {//不是子空间的话就掰开节点
+			queryTree(left, right, root->left, key, count);
+		}
+		if (right > mid) {
+			queryTree(left, right, root->right, key, count);
+		}
+		return true;
+	}
 };
+
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	vector<int> nums = { 1,1,2,2,1,1 };
-	MajorityChecker test(nums);
-	test.query(0, 5, 4);
-	test.query(0, 3, 3);
-	test.query(2, 3, 2);
+	vector<int> nums = { };
 	vector<vector<int>> grid = {
 		{1, 2},
 		{1, 2},
