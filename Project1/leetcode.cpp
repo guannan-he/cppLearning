@@ -7440,6 +7440,219 @@ public:
 		}
 		return res;
 	}
+	vector<string> commonChars(vector<string>& A) {//查找常用字符
+		unordered_map<char, int> charMapA, charMapB;
+		for (char& ch : A[0]) {
+			charMapA[ch]++;
+		}
+		size_t wordCnt = A.size();
+		for (string& str : A) {
+			charMapB = charMapA;
+			charMapA.clear();
+			for (char& ch : str) {
+				if (charMapB[ch] > 0) {
+					charMapA[ch]++;
+					charMapB[ch]--;
+				}
+			}
+		}
+		vector<string> res;
+		string tmp;
+		for (auto& it : charMapA) {
+			tmp.clear();
+			tmp += it.first;
+			while (it.second > 0) {
+				it.second--;
+				res.emplace_back(tmp);
+			}
+		}
+		return res;
+	}
+	int shipWithinDays(vector<int>& weights, int D) {//在 D 天内送达包裹的能力--二分法
+		//货物必须按照给定的顺序装运
+		int minLim = 0;
+		int maxLim = 0;
+		for (int& weight : weights) {
+			maxLim += weight;
+			minLim = max(minLim, weight);
+		}
+		int left = minLim, right = maxLim;
+		while (left < right) {
+			int mid = left + (right - left) / 2;
+			if (canShip(weights, D, mid)) {
+				right = mid;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		return left;
+	}
+	inline bool canShip(vector<int>& weights, int D, int wLim) {
+		int tmp = 0;
+		for (int& wt : weights) {
+			if (tmp + wt > wLim) {
+				tmp = 0;
+				D--;
+			}
+			if (D == 0) {
+				return false;
+			}
+			tmp += wt;
+		}
+		return true;
+	}
+	int heightChecker(vector<int>& heights) {//高度检查器--桶n，如果使用排序的话是nlogn
+		vector<int> bucket(101, 0);
+		for (int& height : heights) {
+			bucket[height]++;//有序的
+		}
+		int res = 0;
+		int cnt = 0;
+		for (size_t i = 1; i < 101; i++) {
+			while (bucket[i] > 0) {
+				if (heights[cnt] != i) {
+					res++;
+				}
+				bucket[i]--;
+				cnt++;
+			}
+		}
+		return res;
+	}
+	void duplicateZeros(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		int cnt = 0;
+		for (size_t i = 0; i < numsLen; i++) {
+			if (nums[i] == 0) {
+				nums.insert(nums.begin() + i, 0);
+				cnt++;
+				i++;
+			}
+		}
+		while (cnt > 0) {
+			nums.pop_back();
+			cnt--;
+		}
+		return;
+	}
+	int numEquivDominoPairs(vector<vector<int>>& dominoes) {//等价多米诺骨牌对的数量
+		vector<vector<int>> dominoeMap(11, vector<int>(11, 0));
+		int res = 0;
+		for (vector<int>& dominoe : dominoes) {
+			if (dominoe[0] <= dominoe[1]) {
+				res += dominoeMap[dominoe[0]][dominoe[1]]++;
+			}
+			else {
+				res += dominoeMap[dominoe[1]][dominoe[0]]++;
+			}
+		}
+		return res;
+	}
+	string dayOfTheWeek(int day, int month, int year) {//一周中的第几天
+		//首先我们知道1971.1.1是Friday
+		vector<string> weekDayRes = { "Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday" };
+		vector<int> monthDatCnt = { 0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+		int dayCnt = 0;
+		for (int i = 1971; i < year; i++) {
+			dayCnt += 365;
+			if (isLapYear(i)) {
+				dayCnt++;
+			}
+		}
+		dayCnt += monthDatCnt[month];
+		if (isLapYear(year) && month > 2) {
+			dayCnt++;
+		}
+		dayCnt += day - 1;
+		return weekDayRes[dayCnt % 7];
+	}
+	inline bool isLapYear(int year) {
+		if (year % 400 == 0) {
+			return true;
+		}
+		if (year % 100 == 0) {
+			return false;
+		}
+		if (year % 4 == 0) {
+			return true;
+		}
+		return false;
+	}
+	int distanceBetweenBusStops(vector<int>& distance, int start, int destination) {//公交站间的距离
+		int sum1 = 0;
+		int sum2 = 0;
+		size_t distCnt = distance.size();
+		size_t lb = min(start, destination);
+		size_t ub = max(start, destination);
+		for (int i = 0; i < distCnt; i++) {
+			sum1 += distance[i];
+		}
+		for (int i = lb; i < ub; i++) {
+			sum2 += distance[i];
+		}
+		return min(sum2, sum1 - sum2);
+	}
+	vector<int> numSmallerByFrequency(vector<string>& queries, vector<string>& words) {//比较字符串最小字母出现频次
+		unordered_map<int, int> wordMap;
+		for (string& word : words) {
+			wordMap[getNum(word)]++;
+		}
+		vector<int> res;
+		for (string& qury : queries) {
+			int quryNum = getNum(qury);
+			int cnt = 0;
+			for (auto& it : wordMap) {
+				if (quryNum < it.first) {
+					cnt += it.second;
+				}
+			}
+			res.push_back(cnt);
+		}
+		return res;
+	}
+	inline int getNum(string& str) {
+		char chCur = 'z';
+		int cnt = 0;
+		for (char& ch : str) {
+			if (ch < chCur) {
+				chCur = ch;
+				cnt = 0;
+			}
+			if (ch == chCur) {
+				cnt++;
+			}
+		}
+		return cnt;
+	}
+	int countCharacters(vector<string>& words, string chars) {//拼写单词
+		unordered_map<char, int> charMap;
+		for (char& ch : chars) {
+			charMap[ch]++;
+		}
+		int res = 0;
+		for (string& word : words) {
+			unordered_map<char, int> tmp = charMap;
+			bool isCap = true;
+			for (char& ch : word) {
+				if (tmp.count(ch)) {
+					if (tmp[ch] == 0) {
+						isCap = false;
+						break;
+					}
+					tmp[ch]--;
+				}
+				else {
+					isCap = false;
+					break;
+				}
+			}
+			if (isCap) {
+				res += word.size();
+			}
+		}
+		return res;
+	}
 };
 class MyCalendar {
 public:
@@ -7460,36 +7673,56 @@ public:
 private:
 	map<int, int> timeMap;//红黑树
 };
+class MajorityChecker {//子数组中占绝大多数的元素--摩尔投票+线段树
+	//解答思路：
+	//线段树是把一个大的区间拆分成很多个小区间
+	//每个小区间内使用摩尔投票，最终把所有小区间合并起来再用一次摩尔投票
+public:
+	MajorityChecker(vector<int>& arr) {
+		nums = arr;
+		return;
+	}
+
+	int query(int left, int right, int threshold) {//暴力法(投票法)超时
+		if (threshold > right - left + 1) {
+			return -1;
+		}
+		vector<int> tmp(nums.begin() + left, nums.begin() + right + 1);
+		sort(tmp.begin(), tmp.end());
+		int tmpLen = tmp.size();
+		int target = tmp[threshold - 1];
+		left = threshold - 1;
+		while (left > 0 && tmp[left - 1] == target) {
+			left--;
+		}
+		right = threshold - 1;
+		while (right < tmpLen - 1 && tmp[right + 1] == target) {
+			right++;
+		}
+		return right - left + 1 >= threshold ? target : -1;
+
+	}
+	vector<int> nums;
+};
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	vector<int> nums = { 1,1,2,2,3,3,4,4,5,5 };
-	vector<int> candidates = { 10,1,2,7,6,1,5 };
-	vector<vector<int>> qury = {
-		{1, 0},
-		{-3, 1},
-		{-4, 0},
-		{2, 3} };
-	vector<vector<char>> grid = {
-		{'.','.','.','.','.','.','.','.'},
-		{'.','.','.','p','.','.','.','.'},
-		{'.','.','.','R','.','.','.','p'},
-		{'.','.','.','.','.','.','.','.'},
-		{'.','.','.','.','.','.','.','.'},
-		{'.','.','.','p','.','.','.','.'},
-		{'.','.','.','.','.','.','.','.'},
-		{'.','.','.','.','.','.','.','.'} };
-	vector<vector<int>> matrix = {
+	vector<int> nums = { 1,1,2,2,1,1 };
+	MajorityChecker test(nums);
+	test.query(0, 5, 4);
+	test.query(0, 3, 3);
+	test.query(2, 3, 2);
+	vector<vector<int>> grid = {
 		{1, 2},
-		{3, 4} };
-	vector<vector<int>> triangle = {
-		{2},
-		{3, 4},
-		{6, 5, 7},
-		{4, 1, 8, 3} };
-	vector<string> wordList = { "hot","dot","dog","lot","log","cog" };
-	vector<vector<int>> tmp = { {1, 1}, {1, 1} };
-	mySolution.threeSumMulti(nums, 8);
+		{1, 2},
+		{1, 1},
+		{1, 2},
+		{2, 2} };
+	vector<vector<int>> matrix = {
+		{} };
+	vector<string> wordList = { "bba","abaaaaaa","aaaaaa","bbabbabaab","aba","aa","baab","bbbbbb","aab","bbabbaabb" };
+	vector<string> wdLst2 = { "aaabbb","aab","babbab","babbbb","b","bbbbbbbbab","a","bbbbbbbbbb","baaabbaab","aa" };
+	mySolution.numSmallerByFrequency(wordList, wdLst2);
 	return 0;
 }
 #endif
