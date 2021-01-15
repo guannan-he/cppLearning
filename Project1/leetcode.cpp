@@ -7653,6 +7653,328 @@ public:
 		}
 		return res;
 	}
+	vector<vector<int>> minimumAbsDifference(vector<int>& arr) {//最小绝对差
+		sort(arr.begin(), arr.end());
+		size_t numsLen = arr.size();
+		vector<int> arrCopy(numsLen);
+		vector<vector<int>> res;
+		int val = INT_MAX;
+		for (size_t i = 1; i < numsLen; i++) {
+			arrCopy[i] = arr[i] - arr[i - 1];
+			val = min(val, arrCopy[i]);
+		}
+		for (size_t i = 1; i < numsLen; i++) {
+			if (arrCopy[i] == val) {
+				res.push_back({ arr[i - 1] , arr[i] });
+			}
+		}
+		return res;
+	}
+	int minCostToMoveChips(vector<int>& position) {//玩筹码
+		int numsLen = position.size();
+		int cnt = 0;
+		for (int& num : position) {
+			if (num % 2 != 0) {
+				cnt++;
+			}
+		}
+		return min(cnt, numsLen - cnt);
+	}
+	bool checkStraightLine(vector<vector<int>>& coordinates) {//缀点成线
+		int paraA = coordinates[1][1] - coordinates[0][1];
+		int paraB = coordinates[0][0] - coordinates[1][0];
+		int paraComp = coordinates[0][0] * coordinates[1][1] - coordinates[1][0] * coordinates[0][1];
+		size_t coordCnt = coordinates.size();
+		for (size_t i = 2; i < coordCnt; i++) {
+			if (paraA * coordinates[i][0] + paraB * coordinates[i][1] != paraComp) {
+				return false;
+			}
+		}
+		return true;
+	}
+	int oddCells(int n, int m, vector<vector<int>>& indices) {//奇数值单元格的数目
+		vector<int> rol(n), col(m);
+		for (vector<int>& indc : indices) {
+			rol[indc[0]]++;
+			col[indc[1]]++;
+		}
+		int res = 0;
+		for (size_t i = 0; i < n; i++) {
+			for(size_t j =0 ; j < m; j++) {
+				if ((rol[i] + col[j]) % 2 != 0) {
+					res++;
+				}
+			}
+		}
+		return res;
+	}
+	vector<vector<int>> shiftGrid(vector<vector<int>>& grid, int k) {//二维网格迁移
+		vector<vector<int>> res(grid);
+		size_t rol = grid.size();
+		size_t col = grid[0].size();
+		for (size_t i = 0; i < rol; i++) {
+			for (size_t j = 0; j < col; j++) {
+				size_t newRol = (i + (k + j) / col) % rol;
+				size_t newCol = (j + k) % col;
+				res[newRol][newCol] = grid[i][j];
+			}
+		}
+		return res;
+	}
+	int minTimeToVisitAllPoints(vector<vector<int>>& points) {//访问所有点的最小时间
+		int currentX = points[0][0];
+		int currentY = points[0][1];
+		int res = 0;
+		for (vector<int>& point : points) {
+			res += max(abs(point[1] - currentY), abs(point[0] - currentX));
+			currentX = point[0];
+			currentY = point[1];
+		}
+		return res;
+	}
+	string tictactoe(vector<vector<int>>& moves) {
+		vector<string> res = { "A", "B", "Draw", "Pending" };
+		size_t moveCnt = moves.size();
+		vector<vector<int>> grid(3, vector<int>(3, 0));
+		//下棋
+		for (size_t i = 0; i < moveCnt; i++) {
+			if (i % 2 == 0) {
+				grid[moves[i][0]][moves[i][1]] = 1;
+			}
+			else {
+				grid[moves[i][0]][moves[i][1]] = 2;
+			}
+		}
+		//检查赢家
+		for (size_t i = 0; i < 3; i++) {
+			if (grid[i][0] == grid[i][1] && grid[i][1] == grid[i][2]) {
+				if (grid[i][0] == 0) {
+					continue;
+				}
+				if (grid[i][0] == 1) {
+					return res[0];
+				}
+				if (grid[i][0] == 2) {
+					return res[1];
+				}
+			}
+			if (grid[0][i] == grid[1][i] && grid[1][i] == grid[2][i]) {
+				if (grid[0][i] == 0) {
+					continue;
+				}
+				if (grid[0][i] == 1) {
+					return res[0];
+				}
+				if (grid[0][i] == 2) {
+					return res[1];
+				}
+			}
+		}
+		if (grid[0][0] == grid[1][1] && grid[1][1] == grid[2][2]) {
+			if (grid[1][1] == 1) {
+				return res[0];
+			}
+			if (grid[1][1] == 2) {
+				return res[1];
+			}
+		}
+		if (grid[2][0] == grid[1][1] && grid[1][1] == grid[0][2]) {
+			if (grid[1][1] == 1) {
+				return res[0];
+			}
+			if (grid[1][1] == 2) {
+				return res[1];
+			}
+		}
+		if (moveCnt == 9) {
+			return res[2];
+		}
+		return (res[3]);
+	}
+	int findSpecialInteger(vector<int>& arr) {//有序数组中出现次数超过25%的元素
+		size_t targetLen = arr.size() / 4;
+		int target = arr[0];
+		int cnt = 0;
+		for (int& num : arr) {
+			if (num == target) {
+				cnt++;
+			}
+			else {
+				target = num;
+				cnt = 1;
+			}
+			if (cnt > targetLen) {
+				return target;
+			}
+		}
+		return -1;
+	}
+	int findNumbers(vector<int>& nums) {//统计位数为偶数的数字
+		int res = 0;
+		for (int& num : nums) {
+			int cnt = 0;
+			while (num != 0) {
+				num /= 10;
+				cnt++;
+			}
+			if (cnt % 2 == 0) {
+				res++;
+			}
+		}
+		return res;
+	}
+	vector<int> replaceElements(vector<int>& arr) {//将每个元素替换为右侧最大元素
+		vector<int> res(arr);
+		int numsLen = arr.size();
+		res[numsLen - 1] = -1;
+		for (int i = numsLen - 2; i > -1; i--) {
+			res[i] = max(res[i + 1], arr[i + 1]);
+		}
+		return res;
+	}
+	int findBestValue(vector<int>& arr, int target) {//转变数组后最接近目标值的数组和
+		int numsLen = arr.size();
+		if (numsLen == 0) {
+			return 0;
+		}
+		sort(arr.begin(), arr.end());
+		for (int i = 0; i < numsLen; i++) {
+			double tmp = 1.0 * target / (numsLen - i);
+			int mean = tmp;
+			if (tmp - mean - 0.5 >= 0) {
+				mean++;
+			}
+			if (arr[i] >= mean) {
+				if (abs(target - (mean - 1) * (numsLen - i)) <= abs(target - mean * (numsLen - i))) {
+					return mean - 1;
+				}
+				return mean;
+			}
+			target -= arr[i];
+		}
+		return arr[numsLen - 1];
+	}
+	vector<int> sumZero(int n) {//和为零的N个唯一整数
+		vector<int> res(n);
+		int lim = n / 2;
+		for (int i = 1; i <= lim; i++) {
+			res[i - 1] = -i;
+			res[n - i] = i;
+		}
+		return res;
+	}
+	bool canReach(vector<int>& arr, int start) {//跳跃游戏 III--回溯
+		if (start < 0 || start >= arr.size()) {
+			return false;
+		}
+		if (arr[start] == 0) {
+			return true;
+		}
+		if (arr[start] == -1) {
+			return false;
+		}
+		int arrCopy = arr[start];
+		arr[start] = -1;
+		bool left = canReach(arr, start + arrCopy);
+		bool right = canReach(arr, start - arrCopy);
+		arr[start] = arrCopy;
+		return left || right;
+	}
+	vector<int> decompressRLElist(vector<int>& nums) {//解压缩编码列表
+		int numsLen = nums.size();
+		vector<int> res;
+		int cur = 0;
+		while (cur < numsLen) {
+			int freq = nums[cur];
+			int val = nums[cur + 1];
+			while (freq > 0) {
+				res.push_back(val);
+				freq--;
+			}
+			cur += 2;
+		}
+		return res;
+	}
+	vector<int> getNoZeroIntegers(int n) {//将整数转换为两个无零整数的和
+		vector<int> res(2);
+		int part1 = n;
+		int part2 = 0;
+		while (part2 < n) {
+			part1 = n - part2;
+			if ((to_string(part1) + to_string(part2)).find('0') == string::npos) {
+				res[0] = part1;
+				res[1] = part2;
+				break;
+			}
+			part2++;
+		}
+		return res;
+	}
+	vector<int> luckyNumbers(vector<vector<int>>& matrix) {//矩阵中的幸运数
+		size_t rol = matrix.size();
+		size_t col = matrix[0].size();
+		vector<int> res;
+		vector<int> rolMem(rol), colMem(col);
+		for (size_t i = 0; i < rol; i++) {
+			int target = INT_MAX;
+			for (size_t j = 0; j < col; j++) {
+				target = min(target, matrix[i][j]);
+			}
+			rolMem[i] = target;
+		}
+		for (size_t i = 0; i < col; i++) {
+			int target = INT_MIN;
+			for (size_t j = 0; j < rol; j++) {
+				target = max(target, matrix[j][i]);
+			}
+			colMem[i] = target;
+		}
+		for (size_t i = 0; i < rol; i++) {
+			for (size_t j = 0; j < col; j++) {
+				if (rolMem[i] == colMem[j]) {
+					res.push_back(rolMem[i]);
+				}
+			}
+		}
+		return res;
+	}
+	int findTheDistanceValue(vector<int>& arr1, vector<int>& arr2, int d) {//两个数组间的距离值
+		int res = 0;
+		for (int& num1 : arr1) {
+			bool isOK = true;
+			for (int& num2 : arr2) {
+				if (abs(num1 - num2) <= d ) {
+					isOK = false;
+					break;
+				}
+			}
+			if (isOK) {
+				res++;
+			}
+		}
+		return res;
+	}
+	vector<int> createTargetArray(vector<int>& nums, vector<int>& index) {//按既定顺序创建目标数组
+		vector<int> res;
+		size_t numsLen = nums.size();
+		for (size_t i = 0; i < numsLen; i++) {
+			res.insert(res.begin() + index[i], nums[i]);
+		}
+		return res;
+	}
+	int maxProduct(vector<int>& nums) {//数组中两元素的最大乘积
+		sort(nums.begin(), nums.end());
+		return max((nums[0] - 1) * (nums[1] - 1), (nums[nums.size() - 1] - 1) * (nums[nums.size() - 2] - 1));
+	}
+	vector<int> shuffle(vector<int>& nums, int n) {//重新排列数组
+		vector<int> res(nums);
+		size_t gap = nums.size() / 2;
+		for (size_t i = 0; i < gap; i++) {
+			res[2 * i] = nums[i];
+			res[2 * i + 1] = nums[gap + i];
+		}
+		return res;
+	}
 };
 class MyCalendar {
 public:
@@ -7673,6 +7995,7 @@ public:
 private:
 	map<int, int> timeMap;//红黑树
 };
+
 class MajorityChecker {//子数组中占绝大多数的元素--摩尔投票+线段树,赞数超时
 	//解答思路：
 	//线段树是把一个大的区间拆分成很多个小区间
@@ -7789,18 +8112,15 @@ private:
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	vector<int> nums = { };
+	vector<int> nums = { 3, 0, 2, 1, 2 };
 	vector<vector<int>> grid = {
-		{1, 2},
-		{1, 2},
-		{1, 1},
-		{1, 2},
-		{2, 2} };
+		{0, 1},
+		{1, 1}};
 	vector<vector<int>> matrix = {
 		{} };
 	vector<string> wordList = { "bba","abaaaaaa","aaaaaa","bbabbabaab","aba","aa","baab","bbbbbb","aab","bbabbaabb" };
 	vector<string> wdLst2 = { "aaabbb","aab","babbab","babbbb","b","bbbbbbbbab","a","bbbbbbbbbb","baaabbaab","aa" };
-	mySolution.numSmallerByFrequency(wordList, wdLst2);
+	mySolution.canReach(nums, 2);
 	return 0;
 }
 #endif
