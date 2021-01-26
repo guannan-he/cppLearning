@@ -6187,7 +6187,8 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-#if true //cookBook-数组
+//cookBook-数组
+#if false 
 
 class Solution {
 public:
@@ -8121,6 +8122,84 @@ int main(int argc, char* argv[]) {
 	vector<string> wordList = { "bba","abaaaaaa","aaaaaa","bbabbabaab","aba","aa","baab","bbbbbb","aab","bbabbaabb" };
 	vector<string> wdLst2 = { "aaabbb","aab","babbab","babbbb","b","bbbbbbbbab","a","bbbbbbbbbb","baaabbaab","aa" };
 	mySolution.canReach(nums, 2);
+	return 0;
+}
+#endif
+
+//cookBook-字符串
+#if true
+
+class Solution {
+public:
+	string addBinary(string a, string b) {//二进制求和
+		//注意长度
+		int aCur = a.size() - 1, bCur = b.size() - 1;
+		string res;
+		int sign = 0;
+		while (aCur > -1 || bCur > -1) {
+			int intA = aCur > -1 ? a[aCur] - '0' : 0;
+			int intB = bCur > -1 ? b[bCur] - '0' : 0;
+			int signCopy = (intA + intB + sign) / 2;
+			int remain = (intA + intB + sign) % 2;
+			sign = signCopy;
+			res.insert(res.begin(), '0' + remain);
+			aCur--;
+			bCur--;
+		}
+		if (sign == 1) {
+			res.insert(res.begin(), '1');
+		}
+		return res;
+	}
+	int numDecodings(string s) {//解码方法
+		size_t sLen = s.size();
+		if (sLen == 0 || s[0] == '0') {
+			return 0;
+		}
+		int pre = 1, current = 1;
+		for (size_t i = 1; i < sLen; i++) {
+			int tmp = current;
+			if (s[i] == '0') {
+				if (s[i - 1] == '1' || s[i - 1] == '2') {
+					current = pre;
+				}
+				else {//以 0 开头的数字不合规则，0 必须是结尾
+					return 0;
+				}
+			}
+			else if (s[i - 1] == '1' || (s[i - 1] == '2' && s[i] < '7' && s[i] > '0')) {
+				current += pre;
+			}
+			pre = tmp;
+		}
+		return current;
+	}
+	int longestPalindrome(string s) {//最长回文串
+		unordered_map<char, int> chMap;
+		for (char& ch : s) {
+			chMap[ch]++;
+		}
+		int res = 0;
+		bool odd = false;
+		for (auto& it : chMap) {
+			res += it.second;
+			if (it.second % 2 == 1) {
+				res--;
+				odd = true;
+			}
+		}
+		if (odd) {
+			res++;
+		}
+		return res;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "10";
+	string b = "1011";
+	mySolution.numDecodings(a);
 	return 0;
 }
 #endif
