@@ -8193,13 +8193,177 @@ public:
 		}
 		return res;
 	}
+	vector<string> findWords(vector<string>& words) {//键盘行
+		int charMap[] = {
+			2, 3, 3, 2, 1, 2, 2,
+			2, 1, 2, 2, 2, 3, 3, 
+			1, 1, 1, 1, 2, 1, 1, 
+			3, 1, 3, 1, 3
+		};
+		vector<string> res;
+		for (string& word : words) {
+			int target = charMap[tolower(word[0]) - 'a'];
+			bool add = true;
+			for (char& ch : word) {
+				if (charMap[tolower(ch) - 'a'] != target) {
+					add = false;
+					break;
+				}
+			}
+			if (add) {
+				res.push_back(word);
+			}
+		}
+		return res;
+	}
+	string complexNumberMultiply(string a, string b) {//复数乘法
+		int re1 = 0, im1 = 0, re2 = 0, im2 = 0;
+		imgStr2Int(a, re1, im1);
+		imgStr2Int(b, re2, im2);
+		return to_string(re1 * re2 - im1 * im2) + '+' + to_string(re1 * im2 + re2 * im1) + 'i';
+	}
+	inline void imgStr2Int(string& str, int& real, int& imag) {
+		bool realSignNeg = false;
+		bool imagSignNeg = false;
+		size_t cur = 0;
+		if (str[cur] == '-') {
+			realSignNeg = true;
+			cur++;
+		}
+		while (str[cur] != '+') {
+			real *= 10;
+			real += str[cur] - '0';
+			cur++;
+		}
+		cur++;
+		if (str[cur] == '-') {
+			imagSignNeg = true;
+			cur++;
+		}
+		while (str[cur] != 'i') {
+			imag *= 10;
+			imag += str[cur] - '0';
+			cur++;
+		}
+		if (realSignNeg) {
+			real = -real;
+		}
+		if (imagSignNeg) {
+			imag = -imag;
+		}
+		return;
+	}
+	string reverseStr(string s, int k) {//反转字符串 II
+		//通俗一点说，每隔k个反转k个，末尾不够k个时全部反转
+		size_t sLen = s.size();
+		size_t processTime = sLen / k;
+		for (size_t i = 0; i < processTime; i++) {
+			if (i % 2 == 0) {
+				int front = k * i;
+				int rear = front + k - 1;
+				while (front < rear) {
+					swap(s[front], s[rear]);
+					front++;
+					rear--;
+				}
+			}
+		}
+		if (processTime % 2 == 0) {
+			processTime *= k;
+			int front = processTime;
+			int rear = sLen - 1;
+			while (front < rear) {
+				swap(s[front], s[rear]);
+				front++;
+				rear--;
+			}
+		}
+		return s;
+	}
+	string shortestCompletingWord(string licensePlate, vector<string>& words) {//最短补全词
+		unordered_map<char, int> plateMap;
+		for (char& ch : licensePlate) {
+			if (isalpha(ch)) {
+				plateMap[tolower(ch)]++;
+			}
+		}
+		string res;
+		for (string& word : words) {
+			if (word.size() < res.size() || res == "") {//剪枝
+				unordered_map<char, int> tmp(plateMap);
+				for (char& ch : word) {
+					char cur = tolower(ch);
+					if (tmp.count(cur) > 0) {
+						tmp[cur]--;
+						if (tmp[cur] == 0) {
+							tmp.erase(cur);
+						}
+					}
+				}
+				if (tmp.empty()) {
+					res = word;
+				}
+			}
+		}
+		return res;
+	}
+	vector<int> smallestRange(vector<vector<int>>& nums) {//最小区间
+		//滑动窗口
+		unordered_map<int, vector<int>> indicator;
+		int minVal = INT_MAX, maxVal = INT_MIN;
+		size_t numsCnt = nums.size();
+		for (size_t i = 0; i < numsCnt; i++) {
+			for (int& num : nums[i]) {
+				indicator[num].push_back(i);
+			}
+			minVal = min(nums[i][0], minVal);
+			maxVal = max(nums[i][nums[i].size() - 1], maxVal);
+		}
+		vector<int> freq(numsCnt);
+		int inside = 0;//窗口内！数组！数量
+		int left = minVal, right = minVal - 1;
+		int bestLeft = minVal, bestRight = maxVal;
+		while (right < maxVal) {
+			right++;
+			if (indicator.count(right) > 0) {//有效数值
+				for (int& numSer : indicator[right]) {//增加窗口内！数字！数量
+					freq[numSer]++;
+					if (freq[numSer] == 1) {
+						inside++;
+					}
+				}
+				while (inside == numsCnt) {//窗口包含数组达到要求后缩小宽度，减少数字数量
+					if (right - left < bestRight - bestLeft) {
+						bestLeft = left;
+						bestRight = right;
+					}
+					if (indicator.count(left)) {
+						for (const int& x : indicator[left]) {
+							freq[x]--;
+							if (freq[x] == 0) {
+								inside--;
+							}
+						}
+					}
+					left++;
+				}
+			}
+		}
+		return { bestLeft, bestRight };
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	string a = "10";
-	string b = "1011";
-	mySolution.numDecodings(a);
+	string a = "1s3 PSt";
+	string b = "1+1i";
+	vector<string> inpt = { "step", "steps", "stripe", "stepple" };
+	vector<vector<int>> nums = { 
+		{4,10,15,24,26 }, 
+		{ 0,9,12,20 }, 
+		{ 5,18,22,30 }
+	};
+	mySolution.smallestRange(nums);
 	return 0;
 }
 #endif
