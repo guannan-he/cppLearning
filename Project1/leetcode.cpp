@@ -7034,7 +7034,7 @@ public:
 		size_t col = matrix[0].size();
 		size_t limL = min(rol, col);
 		size_t limU = max(rol, col);
-		for(size_t i = 0; i < rol; i++) {
+		for (size_t i = 0; i < rol; i++) {
 			if (!exploreThis(matrix, i, 0, rol, col)) {//验证竖着的
 				return false;
 			}
@@ -7117,7 +7117,7 @@ public:
 			return true;
 		}
 		size_t i = 1;
-		while (i < numsLen && nums[i] == nums[i - 1]) {//去除开头重复
+		while (i < numsLen&& nums[i] == nums[i - 1]) {//去除开头重复
 			i++;
 		}
 		if (i == numsLen) {//全相等
@@ -7701,7 +7701,7 @@ public:
 		}
 		int res = 0;
 		for (size_t i = 0; i < n; i++) {
-			for(size_t j =0 ; j < m; j++) {
+			for (size_t j = 0; j < m; j++) {
 				if ((rol[i] + col[j]) % 2 != 0) {
 					res++;
 				}
@@ -7944,7 +7944,7 @@ public:
 		for (int& num1 : arr1) {
 			bool isOK = true;
 			for (int& num2 : arr2) {
-				if (abs(num1 - num2) <= d ) {
+				if (abs(num1 - num2) <= d) {
 					isOK = false;
 					break;
 				}
@@ -8116,7 +8116,7 @@ int main(int argc, char* argv[]) {
 	vector<int> nums = { 3, 0, 2, 1, 2 };
 	vector<vector<int>> grid = {
 		{0, 1},
-		{1, 1}};
+		{1, 1} };
 	vector<vector<int>> matrix = {
 		{} };
 	vector<string> wordList = { "bba","abaaaaaa","aaaaaa","bbabbabaab","aba","aa","baab","bbbbbb","aab","bbabbaabb" };
@@ -8196,8 +8196,8 @@ public:
 	vector<string> findWords(vector<string>& words) {//键盘行
 		int charMap[] = {
 			2, 3, 3, 2, 1, 2, 2,
-			2, 1, 2, 2, 2, 3, 3, 
-			1, 1, 1, 1, 2, 1, 1, 
+			2, 1, 2, 2, 2, 3, 3,
+			1, 1, 1, 1, 2, 1, 1,
 			3, 1, 3, 1, 3
 		};
 		vector<string> res;
@@ -8351,19 +8351,169 @@ public:
 		}
 		return { bestLeft, bestRight };
 	}
+	string mostCommonWord(string paragraph, vector<string>& banned) {//最常见的单词
+		size_t sLen = paragraph.size();
+		unordered_map<string, int> freq;
+		unordered_set<string> bannedList(banned.begin(), banned.end());
+		for (string& str : banned) {
+			for (char& ch : str) {
+				ch = tolower(ch);
+			}
+		}
+		size_t cur = 0;
+		size_t last = 0;
+		while (cur < sLen) {
+			while (cur < sLen && isalpha(paragraph[cur])) {
+				cur++;
+			}
+			string tmp(paragraph.begin() + last, paragraph.begin() + cur);
+			for (char& ch : tmp) {
+				ch = tolower(ch);
+			}
+			if (bannedList.count(tmp) < 1) {
+				freq[tmp]++;
+			}
+			while (cur < sLen && !isalpha(paragraph[cur])) {
+				cur++;
+			}
+			last = cur;
+		}
+		string res;
+		int cnt = 0;
+		for (auto& it : freq) {
+			if (it.second > cnt) {
+				res = it.first;
+				cnt = it.second;
+			}
+		}
+		return res;
+	}
+	bool isLongPressedName(string name, string typed) {//长按键入
+		size_t typeLen = typed.size();
+		size_t nameLen = name.size();
+		size_t typeCur = 0, nameCur = 0;
+		while (typeCur < typeLen) {
+			if (nameCur < nameLen && name[nameCur] == typed[typeCur]) {
+				nameCur++;
+				typeCur++;
+			}
+			else if (typeCur > 0 && typed[typeCur] == typed[typeCur - 1]) {
+				typeCur++;
+			}
+			else {
+				return false;
+			}
+		}
+		return nameCur == nameLen;
+	}
+	vector<int> diStringMatch(string S) {//增减字符串匹配
+		size_t sLen = S.size();
+		int left = 0, right = sLen;
+		vector<int> res(sLen + 1);
+		for (size_t i = 0; i < sLen; i++) {
+			if (S[i] == 'I') {
+				res[i] = left++;
+			}
+			else {
+				res[i] = right--;
+			}
+		}
+		res[sLen] = left;
+		return res;
+	}
+	string strWithout3a3b(int a, int b) {//不含 AAA 或 BBB 的字符串
+		string res;
+		int aCnt = 0, bCnt = 0;
+		while (a > 0 || b > 0) {
+			if (a > b) {
+				if (aCnt < 2) {
+					res.push_back('a');
+					aCnt++;
+					a--;
+					bCnt = 0;
+				}
+				else {
+					res.push_back('b');
+					bCnt++;
+					b--;
+					aCnt = 0;
+				}
+			}
+			else {
+				if (bCnt < 2) {
+					res.push_back('b');
+					bCnt++;
+					b--;
+					aCnt = 0;
+				}
+				else {
+					res.push_back('a');
+					aCnt++;
+					a--;
+					bCnt = 0;
+				}
+			}
+		}
+		return res;
+	}
+	string decodeAtIndex(string S, int K) {//索引处的解码字符串
+		string res;
+		long size = 0;
+		size_t sLen = S.size();
+		for (int i = 0; i < sLen; i++) {
+			if (isdigit(S[i]))
+				size *= S[i] - '0';
+			else
+				size++;
+		}
+		for (int i = sLen - 1; i > -1; i--) {
+			K %= size;
+			if (K == 0 && isalpha(S[i])) {
+				res += S[i];
+				break;
+			}
+			if (isdigit(S[i])) {
+				size /= S[i] - '0';
+			}
+			else {
+				size--;
+			}
+		}
+		return res;
+	}
+	int uniqueLetterString(string s) {//统计子串中的唯一字符
+		//和之前一道题比较像，统计每一个单独字符的贡献，向两侧拓展
+		size_t sLen = s.size();
+		vector<int> left(sLen), right(sLen), prev(26, -1);
+		for (size_t i = 0; i < sLen; i++) {
+			left[i] = prev[s[i] - 'A'];
+			prev[s[i] - 'A'] = i;
+		}
+		prev = vector<int>(26, sLen);
+		for (int i = sLen - 1; i > -1; i--) {
+			right[i] = prev[s[i] - 'A'];
+			prev[s[i] - 'A'] = i;
+		}
+		int mod = 1000000007;
+		long long res = 0;
+		for (size_t i = 0; i < sLen; i++) {
+			res = (res + (right[i] - i) * (i - left[i])) % mod;
+		}
+		return res;
+	}
 };
 
-int main(int argc, char* argv[]) {
-	Solution mySolution;
-	string a = "1s3 PSt";
-	string b = "1+1i";
-	vector<string> inpt = { "step", "steps", "stripe", "stepple" };
-	vector<vector<int>> nums = { 
-		{4,10,15,24,26 }, 
-		{ 0,9,12,20 }, 
-		{ 5,18,22,30 }
-	};
-	mySolution.smallestRange(nums);
-	return 0;
-}
+	int main(int argc, char* argv[]) {
+		Solution mySolution;
+		string a = "1s3 PSt";
+		string b = "1+1i";
+		vector<string> inpt = { "hit" };
+		vector<vector<int>> nums = {
+			{4,10,15,24,26 },
+			{ 0,9,12,20 },
+			{ 5,18,22,30 }
+		};
+		mySolution.decodeAtIndex("leet2code3", 10);
+		return 0;
+	}
 #endif
