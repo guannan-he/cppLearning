@@ -11,6 +11,7 @@
 #include <set>
 #include <numeric>
 #include <algorithm>
+#include <sstream>
 using namespace std;
 
 //链表
@@ -8127,7 +8128,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-字符串
-#if true
+#if false
 
 class Solution {
 public:
@@ -8501,19 +8502,140 @@ public:
 		}
 		return res;
 	}
+	vector<string> findOcurrences(string text, string first, string second) {//Bigram 分词
+		vector<string> res, textMap;
+		int last = 0, current = 0;
+		for (char& ch : text) {
+			if (ch == ' ') {
+				textMap.push_back(text.substr(last, current - last));
+				last = current + 1;//注意单词前空格
+			}
+			current++;
+		}
+		textMap.push_back(text.substr(last, current - last));
+		int textCnt = textMap.size();
+		for (int i = 2; i < textCnt; i++) {
+			if (second == textMap[i - 1] && first == textMap[i - 2]) {
+				res.push_back(textMap[i]);
+			}
+		}
+		return res;
+	}
+	string defangIPaddr(string s) {//IP 地址无效化
+		string res;
+		for (char& ch : s) {
+			if (ch == '.') {
+				res += "[.]";
+			}
+			else {
+				res += ch;
+			}
+		}
+		return res;
+	}
+	int maxNumberOfBalloons(string text) {//“气球” 的最大数量 balloon
+		vector<int> charCnt(26);
+		for (char& ch : text) {
+			charCnt[ch - 'a']++;
+		}
+		return min(min(min(min(charCnt[1], charCnt[0]), charCnt[11] / 2), charCnt[14] / 2), charCnt[13]);
+	}
+	int balancedStringSplit(string s) {//分割平衡字符串
+		int cnt = 0, res = 0;
+		for (char& ch : s) {
+			if (ch == 'L') {
+				cnt++;
+			}
+			else {
+				cnt--;
+			}
+			if (cnt == 0) {
+				res++;
+			}
+		}
+		return res;
+	}
+	int isPrefixOfWord(string sentence, string searchWord) {//检查单词是否为句中其他单词的前缀
+		vector<string> textMap;
+		int last = 0, current = 0;
+		for (char& ch : sentence) {
+			if (ch == ' ') {
+				textMap.push_back(sentence.substr(last, current - last));
+				last = current + 1;//注意单词前空格
+			}
+			current++;
+		}
+		textMap.push_back(sentence.substr(last, current - last));
+		int textCnt = textMap.size();
+		size_t wordLen = searchWord.size();
+		for (int i = 0; i < textCnt; i++) {
+			int textCur = 0, wordCur = 0, textLen = textMap[i].size();
+			while (textCur < textLen && wordCur < wordLen && searchWord[wordCur] == textMap[i][textCur]) {
+				textCur++;
+				wordCur++;
+			}
+			if (wordCur == wordLen) {
+				return i + 1;
+			}
+		}
+		return -1;
+	}
+	int balancedString(string s) {
+		int sLen = s.size(), k = sLen / 4, res = sLen;
+		unordered_map<char, int> chMap;//窗口外字符计数
+		for (char& ch : s) {
+			chMap[ch]++;
+		}
+		int leftCur = 0, rightCur = 0;
+		while (rightCur < sLen) {
+			chMap[s[rightCur]]--;
+			while (leftCur <= rightCur + 1 && chMap['Q'] <= k && chMap['W'] <= k && chMap['E'] <= k && chMap['R'] <= k) {
+				//窗口外都小于1/4可以替换当前窗口
+				//缺少部分可以用窗口内替换的补偿
+				res = min(res, rightCur - leftCur + 1);
+				chMap[s[leftCur]]++;
+				leftCur++;
+			}
+			rightCur++;
+		}
+		return res;
+	}
 };
 
-	int main(int argc, char* argv[]) {
-		Solution mySolution;
-		string a = "1s3 PSt";
-		string b = "1+1i";
-		vector<string> inpt = { "hit" };
-		vector<vector<int>> nums = {
-			{4,10,15,24,26 },
-			{ 0,9,12,20 },
-			{ 5,18,22,30 }
-		};
-		mySolution.decodeAtIndex("leet2code3", 10);
-		return 0;
-	}
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "1s3 PSt";
+	string b = "1+1i";
+	vector<string> inpt = { "hit" };
+	vector<vector<int>> nums = {
+		{4,10,15,24,26 },
+		{ 0,9,12,20 },
+		{ 5,18,22,30 }
+	};
+	mySolution.maxNumberOfBalloons("loonbalxballpoon");
+	return 0;
+}
+#endif
+
+//cookBook-滑动窗口与双指针
+#if true
+
+class Solution {
+public:
+	;
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "1s3 PSt";
+	string b = "1+1i";
+	vector<string> inpt = { "hit" };
+	vector<vector<int>> nums = {
+		{4,10,15,24,26 },
+		{ 0,9,12,20 },
+		{ 5,18,22,30 }
+	};
+	mySolution;
+	return 0;
+}
 #endif
