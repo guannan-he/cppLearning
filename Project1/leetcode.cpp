@@ -8622,20 +8622,155 @@ int main(int argc, char* argv[]) {
 
 class Solution {
 public:
-	;
+	int characterReplacement(string s, int k) {//替换后的最长重复字符
+		int cnt = 0;//最多字母计数
+		size_t sLen = s.size();
+		vector<int> charCnt(26);//窗口内字母计数
+		size_t rightCur = 0, leftCur = 0;
+		while (rightCur < sLen) {
+			cnt = max(cnt, ++charCnt[s[rightCur] - 'A']);
+			if (rightCur - leftCur + 1 - cnt > k) {
+				charCnt[s[leftCur] - 'A']--;
+				leftCur++;
+				//不满足条件的情况下，left和right一起移动,len不变的
+			}
+			rightCur++;
+		}
+		return rightCur - leftCur;
+	}
+	unordered_map<char, int> pMap, tmpMap;
+	vector<int> findAnagrams(string s, string p) {//找到字符串中所有字母异位词
+		for (char& ch : p) {
+			pMap[ch]++;
+		}
+		size_t sLen = s.size(), pLen = p.size();
+		vector<int> res;
+		int cur = 0;
+		while (cur < pLen) {
+			tmpMap[s[cur]]++;
+			cur++;
+		}
+		while (cur < sLen) {
+			if (findAnagramsCheck()) {
+				res.push_back(cur - pLen);
+			}
+			--tmpMap[s[cur - pLen]];
+			tmpMap[s[cur++]]++;
+		}
+		if (findAnagramsCheck()) {
+			res.push_back(cur - pLen);
+		}
+		return res;
+	}
+	bool findAnagramsCheck() {
+		for (auto& it : pMap) {
+			if (tmpMap.count(it.first) < 1 || tmpMap[it.first] != it.second) {
+				return false;
+			}
+		}
+		return true;
+	}
+	bool checkInclusion(string p, string s) {//字符串的排列
+		for (char& ch : p) {
+			pMap[ch]++;
+		}
+		size_t sLen = s.size(), pLen = p.size();
+		if (sLen < pLen) {
+			return false;
+		}
+		vector<int> res;
+		int cur = 0;
+		while (cur < pLen) {
+			tmpMap[s[cur]]++;
+			cur++;
+		}
+		while (cur < sLen) {
+			if (checkInclusionCheck()) {
+				return true;
+			}
+			--tmpMap[s[cur - pLen]];
+			tmpMap[s[cur++]]++;
+		}
+		if (checkInclusionCheck()) {
+			return true;
+		}
+		return false;
+	}
+	bool checkInclusionCheck() {
+		for (auto& it : pMap) {
+			if (tmpMap.count(it.first) < 1 || tmpMap[it.first] != it.second) {
+				return false;
+			}
+		}
+		return true;
+	}
+	vector<int> partitionLabels(string s) {//划分字母区间
+		vector<int> endPos(26), res;
+		size_t sLen = s.size();
+		for (size_t i = 0; i < sLen; i++) {
+			endPos[s[i] - 'a'] = i;
+		}
+		int startCur = 0, endCur = 0;
+		for (size_t i = 0; i < sLen; i++) {
+			endCur = max(endCur, endPos[s[i] - 'a']);//尽可能把区间向右扩
+			if (i == endCur) {
+				res.push_back(endCur - startCur + 1);
+				startCur = endCur + 1;
+			}
+		}
+		return res;
+	}
+	vector<double> medianSlidingWindowBAK(vector<int>& nums, int k) {//滑动窗口中位数--暴力法超时
+		vector<double> res;
+		size_t numsLen = nums.size();
+		bool isOdd = k % 2 == 1;
+		size_t cur = k / 2;
+		for (size_t i = 0; i < numsLen - k + 1; i++) {
+			vector<double> tmp(nums.begin() + i, nums.begin() + i + k);
+			sort(tmp.begin(), tmp.end());
+			if (isOdd) {
+				res.push_back(tmp[cur]);
+			}
+			else {
+				res.push_back((tmp[cur] + tmp[cur - 1] + 0.0) / 2);
+			}
+		}
+		return res;
+	}
+	vector<double> medianSlidingWindow(vector<int>& nums, int k) {//滑动窗口中位数--使用STL multiset
+		//multiset默认从小到大排序，红黑树
+		size_t numsLen = nums.size();
+		vector<double> res(numsLen - k + 1);
+		multiset<int> window(nums.begin(), nums.begin() + k);
+		auto mid = next(window.begin(), k / 2);//向后移动迭代器，类似prev()
+		for (size_t i = k; i < numsLen; i++) {
+			res[i - k] = (0.0 + *mid + *next(mid, k % 2 - 1)) * 0.5;
+			window.insert(nums[i]);
+			// 5 / 2 == 2， 4 / 2 == 2. 故只考虑在前插入和移除的情况
+			if (nums[i] < *mid) {//入窗口元素，位置在mid之前
+				mid--;
+			}
+			if (nums[i - k] <= *mid) {//出窗口元素，位置在mid之前
+				mid++;
+			}
+			window.erase(window.lower_bound(nums[i - k]));
+		}
+		res[numsLen - k] = (0.0 + *mid + *next(mid, k % 2 - 1)) * 0.5;
+		return res;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	string a = "1s3 PSt";
-	string b = "1+1i";
-	vector<string> inpt = { "hit" };
+	string a = "ababcbacadefegdehijhklij";
+	string b = "abc";
+	vector<int> inpt = { 1,3,-1,-3,5,3,6,7 };
 	vector<vector<int>> nums = {
 		{4,10,15,24,26 },
 		{ 0,9,12,20 },
 		{ 5,18,22,30 }
 	};
-	mySolution;
+	mySolution.medianSlidingWindow(inpt, 3);
 	return 0;
 }
 #endif
