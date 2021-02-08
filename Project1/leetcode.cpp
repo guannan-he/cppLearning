@@ -8758,19 +8758,411 @@ public:
 		res[numsLen - k] = (0.0 + *mid + *next(mid, k % 2 - 1)) * 0.5;
 		return res;
 	}
+	int maxProfitAssignment(vector<int>& difficulty, vector<int>& profit, vector<int>& worker) {//安排工作以达到最大收益
+		//哈希映射+动态规划
+		size_t diffLen = difficulty.size();
+		vector<vector<int>> dp(diffLen + 1, vector<int>(2));
+		for (size_t i = 0; i < diffLen; i++) {
+			dp[i][0] = difficulty[i];
+			dp[i][1] = profit[i];
+		}
+		dp[diffLen][0] = 0;
+		dp[diffLen][1] = 0;
+		sort(dp.begin(), dp.end());
+		for (size_t i = 1; i <= diffLen; i++) {
+			dp[i][1] = max(dp[i][1], dp[i - 1][1]);
+		}
+		map<int, int> dpMap;
+		for (vector<int>& it : dp) {
+			dpMap[it[0]] = it[1];
+		}
+		int res = 0;
+		for (int& num : worker) {
+			auto it = dpMap.lower_bound(num);
+			if (it == dpMap.end() || num != it->first) {
+				it--;
+			}
+			res += it->second;
+		}
+		return res;
+	}
+	int longestMountain(vector<int>& arr) {//数组中的最长山脉
+		size_t arrLen = arr.size();
+		//起始与终点
+		vector<int> left(arrLen, 0), right(arrLen, arrLen), climax(arrLen, 0);
+		for (size_t i = 1; i < arrLen; i++) {
+			if (arr[i] > arr[i - 1]) {
+				left[i] = left[i - 1];
+			}
+			else {
+				left[i] = i;
+			}
+			if (arr[arrLen - i - 1] > arr[arrLen - i]) {
+				right[arrLen - i - 1] = right[arrLen - i];
+			}
+			else {
+				right[arrLen - i - 1] = arrLen - i;
+			}
+		}
+		for (size_t i = 2; i < arrLen; i++) {
+			if (arr[i - 2] < arr[i - 1] && arr[i - 1] > arr[i]) {
+				climax[i - 1] = 1;
+			}
+		}
+		int res = 0;
+		for (size_t i = 0; i < arrLen; i++) {
+			if (climax[i] == 1) {
+				res = max(right[i] - left[i], res);
+			}
+		}
+		return res > 2 ? res : 0;
+	}
+	string pushDominoes(string s) {//推多米诺
+		//受力计算
+		size_t sLen = s.size();
+		vector<int> left(sLen, 0), right(sLen, 0);
+		int force = 0;//最大力
+		for (size_t i = 0; i < sLen; i++) {
+			if (s[i] == 'R') {
+				force = sLen;
+			}
+			else if (s[i] == 'L') {
+				force = 0;
+			}
+			else {
+				force = max(force - 1, 0);
+			}
+			right[i] += force;
+		}
+		force = 0;
+		for (int i = sLen - 1; i > -1; i--) {
+			if (s[i] == 'L') {
+				force = sLen;
+			}
+			else if (s[i] == 'R') {
+				force = 0;
+			}
+			else {
+				force = max(0, force - 1);
+			}
+			left[i] += force;
+		}
+		for (size_t i = 0; i < sLen; i++) {
+			if (left[i] > right[i]) {
+				s[i] = 'L';
+			}
+			else if (left[i] < right[i]) {
+				s[i] = 'R';
+			}
+		}
+		return s;
+	}
+	int numRescueBoats(vector<int>& people, int limit) {//救生艇
+		sort(people.begin(), people.end());
+		size_t numsLen = people.size();
+		int leftCur = 0, rightCur = numsLen - 1;
+		int res = 0;
+		while (leftCur < numsLen && rightCur > -1 && leftCur < rightCur) {
+			if (people[leftCur] + people[rightCur] <= limit) {
+				leftCur++;
+			}
+			rightCur--;
+			res++;
+		}
+		if (leftCur == rightCur) {
+			res++;
+		}
+		return res;
+	}
+	int totalFruit(vector<int>& tree) {//水果成篮，用map比用set简单
+		unordered_map<int, int> fruits;
+		int res = 0;
+		int left = 0;
+		for (int i = 0; i < tree.size(); i++) {
+			fruits[tree[i]]++;//入窗口
+			while (fruits.size() > 2) {//出窗口
+				fruits[tree[left]]--;
+				if (fruits[tree[left]] == 0) {
+					fruits.erase(tree[left]);
+				}
+				left++;
+			}
+			res = max(res, i - left + 1);
+		}
+		return res;
+	}
+	int numSubarraysWithSum(vector<int>& nums, int target) {//和相同的二元子数组
+		unordered_map<int, int> prefixMap;
+		int res = 0, prefix = 0;
+		prefixMap[0] = 1;
+		for (int& num : nums) {
+			prefix += num;
+			if (prefixMap.count(prefix - target) > 0) {
+				//存在 prefix2 - prefix1 == target 的情况
+				res += prefixMap[prefix - target];
+			}
+			prefixMap[prefix]++;
+		}
+		return res;
+	}
+	vector<vector<int>> intervalIntersection(vector<vector<int>>& firstList, vector<vector<int>>& secondList) {//区间列表的交集
+		size_t flistLen = firstList.size(), slistLen = secondList.size(), fCur = 0, sCur = 0;
+		vector<vector<int>> res;
+		while (fCur < flistLen && sCur < slistLen) {
+			int leftEnd = max(firstList[fCur][0], secondList[sCur][0]);
+			int rightEnd = min(firstList[fCur][1], secondList[sCur][1]);
+			if (leftEnd <= rightEnd) {//合法区间
+				res.push_back({ leftEnd, rightEnd });
+			}
+			//将靠前的区间向后移
+			if (firstList[fCur][1] < secondList[sCur][1]) {
+				fCur++;
+			}
+			else {
+				sCur++;
+			}
+		}
+		return res;
+	}
+	int subarraysWithKDistinct(vector<int>& nums, int cnt) {//K 个不同整数的子数组
+		//将“恰好问题”转换为至多相减
+		return subarraysWithKDistinctMax(nums, cnt) - subarraysWithKDistinctMax(nums, cnt - 1);
+	}
+	int subarraysWithKDistinctMax(vector<int>& nums, int cnt) {
+		//窗口里至多有k种元素
+		int numsLen = nums.size();
+		unordered_map<int, int> numsMap;
+		int left = 0, res = 0;
+		for (int i = 0; i < numsLen; i++) {
+			numsMap[nums[i]]++;
+			while (numsMap.size() > cnt) {
+				numsMap[nums[left]]--;
+				if (numsMap[nums[left]] == 0) {
+					numsMap.erase(nums[left]);
+				}
+				left++;
+			}
+			//以右侧为头向左拓展的子数组数量
+			res += i - left + 1;
+		}
+		return res;
+	}
+	int minKBitFlipsBAK(vector<int>& nums, int wide) {//K 连续位的最小翻转次数
+		//暴力算法超时
+		size_t numsLen = nums.size();
+		int res = 0;
+		for (size_t i = 0; i <= numsLen - wide; i++) {
+			if (nums[i] == 0) {
+				int lim = i + wide;
+				for (int j = i; j < lim; j++) {
+					nums[j] = nums[j] == 0 ? 1 : 0;
+				}
+				res++;
+			}
+		}
+		for (size_t i = numsLen - wide; i < numsLen; i++) {
+			if (nums[i] == 0) {
+				return -1;
+			}
+		}
+		return res;
+	}
+	int minKBitFlips(vector<int>& nums, int k) {//K 连续位的最小翻转次数
+		size_t numsLen = nums.size();
+		int res = 0, flipTime = 0;//窗口内累计翻转次数
+		for (size_t i = 0; i < numsLen; i++) {
+			if (i >= k && nums[i - k] == 2) {//超出上一个窗口翻转范围
+				flipTime--;
+			}
+			if (flipTime % 2 == nums[i]) {//需要翻转（累积影响）
+				if (i + k > numsLen) {
+					return -1;
+				}
+				flipTime++;
+				nums[i] = 2;
+				res++;
+			}
+		}
+		return res;
+	}
+	int longestOnes(vector<int>& nums, int K) {//最大连续1的个数 III
+		int numsLen = nums.size(), left = 0, res = 0, right = 0;
+		while (left < numsLen) {
+			if (right < numsLen && ((K > 0 && nums[right] == 0) || nums[right] == 1)) {
+				if (nums[right++] == 0) {//先把K分配
+					K--;
+				}
+			}
+			else {
+				if (K == 0 || (right == numsLen && K > 0)) {//异常判断
+					res = max(res, right - left);
+				}
+				if (nums[left] == 0) {//移动安插位置
+					K++;
+				}
+				left++;
+			}
+		}
+		return res;
+	}
+	vector<int> numMovesStonesII(vector<int>& stones) {//移动石子直到连续 II
+		sort(stones.begin(), stones.end());
+		int stoneCnt = stones.size();
+		int minStep = INT_MAX, maxStep = 0, s1 = 0, s2 = 0;
+		s1 = stones[stoneCnt - 1] - stones[0] + 1 - stoneCnt;//可移动空位
+		s2 = min(stones[1] - stones[0] - 1, stones[stoneCnt - 1] - stones[stoneCnt - 2] - 1);//不可利用空位
+		maxStep = s1 - s2;
+		int right = 0;
+		for (int left = 0; left < stoneCnt; left++) {
+			while (right + 1 < stoneCnt && stones[right + 1] - stones[left] < stoneCnt) {
+				//找到窗口
+				right++;
+			}
+			int cost = stoneCnt - (right - left + 1);//窗口内缺失的石头数量
+			if ((right - left + 1 == stoneCnt - 1) && (stones[right] - stones[left] + 1 == stoneCnt - 1)) {
+				cost = 2;
+			}
+			minStep = min(minStep, cost);
+		}
+		return {minStep, maxStep};
+	}
+	int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int X) {//爱生气的书店老板
+		size_t numsLen = customers.size();
+		int res = 0;
+		for (size_t i = 0; i < numsLen; i++) {
+			res += grumpy[i] == 0 ? customers[i] : 0;
+		}
+		int left = 0, right = X;
+		for (size_t i = 0; i < right; i++) {
+			res += grumpy[i] == 1 ? customers[i] : 0;
+		}
+		int newRes = res;
+		while (right < numsLen) {
+			newRes = newRes + (grumpy[right] == 1 ? customers[right] : 0) - (grumpy[left] == 1 ? customers[left] : 0);
+			res = max(res, newRes);
+			left++;
+			right++;
+		}
+		return res;
+	}
+	vector<double> sampleStats(vector<int>& count) {//大样本统计
+		//最小值、最大值、平均值、中位数和众数
+		vector<double> res(5, 0.0);
+		int minVal = -1, maxVal = 0;
+		int cand = 0, cnt = 0;
+		int totalCnt = 0, currentCnt = 0, lastCnt = 0;
+		for (int& num : count) {//有效样本数量
+			totalCnt += num;
+		}
+		int lim = totalCnt / 2;
+		bool isOdd = totalCnt % 2 == 1;
+		for (size_t val = 0; val < 256; val++) {
+			int valCnt = count[val];
+			if (valCnt == 0) {
+				continue;
+			}
+			//求平均
+			res[2] += 1.0 * valCnt * val / totalCnt;
+			//最小值
+			if (minVal == -1) {
+				minVal = val;
+			}
+			//最大值
+			maxVal = val;
+			//众数
+			if (valCnt > cnt) {
+				cand = val;
+				cnt = valCnt;
+			}
+		}
+		int lastVal = 0;
+		for (size_t val = 0; val < 256; val++) {
+			int valCnt = count[val];
+			if (valCnt == 0) {
+				continue;
+			}
+			//中位数，三种情况，奇数，偶数非跨区，偶数跨区
+			lastCnt = currentCnt;
+			currentCnt += valCnt;
+			if (isOdd && lastCnt < lim && lim <= currentCnt) {//奇数
+				res[3] = val + 0.0;
+				break;
+			}
+			else if (!isOdd && lastCnt < lim && lim + 1 <= currentCnt) {//偶数非跨区
+				res[3] = val + 0.0;
+				break;
+			}
+			else if (!isOdd && lastCnt == lim && lim + 1 <= currentCnt) {
+				res[3] = (lastVal + val) / 2.0;
+				break;
+			}
+			lastVal = val;
+		}
+		res[0] = minVal + 0.0;
+		res[1] = maxVal + 0.0;
+		res[4] = cand + 0.0;
+		return res;
+	}
+	int equalSubstring(string s, string t, int maxCost) {//尽可能使字符串相等
+		int res = 0;
+		int sLen = s.size(), left = 0;
+		for (int i = 0; i < sLen; i++) {
+			maxCost -= abs(s[i] - t[i]);
+			while (left <= i && maxCost < 0) {
+				maxCost += abs(s[left] - t[left]);
+				left++;
+			}
+			res = max(res, i - left + 1);
+		}
+		return res;
+	}
+	//int prefix[300][300];
+	int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {//元素和为目标值的子矩阵数量
+		size_t rol = matrix.size(), col = matrix[0].size();
+		//求累加矩阵
+		int** prefix = new int*[rol + 1];
+		for (int i = 0; i <= rol; i++) {
+			prefix[i] = new int[col + 1];
+			for (int j = 0; j <= col; j++) {
+				prefix[i][j] = 0;
+			}
+		}
+		for (size_t i = 1; i <= rol; i++) {
+			for (size_t j = 1; j <= col; j++) {
+				prefix[i][j] = prefix[i - 1][j] + prefix[i][j - 1] - prefix[i - 1][j - 1] + matrix[i - 1][j - 1];
+			}
+		}
+		int res = 0;
+		for (size_t r1 = 1; r1 <= rol; r1++) {
+			for (size_t c1 = 1; c1 <= col; c1++) {
+				for (size_t r2 = r1; r2 <= rol; r2++) {
+					for (size_t c2 = c1; c2 <= col; c2++) {
+						if (prefix[r2][c2] - prefix[r2][c1 - 1] - prefix[r1 - 1][c2] + prefix[r1 - 1][c1 - 1] == target) {
+							res++;
+						}
+					}
+				}
+			}
+		}
+		return res;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	string a = "ababcbacadefegdehijhklij";
+	string a = ".L.R...LR..L..";
 	string b = "abc";
-	vector<int> inpt = { 1,3,-1,-3,5,3,6,7 };
+	vector<int> inpt1 = { 1,0,1,2,1,1,7,5 };
+	vector<int> inpt2 = { 0,1,0,1,0,1,0,1 };
+	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
-		{4,10,15,24,26 },
-		{ 0,9,12,20 },
-		{ 5,18,22,30 }
+		{ 0, 1, 1, 1, 0, 1 },
+		{ 0, 0, 0, 0, 0, 1 },
+		{ 0, 0, 1, 0, 0, 1 },
+		{ 1, 1, 0, 1, 1, 0 },
+		{ 1, 0, 0, 1, 0, 0 },
 	};
-	mySolution.medianSlidingWindow(inpt, 3);
+	mySolution.numSubmatrixSumTarget(nums, 0);
 	return 0;
 }
 #endif
