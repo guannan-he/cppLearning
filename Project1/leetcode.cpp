@@ -8618,7 +8618,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-滑动窗口与双指针
-#if true
+#if false
 
 class Solution {
 public:
@@ -9163,6 +9163,33 @@ int main(int argc, char* argv[]) {
 		{ 1, 0, 0, 1, 0, 0 },
 	};
 	mySolution.numSubmatrixSumTarget(nums, 0);
+	return 0;
+}
+#endif
+
+//cookBook-滑动窗口与双指针
+#if true
+
+class Solution {
+public:
+	;
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = ".L.R...LR..L..";
+	string b = "abc";
+	vector<int> inpt1 = { 1,0,1,2,1,1,7,5 };
+	vector<int> inpt2 = { 0,1,0,1,0,1,0,1 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{ 0, 1, 1, 1, 0, 1 },
+		{ 0, 0, 0, 0, 0, 1 },
+		{ 0, 0, 1, 0, 0, 1 },
+		{ 1, 1, 0, 1, 1, 0 },
+		{ 1, 0, 0, 1, 0, 0 },
+	};
+	mySolution;
 	return 0;
 }
 #endif
