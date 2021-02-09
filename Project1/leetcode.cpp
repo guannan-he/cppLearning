@@ -9024,7 +9024,7 @@ public:
 			}
 			minStep = min(minStep, cost);
 		}
-		return {minStep, maxStep};
+		return { minStep, maxStep };
 	}
 	int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int X) {//爱生气的书店老板
 		size_t numsLen = customers.size();
@@ -9120,7 +9120,7 @@ public:
 	int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {//元素和为目标值的子矩阵数量
 		size_t rol = matrix.size(), col = matrix[0].size();
 		//求累加矩阵
-		int** prefix = new int*[rol + 1];
+		int** prefix = new int* [rol + 1];
 		for (int i = 0; i <= rol; i++) {
 			prefix[i] = new int[col + 1];
 			for (int j = 0; j <= col; j++) {
@@ -9167,19 +9167,176 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-滑动窗口与双指针
+//cookBook-链表
 #if true
 
 class Solution {
 public:
-	;
+	struct ListNode {
+		int val;
+		ListNode* next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
+	ListNode* myBuildList(vector<int>& nums) {
+		ListNode* rootNode = new ListNode;
+		ListNode* currentNode = rootNode;
+		for (int& num : nums) {
+			currentNode->next = new ListNode;
+			currentNode = currentNode->next;
+			currentNode->val = num;
+		}
+		return rootNode->next;
+	}
+	ListNode* deleteDuplicatesMKI(ListNode* head) {//删除排序链表中的重复元素
+		if (head == nullptr) {
+			return head;
+		}
+		ListNode* currentNode = head, *nextNode = head;
+		while (nextNode != nullptr) {
+			if (currentNode->val != nextNode->val) {
+				currentNode->next = nextNode;
+				currentNode = currentNode->next;
+			}
+			nextNode = nextNode->next;
+		}
+		currentNode->next = nextNode;
+		return head;
+	}
+	ListNode* deleteDuplicates(ListNode* head) {//删除排序链表中的重复元素 II
+		if (head == nullptr || head->next == nullptr) {
+			return head;
+		}
+		ListNode * currentNode, *leftNode, *rightNode;
+		ListNode *rootNode = new ListNode;
+		rootNode->next = head;
+		currentNode = rootNode, leftNode = head, rightNode = head;
+		while (rightNode != nullptr) {
+			if (leftNode->val == rightNode->val) {
+				rightNode = rightNode->next;
+			}
+			else if (leftNode->next == rightNode) {
+				currentNode->next = leftNode;
+				currentNode = currentNode->next;
+				leftNode = rightNode;
+			}
+			else {
+				leftNode = rightNode;
+			}
+		}
+		currentNode->next = leftNode->next == nullptr ? leftNode : nullptr;
+		return rootNode->next;
+	}
+	ListNode* partition(ListNode* head, int x) {//分隔链表
+		ListNode* sortNode = new ListNode;
+		ListNode* rminNode = new ListNode;
+		ListNode* sortCur = sortNode, * rminCur = rminNode;
+		sortNode->next = head, rminNode->next = head;
+		while (rminCur != nullptr && rminCur->next != nullptr) {
+			if (rminCur->next->val < x) {
+				sortCur->next = rminCur->next;
+				rminCur->next = rminCur->next->next;
+				sortCur = sortCur->next;
+			}
+			else {
+				rminCur = rminCur->next;
+			}
+		}
+		if (rminCur != nullptr) {
+			rminCur->next = nullptr;
+		}
+		sortCur->next = rminNode->next;
+		return sortNode->next;
+	}
+	ListNode* reverseBetween(ListNode* head, int m, int n) {//反转链表 II
+		//反转从位置 m 到 n 的链表。请使用一趟扫描完成反转。
+		ListNode* root = new ListNode;
+		root->next = head;
+		ListNode* last = root;
+		stack<ListNode*> stk;
+		int cnt = 1;
+		while (cnt < m) {
+			last = head;
+			head = head->next;
+			cnt++;
+		}
+		while (cnt <= n) {
+			stk.push(head);
+			head = head->next;
+			cnt++;
+		}
+		while (!stk.empty()) {
+			last->next = stk.top();
+			stk.pop();
+			last = last->next;
+		}
+		last->next = head;
+		return root->next;
+	}
+	ListNode* reverseKGroupBAK(ListNode* head, int k) {//K 个一组翻转链表
+		//只使用常数空间
+		//栈版本
+		ListNode* rootNode = new ListNode;
+		rootNode->next = head;
+		ListNode* slowCur = rootNode, * fastCur = rootNode;
+		stack<ListNode*> stk;
+		int cnt = 0;
+		while (fastCur->next != nullptr) {
+			fastCur = fastCur->next;
+			cnt++;
+			if (cnt == k) {
+				ListNode* front = slowCur, * rear = fastCur->next;
+				while (cnt > 0) {
+					stk.push(slowCur->next);
+					slowCur = slowCur->next;
+					cnt--;
+				}
+				while (!stk.empty()) {
+					front->next = stk.top();
+					stk.pop();
+					front = front->next;
+				}
+				front->next = rear;
+				slowCur = front;
+				fastCur = front;
+			}
+		}
+		return rootNode->next;
+	}
+	ListNode* reverseKGroup(ListNode* head, int k) {//K 个一组翻转链表
+		//只使用常数空间
+		//不移动头节点固定位置插入就可以实现反序
+		ListNode* rootNode = new ListNode;
+		rootNode->next = head;
+		ListNode* slowCur = rootNode, * fastCur = rootNode;
+		int cnt = 0;
+		while (fastCur->next != nullptr) {
+			fastCur = fastCur->next;
+			cnt++;
+			if (cnt == k) {
+				ListNode* nextNode = slowCur->next;
+				while (cnt > 1) {
+					ListNode* copy = slowCur->next;
+					slowCur->next = copy->next;
+					copy->next = fastCur->next;
+					fastCur->next = copy;
+					cnt--;
+				}
+				cnt = 0;
+				fastCur = nextNode;
+				slowCur = nextNode;
+			}
+		}
+		return rootNode->next;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = ".L.R...LR..L..";
 	string b = "abc";
-	vector<int> inpt1 = { 1,0,1,2,1,1,7,5 };
+	vector<int> inpt1 = { 1, 2, 3, 4, 5 };
 	vector<int> inpt2 = { 0,1,0,1,0,1,0,1 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
@@ -9189,7 +9346,7 @@ int main(int argc, char* argv[]) {
 		{ 1, 1, 0, 1, 1, 0 },
 		{ 1, 0, 0, 1, 0, 0 },
 	};
-	mySolution;
+	mySolution.reverseKGroup(mySolution.myBuildList(inpt1), 2);
 	return 0;
 }
 #endif
