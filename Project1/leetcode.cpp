@@ -9168,7 +9168,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-链表
-#if true
+#if false
 
 class Solution {
 public:
@@ -9330,13 +9330,183 @@ public:
 		}
 		return rootNode->next;
 	}
+	void reorderList(ListNode* head) {//重排链表
+		vector<ListNode*> nodeVtr;
+		ListNode* current = head;
+		while (current != nullptr) {
+			nodeVtr.push_back(current);
+			current = current->next;
+		}
+		int leftCur = 0, rightCur = nodeVtr.size() - 1;
+		head = new ListNode;
+		current = head;
+		while (leftCur < rightCur) {
+			current->next = nodeVtr[leftCur++];
+			current = current->next;
+			current->next = nodeVtr[rightCur--];
+			current = current->next;
+		}
+		if (leftCur == rightCur) {
+			current->next = nodeVtr[leftCur];
+			current = current->next;
+		}
+		current->next = nullptr;
+		head = head->next;
+		return;
+	}
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {//两数相加 II
+		stack<ListNode*> stk1, stk2;
+		while (l1 != nullptr) {
+			stk1.push(l1);
+			l1 = l1->next;
+		}
+		while (l2 != nullptr) {
+			stk2.push(l2);
+			l2 = l2->next;
+		}
+		int aux = 0;
+		ListNode* root = new ListNode;
+		while (!stk1.empty() || !stk2.empty() || aux == 1) {
+			int cand1 = 0, cand2 = 0;
+			if (!stk1.empty()) {
+				cand1 = stk1.top()->val;
+				stk1.pop();
+			}
+			if (!stk2.empty()) {
+				cand2 = stk2.top()->val;
+				stk2.pop();
+			}
+			ListNode* tmp = new ListNode;
+			tmp->val = (cand1 + cand2 + aux) % 10;
+			tmp->next = root->next;
+			root->next = tmp;
+			aux = (cand1 + cand2 + aux) / 10;
+		}
+		return root->next;
+	}
+	vector<ListNode*> splitListToParts(ListNode* root, int k) {//分隔链表
+		ListNode* current = root;
+		int cnt = 0;
+		while (current != nullptr) {
+			current = current->next;
+			cnt++;
+		}
+		int lim = cnt / k;
+		int gap = cnt % k;
+		vector<ListNode*> res(k);
+		current = root;
+		ListNode* tmp = new ListNode;
+		for (int i = 0; i < k; i++) {
+			int currentCnt = 0;
+			int currentLim = lim;
+			if (i < gap) {
+				currentLim++;
+			}
+			res[i] = current;
+			ListNode* cur = tmp;
+			cur->next = current;
+			while (current != nullptr && currentCnt++ < currentLim) {
+				current = current->next;
+				cur = cur->next;
+			}
+			if (cur != nullptr) {
+				cur->next = nullptr;
+			 }
+		}
+		return res;
+	}
+	ListNode* middleNode(ListNode* head) {//链表的中间结点
+		ListNode* root = new ListNode;
+		root->next = head;
+		ListNode* slowCur = root, * fastCur = root;
+		int cnt = 0;
+		while (fastCur != nullptr && fastCur->next != nullptr) {
+			slowCur = slowCur->next;
+			fastCur = fastCur->next->next;
+			cnt += 2;
+		}
+		if (fastCur == nullptr) {
+			cnt++;
+		}
+		if (cnt % 2 == 0) {
+			slowCur = slowCur->next;
+		}
+		return slowCur;
+	}
+	int getDecimalValue(ListNode* head) {//二进制链表转整数
+		int res = 0;
+		while (head != nullptr) {
+			res *= 2;
+			res += head->val;
+			head = head->next;
+		}
+		return res;
+	}
+	ListNode* removeZeroSumSublists(ListNode* head) {//从链表中删去总和值为零的连续节点
+		unordered_map<int, ListNode*> prefixMap;
+		int sum = 0;
+		ListNode* root = new ListNode;
+		root->next = head, root->val = 0;
+		ListNode* cur = root;
+		while (cur != nullptr) {
+			sum += cur->val;
+			prefixMap[sum] = cur;
+			cur = cur->next;
+		}
+		cur = root, sum = 0;
+		while (cur != nullptr) {
+			sum += cur->val;
+			cur->next = prefixMap[sum]->next;
+			cur = cur->next;
+		}
+		return root->next;
+	}
+	vector<int> nextLargerNodes(ListNode* head) {//链表中的下一个更大节点
+		vector<int> nums;
+		for (ListNode* cur = head; cur != nullptr; cur = cur->next) {
+			nums.push_back(cur->val);
+		}
+		vector<int> res(nums);
+		stack<int> stk;
+		for (int i = nums.size() - 1; i > -1; i--) {
+			while (!stk.empty() && stk.top() <= nums[i]) {
+				stk.pop();
+			}
+			res[i] = stk.empty() ? 0 : stk.top();
+			stk.push(nums[i]);
+		}
+		return res;
+	}
+	int numComponents(ListNode* head, vector<int>& G) {//链表组件
+		unordered_set<int> gSet;
+		for (int& num : G) {
+			gSet.emplace(num);
+		}
+		for (ListNode* cur = head; cur != nullptr; cur = cur->next) {
+			cur->val = gSet.count(cur->val) > 0 ? 1 : 0;
+		}
+		int res = 0;
+		ListNode* cur = head;
+		while (cur != nullptr) {
+			if (cur->val == 1) {
+				res++;
+				while (cur != nullptr && cur->val == 1) {
+					cur = cur->next;
+				}
+			}
+			else {
+				cur = cur->next;
+			}
+		}
+		return res;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = ".L.R...LR..L..";
 	string b = "abc";
-	vector<int> inpt1 = { 1, 2, 3, 4, 5 };
+	vector<int> inpt1 = { 1, 2, 3, 4, 5, 6 };
 	vector<int> inpt2 = { 0,1,0,1,0,1,0,1 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
@@ -9346,7 +9516,34 @@ int main(int argc, char* argv[]) {
 		{ 1, 1, 0, 1, 1, 0 },
 		{ 1, 0, 0, 1, 0, 0 },
 	};
-	mySolution.reverseKGroup(mySolution.myBuildList(inpt1), 2);
+	mySolution.middleNode(mySolution.myBuildList(inpt1));
+	return 0;
+}
+#endif
+
+//cookBook-栈和队列
+#if true
+
+class Solution {
+public:
+	;
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = ".L.R...LR..L..";
+	string b = "abc";
+	vector<int> inpt1 = { 1, 2, 3, 4, 5, 6 };
+	vector<int> inpt2 = { 0,1,0,1,0,1,0,1 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{ 0, 1, 1, 1, 0, 1 },
+		{ 0, 0, 0, 0, 0, 1 },
+		{ 0, 0, 1, 0, 0, 1 },
+		{ 1, 1, 0, 1, 1, 0 },
+		{ 1, 0, 0, 1, 0, 0 },
+	};
+	mySolution;
 	return 0;
 }
 #endif
