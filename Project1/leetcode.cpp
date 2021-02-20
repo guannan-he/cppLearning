@@ -9193,7 +9193,7 @@ public:
 		if (head == nullptr) {
 			return head;
 		}
-		ListNode* currentNode = head, *nextNode = head;
+		ListNode* currentNode = head, * nextNode = head;
 		while (nextNode != nullptr) {
 			if (currentNode->val != nextNode->val) {
 				currentNode->next = nextNode;
@@ -9208,8 +9208,8 @@ public:
 		if (head == nullptr || head->next == nullptr) {
 			return head;
 		}
-		ListNode * currentNode, *leftNode, *rightNode;
-		ListNode *rootNode = new ListNode;
+		ListNode* currentNode, * leftNode, * rightNode;
+		ListNode* rootNode = new ListNode;
 		rootNode->next = head;
 		currentNode = rootNode, leftNode = head, rightNode = head;
 		while (rightNode != nullptr) {
@@ -9411,7 +9411,7 @@ public:
 			}
 			if (cur != nullptr) {
 				cur->next = nullptr;
-			 }
+			}
 		}
 		return res;
 	}
@@ -9522,19 +9522,708 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-栈和队列
-#if true
+#if false
+
+class FreqStack {//最大频率栈
+public:
+	FreqStack() {
+
+	}
+
+	void push(int x) {
+		freq[x]++;
+		maxFreq = max(maxFreq, freq[x]);
+		stkVtr[freq[x]].push(x);
+		return;
+	}
+
+	int pop() {
+		int res = stkVtr[maxFreq].top();
+		stkVtr[maxFreq].pop();
+		freq[res]--;
+		if (stkVtr[maxFreq].size() == 0) {
+			maxFreq--;
+		}
+		return res;
+	}
+private:
+	unordered_map<int, int> freq;
+	unordered_map<int, stack<int>> stkVtr;
+	int maxFreq = 0;
+};
+
+class StockSpanner {//股票价格跨度
+public:
+	StockSpanner() {
+		return;
+	}
+
+	int next(int price) {
+		int tmp = 1;
+		while (!pri.empty() && pri.top() <= price) {
+			tmp += day.top();
+			day.pop();
+			pri.pop();
+		}
+		pri.push(price);
+		day.push(tmp);
+		return day.top();
+	}
+private:
+	stack<int> day, pri;
+};
+
+class NestedInteger {
+public:
+	// Constructor initializes an empty nested list.
+	NestedInteger();
+
+	// Constructor initializes a single integer.
+	NestedInteger(int value);
+
+	// Return true if this NestedInteger holds a single integer, rather than a nested list.
+	bool isInteger() const;
+
+	// Return the single integer that this NestedInteger holds, if it holds a single integer
+	// The result is undefined if this NestedInteger holds a nested list
+	int getInteger() const;
+
+	// Set this NestedInteger to hold a single integer.
+	void setInteger(int value);
+
+	// Set this NestedInteger to hold a nested list and adds a nested integer to it.
+	void add(const NestedInteger& ni);
+
+	// Return the nested list that this NestedInteger holds, if it holds a nested list
+	// The result is undefined if this NestedInteger holds a single integer
+	const vector<NestedInteger>& getList() const;
+
+};
 
 class Solution {
 public:
-	;
+	string simplifyPath(string path) {//简化路径
+		path.push_back('/');
+		stack<string> pathStack;
+		string current;
+		for (char& ch : path) {
+			if (ch == '/') {
+				if (current == ".") {
+					current.clear();
+				}
+				else if (current == "..") {
+					if (!pathStack.empty()) {
+						pathStack.pop();
+					}
+				}
+				else if (current.size() > 0) {
+					pathStack.push(current);
+				}
+				current.clear();
+			}
+			else {
+				current.push_back(ch);
+			}
+		}
+		string res = "/";
+		while (!pathStack.empty()) {
+			res = '/' + pathStack.top() + res;
+			pathStack.pop();
+		}
+		if (res.size() != 1) {
+			res.pop_back();
+		}
+		return res;
+	}
+	int calculate(string s) {//基本计算器
+		int res = 0, sym = 1, tmp = 0;
+		stack<int> numStack;
+		//假设只有两个操作数，A - (B - C) = A + （-1）* (B - C)
+		for (char& ch : s) {
+			if (ch == ' ') {
+				continue;
+			}
+			else if (ch >= '0' && ch <= '9') {
+				tmp *= 10;
+				tmp += ch - '0';
+			}
+			else if (ch == '+') {
+				res += tmp * sym;
+				tmp = 0;
+				sym = 1;
+			}
+			else if (ch == '-') {
+				res += tmp * sym;
+				tmp = 0;
+				sym = -1;
+			}
+			else if (ch == '(') {
+				numStack.push(res);
+				numStack.push(sym);
+				sym = 1;
+				res = 0;
+			}
+			else if (ch == ')') {
+				res += tmp * sym;
+				res *= numStack.top();
+				numStack.pop();
+				res += numStack.top();
+				numStack.pop();
+				tmp = 0;
+			}
+		}
+		return res + tmp * sym;
+	}
+	bool isValidSerialization(string preorder) {//验证二叉树的前序序列化
+		int cur = 0, sLen = preorder.size();
+		bool isLeave = false;
+		while (cur < sLen) {//先转换为节点标记
+			if (preorder[cur] <= '9' && preorder[cur] >= '0') {
+				if (isLeave == false) {
+					isLeave = true;
+				}
+				else {
+					preorder[cur] = ',';
+				}
+			}
+			else {
+				isLeave = false;
+			}
+			cur++;
+		}
+		int diff = 1;//出度 - 入度
+		for (char& ch : preorder) {
+			if (ch == ',') {
+				continue;
+			}
+			diff--;
+			if (diff < 0) {
+				return false;
+			}
+			if (ch != '#') {
+				diff += 2;
+			}
+		}
+		return diff == 0;
+	}
+	NestedInteger deserialize(string s) {//迷你语法分析器
+		//整数也需要创建容器
+		int n = s.size();
+		if (n == 0)return NestedInteger();
+		if (s[0] != '[')return NestedInteger(stoi(s));
+		string num;
+		stack<NestedInteger> st;
+		for (int i = 0; i < n; i++) {
+			//cout << i << " " << st.size() << "\n";
+			if (s[i] == '[') {
+				st.push(NestedInteger());
+			}
+			else if (s[i] == ',') {
+				if (!num.empty())st.top().add(NestedInteger(stoi(num)));
+				num.clear();
+			}
+			else if (s[i] == ']') {
+				if (!num.empty()) {
+					st.top().add(NestedInteger(stoi(num)));
+					num.clear();
+				}
+				if (st.size() > 1) {
+					auto now = st.top();
+					st.pop();
+					st.top().add(now);
+				}
+			}
+			else num += s[i];
+		}
+		return st.top();
+	}
+	string removeKdigits(string num, int k) {//移掉K位数字
+		stack<char> stk;
+		for (char& ch : num) {//单调不减栈
+			while (stk.size() > 0 && stk.top() > ch && k > 0) {
+				stk.pop();
+				--k;
+			}
+			stk.push(ch);
+		}
+		while (k-- > 0) {//尾部弹出
+			stk.pop();
+		}
+		string res = "";
+		while (!stk.empty()) {//倒叙生成
+			res = stk.top() + res;
+			stk.pop();
+		}
+		size_t resLen = res.size(), cur = 0;
+		while (cur < resLen) {//去零
+			if (res[cur] != '0') {
+				break;
+			}
+			cur++;
+		}
+		res = res.substr(cur, resLen - cur);
+		return res == "" ? "0" : res;
+	}
+	bool find132pattern(vector<int>& nums) {//132模式
+		//贪心+递减栈
+		size_t numsLen = nums.size();
+		if (numsLen < 3) {
+			return false;
+		}
+		vector<int> left(nums);
+		for (size_t i = 1; i < numsLen; i++) {
+			left[i] = min(left[i], left[i - 1]);
+		}
+		stack<int> stk;
+		for (int i = numsLen - 1; i > -1; i--) {
+			if (left[i] < nums[i]) {
+				while (!stk.empty() && stk.top() <= left[i]) {//递减栈，从1向上找
+					stk.pop();
+				}
+				if (!stk.empty() && stk.top() < nums[i]) {//找到满足<3的就行
+					return true;
+				}
+				stk.push(nums[i]);
+			}
+		}
+		return false;
+	}
+	vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {//下一个更大元素 I
+		stack<int> stk;
+		vector<int> res;
+		unordered_map<int, int> resMap;
+		for (int& num : nums2) {
+			while (!stk.empty() && stk.top() < num) {//带入栈元素大于栈顶元素，证明找到了右侧更大的
+				resMap[stk.top()] = num;
+				stk.pop();
+			}
+			stk.push(num);
+		}
+		while (!stk.empty()) {
+			resMap[stk.top()] = -1;
+			stk.pop();
+		}
+		for (int& num : nums1) {
+			res.push_back(resMap[num]);
+		}
+		return res;
+	}
+	vector<int> nextGreaterElements(vector<int>& nums) {//下一个更大元素 II
+		int numnsLen = nums.size();
+		vector<int> res(numnsLen, -1);
+		for (int i = 0; i < numnsLen; i++) {
+			nums.push_back(nums[i]);
+		}
+		stack<int> stk;
+		for (int i = 0; i < 2 * numnsLen; i++) {
+			while (!stk.empty() && nums[i] > nums[stk.top()]) {
+				int id = stk.top();
+				stk.pop();
+				if (id < numnsLen) {
+					res[id] = nums[i];
+				}
+			}
+			stk.push(i);
+		}
+		return res;
+	}
+	vector<int> exclusiveTime(int n, vector<string>& logs) {//函数的独占时间
+		//关键点：栈顶元素抢占cpu
+		vector<int> res(n, 0);
+		stack<int> stk;//记录id
+		int prev = 0;//上次刷新时间戳
+		for (string& str : logs) {
+			int cur = 0;
+			int sLen = str.size();
+			int id = 0, time = 0;
+			string flag;
+			while (cur < sLen) {//获取ID
+				if (str[cur] == ':') {
+					break;
+				}
+				id *= 10;
+				id += str[cur] - '0';
+				cur++;
+			}
+			cur++;
+			while (cur < sLen) {//获取状态
+				if (str[cur] == ':') {
+					break;
+				}
+				flag.push_back(str[cur]);
+				cur++;
+			}
+			cur++;
+			while (cur < sLen) {//获取时间
+				time *= 10;
+				time += str[cur] - '0';
+				cur++;
+			}
+			if (stk.empty()) {
+				stk.push(id);
+				prev = time;
+				continue;
+			}
+			if (flag == "start") {
+				res[stk.top()] += time - prev;
+				stk.push(id);
+				prev = time;
+			}
+			else {
+				res[id] += time - prev + 1;
+				stk.pop();
+				prev = time + 1;
+			}
+		}
+		return res;
+	}
+	int calPoints(vector<string>& ops) {//棒球比赛
+		stack<int> stk;
+		for (string& op : ops) {
+			if (op == "+") {
+				int tmp = stk.top();
+				stk.pop();
+				int current = tmp + stk.top();
+				stk.push(tmp);
+				stk.push(current);
+			}
+			else if (op == "D") {
+				stk.push(2 * stk.top());
+			}
+			else if (op == "C") {
+				stk.pop();
+			}
+			else {
+				stk.push(stoi(op));
+			}
+		}
+		int res = 0;
+		while (!stk.empty()) {
+			res += stk.top();
+			stk.pop();
+		}
+		return res;
+	}
+	bool backspaceCompare(string S, string T) {//比较含退格的字符串
+		stack<char> stkS, stkT;
+		for (char& ch : S) {
+			if (ch == '#') {
+				if (!stkS.empty()) {
+					stkS.pop();
+				}
+			}
+			else {
+				stkS.push(ch);
+			}
+		}
+		for (char& ch : T) {
+			if (ch == '#') {
+				if (!stkT.empty()) {
+					stkT.pop();
+				}
+			}
+			else {
+				stkT.push(ch);
+			}
+		}
+		if (stkS.size() != stkT.size()) {
+			return false;
+		}
+		while (!stkS.empty()) {
+			if (stkS.top() != stkT.top()) {
+				return false;
+			}
+			stkS.pop();
+			stkT.pop();
+		}
+		return true;
+	}
+	vector<int> asteroidCollision(vector<int>& asteroids) {//行星碰撞
+		stack<int> stk;
+		int asteroidsCnt = asteroids.size();
+		int cur = 0;
+		while (cur < asteroidsCnt) {
+			int num = asteroids[cur];
+			if (stk.empty() || (!stk.empty() && stk.top() * num > 0) || (!stk.empty() && stk.top() < 0 && num > 0)) {//新行星入栈
+				stk.push(num);
+			}
+			else if (abs(stk.top()) == abs(num)) {//新行星和栈顶行星湮灭
+				stk.pop();
+			}
+			else if (abs(stk.top()) < abs(num)) {//栈顶行星消灭
+				stk.pop();
+				continue;
+			}
+			cur++;
+		}
+		vector<int> res;
+		while (!stk.empty()) {
+			res.insert(res.begin(), stk.top());
+			stk.pop();
+		}
+		return res;
+	}
+	bool isUpper(char c) { return c >= 'A' && c <= 'Z'; }
+	bool isLower(char c) { return c >= 'a' && c <= 'z'; }
+	bool isDigit(char c) { return c >= '0' && c <= '9'; }
+	map<string, int> atomSplit(const string  str, int leftCur, int rightCur) {
+		map<string, int> atomMap;
+		string atomName;
+		int cnt = 0, cur = leftCur;
+		while (cur <= rightCur) {
+			char ch = str[cur];
+			if (isUpper(ch)) {
+				if (!atomName.empty()) {//正常元素
+					atomMap[atomName] += max(cnt, 1);
+					atomName.clear();
+					cnt = 0;
+				}
+				atomName += ch;
+			}
+			else if (isLower(ch)) {
+				atomName += ch;
+			}
+			else if (isDigit(ch)) {
+				cnt *= 10;
+				cnt += ch - '0';
+			}
+			else if (ch == '(') {
+				if (!atomName.empty()) {//括号前元素
+					atomMap[atomName] += max(cnt, 1);
+					atomName.clear();
+					cnt = 0;
+				}
+				int newCur = ++cur;//括号内第一个元素头
+				int bracket = 1;
+				while (cur <= rightCur) {
+					if (str[cur] == '(') {
+						bracket++;
+					}
+					else if (str[cur] == ')') {
+						bracket--;
+					}
+					if (bracket == 0) {
+						break;
+					}
+					cur++;
+				}
+				map<string, int> newAtomMap = atomSplit(str, newCur, cur - 1);//处理括号内
+				cnt = 0;
+				while (cur + 1 <= rightCur && isDigit(str[cur + 1])) {
+					cnt *= 10;
+					cnt += str[cur + 1] - '0';
+					cur++;
+				}
+				cnt = max(1, cnt);
+				for (auto& it : newAtomMap) {
+					atomMap[it.first] += it.second * cnt;
+				}
+				cnt = 0;
+			}
+			cur++;
+		}
+		if (!atomName.empty()) {
+			atomMap[atomName] += max(cnt, 1);
+		}
+		return atomMap;
+	}
+	string countOfAtoms(string formula) {//原子的数量
+		map<string, int> atomMap = atomSplit(formula, 0, formula.size() - 1);
+		//后处理
+		string res;
+		for (auto& it : atomMap) {
+			res += it.first;
+			if (it.second > 1) {
+				res += to_string(it.second);
+			}
+		}
+		return res;
+	}
+	int scoreOfParentheses(string S) {//括号的分数
+		stack<int> stk;
+		for (char& ch : S) {
+			if (ch == '(') {
+				stk.push(0);
+			}
+			else {
+				if (stk.top() == 0) {
+					stk.pop();
+					stk.push(1);
+				}
+				else {
+					int tmp = 0;
+					while (!stk.empty() && stk.top() != 0) {
+						tmp += stk.top();
+						stk.pop();
+					}
+					stk.pop();
+					stk.push(2 * tmp);
+				}
+			}
+		}
+		int res = 0;
+		while (!stk.empty()) {
+			res += stk.top();
+			stk.pop();
+		}
+		return res;
+	}
+	int shortestSubarray(vector<int>& nums, int K) {//和至少为 K 的最短子数组
+		size_t numsLen = nums.size();
+		vector<int> prefix(numsLen + 1);
+		for (size_t i = 0; i < numsLen; i++) {
+			prefix[i + 1] = prefix[i] + nums[i];
+		}
+		deque<int> dq;
+		int res = INT_MAX;
+		for (int i = 0; i <= numsLen; i++) {
+			while (!dq.empty() && prefix[i] <= prefix[dq.back()]) {
+				dq.pop_back();
+			}
+			while (!dq.empty() && prefix[i] >= prefix[dq.front()] + K) {
+				res = min(res, i - dq.front());
+				dq.pop_front();
+			}
+			dq.push_back(i);
+		}
+		return res == INT_MAX ? -1 : res;
+	}
+	string removeOuterParentheses(string S) {//删除最外层的括号
+		stack<int> stk;
+		int sLen = S.size();
+		int cur = 0;
+		int bracket = 0;
+		while (cur < sLen) {
+			if (bracket == 0) {
+				stk.push(cur - 1);
+				stk.push(cur);
+			}
+			if (S[cur] == '(') {
+				bracket++;
+			}
+			else {
+				bracket--;
+			}
+			cur++;
+		}
+		stk.push(sLen - 1);
+		string res;
+		for (int i = sLen - 1; i > -1; i--) {
+			if (!stk.empty() && i == stk.top()) {
+				stk.pop();
+				continue;
+			}
+			res = S[i] + res;
+		}
+		return res;
+	}
+	string removeDuplicates(string S) {//删除字符串中的所有相邻重复项
+		string res;
+		for (char& ch : S) {
+			if (!res.empty() && ch == res.back()) {
+				while (!res.empty() && ch == res.back()) {
+					res.pop_back();
+				}
+				continue;
+			}
+			res.push_back(ch);
+		}
+		return res;
+	}
+	bool isValid(string s) {//检查替换后的词是否有效
+		stack<char> stk;
+		for (char& ch : s) {
+			if (ch == 'c') {
+				if (stk.empty() || stk.top() != 'b') {
+					return false;
+				}
+				stk.pop();
+				if (stk.empty() || stk.top() != 'a') {
+					return false;
+				}
+				stk.pop();
+				continue;
+			}
+			stk.push(ch);
+		}
+		return stk.empty();
+	}
+	bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {//验证栈序列
+		int totalCnt = pushed.size();
+		int pushCur = 0, popCur = 0;
+		stack<int> stk;
+		while (pushCur < totalCnt) {
+			if (stk.empty() || stk.top() != popped[popCur]) {
+				stk.push(pushed[pushCur++]);
+			}
+			else if (stk.top() == popped[popCur]) {
+				stk.pop();
+				popCur++;
+			}
+		}
+		while (!stk.empty()) {
+			if (stk.top() != popped[popCur]) {
+				return false;
+			}
+			stk.pop();
+			popCur++;
+		}
+		return popCur == totalCnt;
+	}
+	int minAddToMakeValid(string S) {//使括号有效的最少添加
+		stack<char> stk;
+		for (char& ch : S) {
+			if (!stk.empty() && ch == ')' && stk.top() == '(') {
+				stk.pop();
+			}
+			else {
+				stk.push(ch);
+			}
+		}
+		return stk.size();
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = ".L.R...LR..L..";
-	string b = "abc";
-	vector<int> inpt1 = { 1, 2, 3, 4, 5, 6 };
-	vector<int> inpt2 = { 0,1,0,1,0,1,0,1 };
+	string b = "(()())(())";
+	vector<int> inpt1 = { 1 };
+	vector<int> inpt2 = { 1, 3, 4, 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{ 0, 1, 1, 1, 0, 1 },
+		{ 0, 0, 0, 0, 0, 1 },
+		{ 0, 0, 1, 0, 0, 1 },
+		{ 1, 1, 0, 1, 1, 0 },
+		{ 1, 0, 0, 1, 0, 0 },
+	};
+	mySolution.removeOuterParentheses(b);
+	return 0;
+}
+#endif
+
+//cookBook-树
+#if true
+
+class Solution {
+public:
+	struct TreeNode {
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+		TreeNode() : val(0), left(nullptr), right(nullptr) {}
+		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+		TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
+	};
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = ".L.R...LR..L..";
+	string b = "(()())(())";
+	vector<int> inpt1 = { 1 };
+	vector<int> inpt2 = { 1, 3, 4, 2 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
 		{ 0, 1, 1, 1, 0, 1 },
