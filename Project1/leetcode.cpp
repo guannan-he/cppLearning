@@ -10208,6 +10208,13 @@ int main(int argc, char* argv[]) {
 
 class Solution {
 public:
+	struct ListNode {
+		int val;
+		ListNode* next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
 	struct TreeNode {
 		int val;
 		TreeNode* left;
@@ -10215,6 +10222,264 @@ public:
 		TreeNode() : val(0), left(nullptr), right(nullptr) {}
 		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 		TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
+	};
+	int numTrees(int n) {//不同的二叉搜索树
+		vector<int> dp(n + 1, 0);
+		dp[0] = 1, dp[1] = 1;
+		for (int i = 2; i <= n; i++) {
+			for (int j = 1; j <= i; j++) {
+				dp[i] += dp[j - 1] * dp[i - j];
+			}
+		}
+		return dp[n];
+	}
+	bool isSameTree(TreeNode* p, TreeNode* q) {//相同的树
+		if (p == nullptr && q == nullptr) {
+			return true;
+		}
+		if ((p == nullptr) ^ (q == nullptr)) {
+			return false;
+		}
+		if (p->val == q->val) {
+			return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+		}
+		return false;
+	}
+	void recoverTree(TreeNode* root) {//恢复二叉搜索树
+		vector<int> nums;
+		recoverTreeSubFunc(root, nums);
+		size_t numsLen = nums.size();
+		int x = -1, y = -1;
+		for (size_t i = 1; i < numsLen; i++) {
+			if (nums[i] < nums[i - 1]) {
+				y = nums[i];
+				if (x == -1) {
+					x = nums[i - 1];
+				}
+				else {
+					break;
+				}
+			}
+		}
+		recoverTreeSubFuncRec(root, x, y, 2);
+		return;
+	}
+	void recoverTreeSubFunc(TreeNode* root, vector<int>& nums) {//中序遍历获取
+		if (root == nullptr) {
+			return;
+		}
+		recoverTreeSubFunc(root->left, nums);
+		nums.push_back(root->val);
+		recoverTreeSubFunc(root->right, nums);
+		return;
+	}
+	void recoverTreeSubFuncRec(TreeNode* root, int x, int y, int cnt) {//中序遍历恢复
+		if (root == nullptr) {
+			return;
+		}
+		if (root->val == x || root->val == y) {
+			root->val = root->val == x ? y : x;
+			cnt--;
+			if (cnt == 0) {
+				return;
+			}
+		}
+		recoverTreeSubFuncRec(root->left, x, y, cnt);
+		recoverTreeSubFuncRec(root->right, x, y, cnt);
+		return;
+	}
+	bool isSymmetric(TreeNode* root) {//对称二叉树
+		return isSymmetricCheck(root, root);
+	}
+	bool isSymmetricCheck(TreeNode* leftCur, TreeNode* rightCur) {
+		if (leftCur == nullptr && rightCur == nullptr) {
+			return true;
+		}
+		if ((leftCur == nullptr) ^ (rightCur == nullptr)) {
+			return false;
+		}
+		return leftCur->val == rightCur->val && isSymmetricCheck(leftCur->left, rightCur->right) && isSymmetricCheck(leftCur->right, rightCur->left);
+	}
+	int maxDepth(TreeNode* root) {//二叉树的最大深度
+		if (root == nullptr) {
+			return 0;
+		}
+		return max(maxDepth(root->left), maxDepth(root->right)) + 1;
+	}
+	vector<vector<int>> levelOrderBottom(TreeNode* root) {//二叉树的层序遍历 II
+		vector<vector<int>> res;
+		if (root == nullptr) {
+			return res;
+		}
+		queue<TreeNode*> que;
+		que.push(root);
+		while (!que.empty()) {
+			size_t queLen = que.size();
+			vector<int> tmp;
+			while (queLen != 0) {
+				TreeNode* cur = que.front();
+				que.pop();
+				queLen--;
+				tmp.push_back(cur->val);
+				if (cur->left != nullptr) {
+					que.push(cur->left);
+				}
+				if (cur->right != nullptr) {
+					que.push(cur->right);
+				}
+			}
+			res.insert(res.begin(), tmp);
+		}
+		return res;
+	}
+	TreeNode* sortedListToBST(ListNode* head) {//有序链表转换二叉搜索树
+		vector<int> nums;
+		while (head != nullptr) {
+			nums.push_back(head->val);
+			head = head->next;
+		}
+		int numsLen = nums.size();
+		return sortedListToBSTSub(nums, 0, numsLen);
+	}
+	TreeNode* sortedListToBSTSub(vector<int>& nums, int left, int right) {
+		if (left >= right) {
+			return nullptr;
+		}
+		int mid = left + (right - left) / 2;
+		TreeNode* current = new TreeNode;
+		current->val = nums[mid];
+		current->left = sortedListToBSTSub(nums, left, mid);
+		current->right = sortedListToBSTSub(nums, mid + 1, right);
+		return current;
+	}
+	int minDepth(TreeNode* root) {//二叉树的最小深度
+		if (root == nullptr) {
+			return 0;
+		}
+		if (root->left == nullptr && root->right == nullptr) {
+			return 1;
+		}
+		int left = INT_MAX, right = INT_MAX;
+		if (root->left != nullptr) {
+			left = minDepth(root->left);
+		}
+		if (root->right != nullptr) {
+			right = minDepth(root->right);
+		}
+		return min(left, right) + 1;
+	}
+	vector<vector<int>> pathSum(TreeNode* root, int targetSum) {//路径总和 II
+		vector<vector<int>> res;
+		vector<int> tmp;
+		pathSumSub(root, targetSum, res, tmp);
+		return res;
+	}
+	void pathSumSub(TreeNode* root, int targetSum, vector<vector<int>>& res, vector<int>& tmp) {
+		if (root == nullptr) {
+			return;
+		}
+		targetSum -= root->val;
+		tmp.push_back(root->val);
+		if (targetSum == 0 && root->left == nullptr && root->right == nullptr) {
+			res.push_back(tmp);
+		}
+		pathSumSub(root->left, targetSum, res, tmp);
+		pathSumSub(root->right, targetSum, res, tmp);
+		tmp.pop_back();
+		return;
+	}
+	void flatten(TreeNode* root) {//二叉树展开为链表
+		if (root == nullptr) {
+			return;
+		}
+		//从后到前的先序遍历
+		flatten(root->right);
+		if (root->left == nullptr) {
+			return;
+		}
+		flatten(root->left);
+		TreeNode* cur = root->left;
+		while (cur->right != nullptr) {
+			cur = cur->right;
+		}
+		cur->right = root->right;
+		root->right = root->left;
+		root->left = nullptr;
+		return;
+	}
+	vector<int> rightSideView(TreeNode* root) {//二叉树的右视图
+		vector<int> res;
+		if (root == nullptr) {
+			return res;
+		}
+		queue<TreeNode*> que;
+		que.push(root);
+		while (!que.empty()) {
+			size_t queLen = que.size();
+			TreeNode* cur = que.back();
+			res.push_back(cur->val);
+			while (queLen != 0) {
+				cur = que.front();
+				que.pop();
+				queLen--;
+				if (cur->left != nullptr) {
+					que.push(cur->left);
+				}
+				if (cur->right != nullptr) {
+					que.push(cur->right);
+				}
+			}
+		}
+		return res;
+	}
+	int sumNumbers(TreeNode* root) {//求根到叶子节点数字之和
+		int res = 0, tmp = 0;
+		sumNumbersSub(root, tmp, res);
+		return res;
+	}
+	void sumNumbersSub(TreeNode* root, int& tmp, int& res) {
+		if (root == nullptr) {
+			return;
+		}
+		tmp *= 10;
+		tmp += root->val;
+		if (root->left == nullptr && root->right == nullptr) {
+			res += tmp;
+		}
+		sumNumbersSub(root->left, tmp, res);
+		sumNumbersSub(root->right, tmp, res);
+		tmp /= 10;
+		return;
+	}
+	class BSTIterator {//二叉搜索树迭代器
+	public:
+		BSTIterator(TreeNode* root) {
+			serialize(root);
+			numsLen = nums.size();
+		}
+
+		int next() {
+			if (hasNext()) {
+				return nums[cur++];
+			}
+			return -1;
+		}
+
+		bool hasNext() {
+			return cur < numsLen;
+		}
+	private:
+		size_t numsLen = 0, cur = 0;
+		vector<int> nums;
+		void serialize(TreeNode* root) {
+			if (root == nullptr) {
+				return;
+			}
+			serialize(root->left);
+			nums.push_back(root->val);
+			serialize(root->right);
+			return;
+		}
 	};
 };
 
