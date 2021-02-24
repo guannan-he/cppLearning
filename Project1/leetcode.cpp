@@ -10368,13 +10368,13 @@ public:
 		}
 		return min(left, right) + 1;
 	}
-	vector<vector<int>> pathSum(TreeNode* root, int targetSum) {//路径总和 II
+	vector<vector<int>> pathSumBAK(TreeNode* root, int targetSum) {//路径总和 II
 		vector<vector<int>> res;
 		vector<int> tmp;
-		pathSumSub(root, targetSum, res, tmp);
+		pathSumSubBAK(root, targetSum, res, tmp);
 		return res;
 	}
-	void pathSumSub(TreeNode* root, int targetSum, vector<vector<int>>& res, vector<int>& tmp) {
+	void pathSumSubBAK(TreeNode* root, int targetSum, vector<vector<int>>& res, vector<int>& tmp) {
 		if (root == nullptr) {
 			return;
 		}
@@ -10383,8 +10383,8 @@ public:
 		if (targetSum == 0 && root->left == nullptr && root->right == nullptr) {
 			res.push_back(tmp);
 		}
-		pathSumSub(root->left, targetSum, res, tmp);
-		pathSumSub(root->right, targetSum, res, tmp);
+		pathSumSubBAK(root->left, targetSum, res, tmp);
+		pathSumSubBAK(root->right, targetSum, res, tmp);
 		tmp.pop_back();
 		return;
 	}
@@ -10481,6 +10481,285 @@ public:
 			return;
 		}
 	};
+	TreeNode* invertTree(TreeNode* root) {//翻转二叉树
+		if (root == nullptr) {
+			return nullptr;
+		}
+		root->left = invertTree(root->left);
+		root->right = invertTree(root->right);
+		swap(root->left, root->right);
+		return root;
+	}
+	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {//二叉搜索树的最近公共祖先
+		TreeNode* res = root;
+		while (res != nullptr) {
+			if ((p->val < res->val) && (q->val < res->val)) {
+				res = res->left;
+			}
+			else if ((p->val > res->val) && (q->val > res->val)) {
+				res = res->right;
+			}
+			else {
+				break;
+			}
+		}
+		return res;
+	}
+	vector<string> binaryTreePaths(TreeNode* root) {//二叉树的所有路径
+		vector<string> res;
+		string tmp;
+		binaryTreePathsSub(root, res, tmp);
+		return res;
+	}
+	void binaryTreePathsSub(TreeNode* root, vector<string>& res, string& tmp) {
+		if (root == nullptr) {
+			return;
+		}
+		string tmpCopy = tmp;
+		tmp += "->" + to_string(root->val);
+		if (root->left == nullptr && root->right == nullptr) {
+			res.push_back(tmp.substr(2, tmp.size() - 2));
+		}
+		binaryTreePathsSub(root->left, res, tmp);
+		binaryTreePathsSub(root->right, res, tmp);
+		tmp = tmpCopy;
+		return;
+	}
+	int rob(TreeNode* root) {//打家劫舍 III
+		unordered_map<TreeNode*, int> nodeMapY, nodeMapN;
+		nodeMapY[nullptr] = 0, nodeMapN[nullptr] = 0;
+		robSub(root, nodeMapY, nodeMapN);
+		return max(nodeMapY[root], nodeMapN[root]);
+	}
+	void robSub(TreeNode* root, unordered_map<TreeNode*, int>& nodeMapY, unordered_map<TreeNode*, int>& nodeMapN) {
+		if (root == nullptr) {
+			return;
+		}
+		robSub(root->left, nodeMapY, nodeMapN);
+		robSub(root->right, nodeMapY, nodeMapN);
+		nodeMapY[root] = nodeMapN[root->left] + nodeMapN[root->right] + root->val;
+		nodeMapN[root] = max(nodeMapN[root->left], nodeMapY[root->left]) + max(nodeMapN[root->right], nodeMapY[root->right]);
+		return;
+	}
+	int sumOfLeftLeaves(TreeNode* root) {//左叶子之和
+		if (root == nullptr) {
+			return 0;
+		}
+		queue<TreeNode*> que;
+		que.push(root);
+		int res = 0;
+		while (!que.empty()) {
+			TreeNode* cur = que.front();
+			que.pop();
+			if (cur->left != nullptr) {
+				if (cur->left->left == nullptr && cur->left->right == nullptr) {
+					res += cur->left->val;
+				}
+				else {
+					que.push(cur->left);
+				}
+			}
+			if (cur->right != nullptr) {
+				if (cur->right->left != nullptr || cur->right->right != nullptr) {
+					que.push(cur->right);
+				}
+			}
+		}
+		return res;
+	}
+	int pathSum(TreeNode* root, int sum) {//路径总和 III
+		int res = 0;
+		unordered_map<int, int> prefix;
+		prefix[0] = 1;
+		pathSumSub(root, sum, res, prefix, 0);
+		return res;
+	}
+	void pathSumSub(TreeNode* root, int sum, int& res, unordered_map<int, int>& prefix, int last) {
+		if (root == nullptr) {
+			return;
+		}
+		int current = last + root->val;
+		if (prefix.count(current - sum) > 0) {
+			res += prefix[current - sum];
+		}
+		prefix[current]++;
+		pathSumSub(root->left, sum, res, prefix, current);
+		pathSumSub(root->right, sum, res, prefix, current);
+		prefix[current]--;
+		return;
+	}
+	vector<int> findFrequentTreeSum(TreeNode* root) {//出现次数最多的子树元素和
+		unordered_map<int, int> sumMap;
+		findFrequentTreeSumSub(root, sumMap);
+		int maxCnt = 0;
+		vector<int> res;
+		for (auto& it : sumMap) {
+			if (it.second > maxCnt) {
+				res.clear();
+				res.push_back(it.first);
+				maxCnt = it.second;
+			}
+			else if (it.second == maxCnt) {
+				res.push_back(it.first);
+			}
+		}
+		return res;
+	}
+	int findFrequentTreeSumSub(TreeNode* root, unordered_map<int, int>& sumMap) {
+		if (root == nullptr) {
+			return 0;
+		}
+		int left = findFrequentTreeSumSub(root->left, sumMap);
+		int right = findFrequentTreeSumSub(root->right, sumMap);
+		int res = left + right + root->val;
+		sumMap[res]++;
+		return res;
+	}
+	int findBottomLeftValue(TreeNode* root) {//找树左下角的值
+		if (root == nullptr) {
+			return 0;
+		}
+		queue<TreeNode*> que;
+		int res = 0;
+		que.push(root);
+		while (!que.empty()) {
+			int qLen = que.size();
+			res = que.front()->val;
+			while (qLen > 0) {
+				TreeNode* cur = que.front();
+				que.pop();
+				qLen--;
+				if (cur->left != nullptr) {
+					que.push(cur->left);
+				}
+				if (cur->right != nullptr) {
+					que.push(cur->right);
+				}
+			}
+		}
+		return res;
+	}
+	vector<int> largestValues(TreeNode* root) {//在每个树行中找最大值
+		vector<int> res;
+		if (root == nullptr) {
+			return res;
+		}
+		queue<TreeNode*> que;
+		que.push(root);
+		while (!que.empty()) {
+			int qLen = que.size();
+			int tmp = que.front()->val;
+			while (qLen > 0) {
+				TreeNode* cur = que.front();
+				que.pop();
+				qLen--;
+				tmp = max(tmp, cur->val);
+				if (cur->left != nullptr) {
+					que.push(cur->left);
+				}
+				if (cur->right != nullptr) {
+					que.push(cur->right);
+				}
+			}
+			res.push_back(tmp);
+		}
+		return res;
+	}
+	int findTilt(TreeNode* root) {//二叉树的坡度
+		int res = 0;
+		findTiltSub(root, res);
+		return res;
+	}
+	int findTiltSub(TreeNode* root, int& res) {
+		if (root == nullptr) {
+			return 0;
+		}
+		int left = findTiltSub(root->left, res);
+		int right = findTiltSub(root->right, res);
+		res += abs(left - right);
+		int sum = root->val + left + right;
+		return sum;
+	}
+	bool isSubtree(TreeNode* s, TreeNode* t) {//另一个树的子树
+		if (s == nullptr) {
+			return false;
+		}
+		if (isSameTree(s, t)) {
+			return true;
+		}
+		return isSubtree(s->left, t) || isSubtree(s->right, t);
+	}
+	vector<double> averageOfLevels(TreeNode* root) {//二叉树的层平均值
+		vector<double> res;
+		if (root == nullptr) {
+			return res;
+		}
+		queue<TreeNode*> que;
+		que.push(root);
+		while (!que.empty()) {
+			int qLen = que.size(), qLenBak = qLen;
+			double tmp = 0;
+			while (qLen > 0) {
+				TreeNode* cur = que.front();
+				que.pop();
+				qLen--;
+				tmp += cur->val;
+				if (cur->left != nullptr) {
+					que.push(cur->left);
+				}
+				if (cur->right != nullptr) {
+					que.push(cur->right);
+				}
+			}
+			res.push_back(1.0 * tmp / qLenBak);
+		}
+		return res;
+	}
+	int widthOfBinaryTree(TreeNode* root) {//二叉树最大宽度
+		if (root == nullptr) {
+			return 0;
+		}
+		queue<pair<TreeNode*, unsigned long long>> que;
+		unsigned long long res = 0;
+		que.push(make_pair(root, 1));
+		while (!que.empty()) {
+			int qLen = que.size();
+			unsigned long long frontPos = que.front().second, pos = 0;
+			while (qLen > 0) {
+				TreeNode* cur = que.front().first;
+				pos = que.front().second;
+				que.pop();
+				qLen--;
+				//二叉树子节点编号
+				if (cur->left) {
+					que.push(make_pair(cur->left, pos * 2));
+				}
+				if (cur->right) {
+					que.push(make_pair(cur->right, pos * 2 + 1));
+				}
+			}
+			res = max(pos - frontPos + 1, res);
+		}
+		return (int)res;
+	}
+	bool findTarget(TreeNode* root, int k) {//两数之和 IV - 输入 BST
+		bool res = false;
+		unordered_set<int> valSet;
+		findTargetSub(root, k, valSet, res);
+		return res;
+	}
+	void findTargetSub(TreeNode* root, int k, unordered_set<int>& valSet, bool& res) {
+		if (root == nullptr || res) {
+			return;
+		}
+		if (valSet.count(k - root->val) > 0) {
+			res = true;
+		}
+		valSet.insert(root->val);
+		findTargetSub(root->left, k, valSet, res);
+		findTargetSub(root->right, k, valSet, res);
+		return;
+	}
 };
 
 int main(int argc, char* argv[]) {
