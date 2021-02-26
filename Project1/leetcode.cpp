@@ -10204,7 +10204,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-树
-#if true
+#if false
 
 class Solution {
 public:
@@ -10760,11 +10760,376 @@ public:
 		findTargetSub(root->right, k, valSet, res);
 		return;
 	}
+	bool leafSimilar(TreeNode* root1, TreeNode* root2) {//叶子相似的树
+		vector<int> nums1, nums2;
+		leafSimilarSub(root1, nums1);
+		leafSimilarSub(root2, nums2);
+		return nums1 == nums2;
+	}
+	void leafSimilarSub(TreeNode* root, vector<int>& res) {
+		if (root == nullptr) {
+			return;
+		}
+		leafSimilarSub(root->left, res);
+		leafSimilarSub(root->right, res);
+		if (root->left == nullptr && root->right == nullptr) {
+			res.push_back(root->val);
+		}
+		return;
+	}
+	TreeNode* increasingBST(TreeNode* root) {//递增顺序查找树
+		stack<TreeNode*> stk;
+		increasingBSTSub(root, stk);
+		TreeNode* res = nullptr;
+		while (!stk.empty()) {
+			stk.top()->right = res;
+			stk.top()->left = nullptr;
+			res = stk.top();
+			stk.pop();
+		}
+		return res;
+	}
+	void increasingBSTSub(TreeNode* root, stack<TreeNode*>& stk) {
+		if (root == nullptr) {
+			return;
+		}
+		increasingBSTSub(root->left, stk);
+		stk.push(root);
+		increasingBSTSub(root->right, stk);
+		return;
+	}
+	bool isCousins(TreeNode* root, int x, int y) {//二叉树的堂兄弟节点
+		queue<TreeNode*> que;
+		que.push(root);
+		int level = 0, xLev = -1, yLev = -1;
+		TreeNode* fx = nullptr, *fy = nullptr;
+		while (!que.empty() && (xLev == -1 || yLev == -1)) {
+			int qLen = que.size();
+			while (qLen > 0 && (xLev == -1 || yLev == -1)) {
+				TreeNode* cur = que.front();
+				que.pop();
+				qLen--;
+				if (cur->val == x) {
+					xLev = level;
+				}
+				else if (cur->val == y) {
+					yLev = level;
+				}
+				if (cur->left != nullptr) {
+					que.push(cur->left);
+					if (cur->left->val == x) {
+						fx = cur;
+					}
+					if (cur->left->val == y) {
+						fy = cur;
+					}
+				}
+				if (cur->right != nullptr) {
+					que.push(cur->right);
+					if (cur->right->val == x) {
+						fx = cur;
+					}
+					if (cur->right->val == y) {
+						fy = cur;
+					}
+				}
+			}
+			level++;
+		}
+		return xLev == yLev && fx != fy;
+	}
+	int distributeCoins(TreeNode* root) {//在二叉树中分配硬币
+		int res = 0;
+		distributeCoinsSub(root, res);
+		return res;
+	}
+	int distributeCoinsSub(TreeNode* root, int& res) {
+		if (root == nullptr) {
+			return 0;
+		}
+		//两侧需要移动步数
+		int left = distributeCoinsSub(root->left, res);
+		int right = distributeCoinsSub(root->right, res);
+		res += abs(left) + abs(right);
+		return left + right + root->val - 1;
+	}
+	vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {//二叉树中所有距离为 K 的结点
+		unordered_map<TreeNode*, TreeNode*> parent;
+		distanceKSub(root, nullptr, parent);
+		queue<TreeNode*> que;
+		unordered_set<TreeNode*> vist;
+		vector<int> res;
+		int dist = 0;
+		que.push(target);
+		while (!que.empty() && dist <= k) {
+			int qLen = que.size();
+			while (qLen--) {
+				TreeNode* cur = que.front();
+				que.pop();
+				if (vist.count(cur) > 0) {
+					continue;
+				}
+				vist.insert(cur);
+				if (dist == k) {
+					res.push_back(cur->val);
+				}
+				if (cur->left != nullptr) {
+					que.push(cur->left);
+				}
+				if (cur->right != nullptr) {
+					que.push(cur->right);
+				}
+				if (parent[cur] != nullptr) {
+					que.push(parent[cur]);
+				}
+			}
+			dist++;
+		}
+		return res;
+	}
+	void distanceKSub(TreeNode* root, TreeNode* par, unordered_map<TreeNode*, TreeNode*>& parent) {
+		//转换为图计算
+		if (root == nullptr) {
+			return;
+		}
+		parent[root] = par;
+		distanceKSub(root->left, root, parent);
+		distanceKSub(root->right, root, parent);
+		return;
+	}
+	int deepestLeavesSum(TreeNode* root) {//层数最深叶子节点的和
+		int res = 0, maxDepth = 0, currentDepth = 0;
+		deepestLeavesSumSub(root, maxDepth, currentDepth, res);
+		return res;
+	}
+	void deepestLeavesSumSub(TreeNode* root, int& maxDepth, int& currentDepth, int& res) {
+		if (root == nullptr) {
+			return;
+		}
+		currentDepth++;
+		if (currentDepth > maxDepth) {
+			maxDepth = currentDepth;
+			res = 0;
+		}
+		if (currentDepth == maxDepth && root->left == nullptr && root->right == nullptr) {
+			res += root->val;
+		}
+		deepestLeavesSumSub(root->left, maxDepth, currentDepth, res);
+		deepestLeavesSumSub(root->right, maxDepth, currentDepth, res);
+		currentDepth--;
+		return;
+	}
+	TreeNode* lcaDeepestLeaves(TreeNode* root) {//最深叶节点的最近公共祖先
+		int maxDepth = 0;
+		return lcaDeepestLeavesSub(root, maxDepth);
+	}
+	TreeNode* lcaDeepestLeavesSub(TreeNode* root, int& maxDepth) {
+		if (root == nullptr) {
+			maxDepth = 0;
+			return nullptr;
+		}
+		int leftHt = 0, rightHt = 0;
+		TreeNode* leftNode = lcaDeepestLeavesSub(root->left, leftHt);
+		TreeNode* rightNode = lcaDeepestLeavesSub(root->right, rightHt);
+		maxDepth = max(leftHt, rightHt) + 1;
+		if (leftHt == rightHt) {
+			return root;
+		}
+		if (leftHt > rightHt) {
+			return leftNode;
+		}
+		return rightNode;
+	}
+	int maxAncestorDiff(TreeNode* root) {//节点与其祖先之间的最大差值
+		int res = 0;
+		maxAncestorDiffSub(root, root->val, root->val, res);
+		return res;
+	}
+	void maxAncestorDiffSub(TreeNode* root, int hi, int lo, int& res) {
+		if (root == nullptr) {
+			return;
+		}
+		res = max(max(abs(hi - root->val), abs(lo - root->val)), res);
+		hi = max(hi, root->val);
+		lo = min(lo, root->val);
+		maxAncestorDiffSub(root->left, hi, lo, res);
+		maxAncestorDiffSub(root->right, hi, lo, res);
+		return;
+	}
+	vector<TreeNode*> delNodes(TreeNode* root, vector<int>& to_delete) {//删点成林
+		vector<TreeNode*> res;
+		unordered_set<int> delSet(to_delete.begin(), to_delete.end());
+		if (delNodesSub(root, delSet, res) != nullptr) {
+			res.push_back(root);
+		}
+		return res;
+	}
+	TreeNode* delNodesSub(TreeNode* root, unordered_set<int>& delSet, vector<TreeNode*>& res) {
+		if (root == nullptr) {
+			return nullptr;
+		}
+		root->left = delNodesSub(root->left, delSet, res);
+		root->right = delNodesSub(root->right, delSet, res);
+		if (delSet.count(root->val) > 0) {
+			if (root->left != nullptr) {
+				res.push_back(root->left);
+			}
+			if (root->right != nullptr) {
+				res.push_back(root->right);
+			}
+			return nullptr;
+		}
+		return root;
+	}
+	bool btreeGameWinningMove(TreeNode* root, int n, int x) {//二叉树着色游戏
+		int leftCon = 0, rightCon = 0;
+		btreeGameWinningMoveSub(root, x, leftCon, rightCon);
+		int parent = n - leftCon - rightCon - 1;
+		n /= 2;
+		return parent > n || leftCon > n || rightCon > n;
+	}
+	int btreeGameWinningMoveSub(TreeNode* root, int val, int& leftCon, int& rightCon) {
+		if (root == nullptr) {
+			return 0;
+		}
+		int leftCnt = btreeGameWinningMoveSub(root->left, val, leftCon, rightCon);
+		int rightCnt = btreeGameWinningMoveSub(root->right, val, leftCon, rightCon);
+		if (root->val == val) {
+			leftCon = leftCnt;
+			rightCon = rightCnt;
+		}
+		return leftCnt + rightCnt + 1;
+	}
+	TreeNode* recoverFromPreorder(string s) {//从先序遍历还原二叉树
+		stack<pair<TreeNode*, int>> stk;
+		TreeNode* tmp = new TreeNode;
+		stk.push(make_pair(tmp, -1));
+		size_t sLen = s.size();
+		size_t cur = 0;
+		while (cur < sLen) {
+			int level = 0;
+			int nodeVal = 0;
+			while (s[cur] == '-') {
+				level++;
+				cur++;
+			}
+			while (s[cur] <= '9' && s[cur] >= '0') {
+				nodeVal *= 10;
+				nodeVal += s[cur] - '0';
+				cur++;
+			}
+			tmp = new TreeNode(nodeVal);
+			while (stk.top().second >= level) {
+				stk.pop();
+			}
+			if (stk.top().first->left == nullptr) {
+				stk.top().first->left = tmp;
+			}
+			else {
+				stk.top().first->right = tmp;
+			}
+			stk.push(make_pair(tmp, level));
+		}
+		while (!stk.empty()) {
+			tmp = stk.top().first;
+			stk.pop();
+		}
+		return tmp->left;
+	}
+	int minCameraCover(TreeNode* root) {//监控二叉树
+		int res = 0;
+		if (minCameraCoverSub(root, res) == 0) {
+			res++;
+		}
+		return res;
+	}
+	int minCameraCoverSub(TreeNode* root, int& res) {
+		//0: 无覆盖, 1: 有摄像头, 2: 覆盖
+		if (root == nullptr) {
+			return 2;
+		}
+		int leftStat = minCameraCoverSub(root->left, res);
+		int rightStat = minCameraCoverSub(root->right, res);
+		if (leftStat == 2 && rightStat == 2) {
+			return 0;
+		}
+		if (leftStat == 0 || rightStat == 0) {
+			res++;
+			return 1;
+		}
+		if (leftStat == 1 || rightStat == 1) {
+			return 2;
+		}
+		return -1;
+	}
+	vector<int> sumOfDistancesInTree(int N, vector<vector<int>>& edges) {//树中距离之和
+		if (N == 0 || edges.empty()) {
+			return {0};
+		}
+		vector<int> cnt(N, 1);
+		vector<int> res(N);
+		vector<vector<int>> graph(N);
+		for (vector<int>& edge : edges) {
+			graph[edge[0]].push_back(edge[1]);
+			graph[edge[1]].push_back(edge[0]);
+		}
+		sumOfDistancesInTreeSub1(0, -1, graph, cnt, res);
+		sumOfDistancesInTreeSub2(0, -1, graph, cnt, res);
+		return res;
+	}
+	void sumOfDistancesInTreeSub1(int child, int parent, vector<vector<int>>& graph, vector<int>& cnt, vector<int>& res) {
+		for (int i = 0; i < graph[child].size(); i++) {
+			if (graph[child][i] != parent) {
+				sumOfDistancesInTreeSub1(graph[child][i], child, graph, cnt, res);
+				cnt[child] += cnt[graph[child][i]];
+				res[child] += res[graph[child][i]] + cnt[graph[child][i]];
+			}
+		}
+		return;
+	}
+	void sumOfDistancesInTreeSub2(int child, int parent, vector<vector<int>>& graph, vector<int>& cnt, vector<int>& res) {
+		for (int i = 0; i < graph[child].size(); i++) {
+			if (parent != graph[child][i]) {
+				res[graph[child][i]] = res[child] - cnt[graph[child][i]] + res.size() - cnt[graph[child][i]];//先计算出根节点的子节点，然后再递归去算子节点的子节点
+				sumOfDistancesInTreeSub2(graph[child][i], child, graph, cnt, res);
+			}
+		}
+		return;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	string a = ".L.R...LR..L..";
+	string a = "1-2--3--4-5--6--7";
+	string b = "(()())(())";
+	vector<int> inpt1 = { 1 };
+	vector<int> inpt2 = { 1, 3, 4, 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{ 0, 1, 1, 1, 0, 1 },
+		{ 0, 0, 0, 0, 0, 1 },
+		{ 0, 0, 1, 0, 0, 1 },
+		{ 1, 1, 0, 1, 1, 0 },
+		{ 1, 0, 0, 1, 0, 0 },
+	};
+	mySolution.recoverFromPreorder(a);
+	return 0;
+}
+#endif
+
+//cookBook-动态规划
+#if true
+
+class Solution {
+public:
+	int climbStairs(int n) {
+
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "1-2--3--4-5--6--7";
 	string b = "(()())(())";
 	vector<int> inpt1 = { 1 };
 	vector<int> inpt2 = { 1, 3, 4, 2 };
