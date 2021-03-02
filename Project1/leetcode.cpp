@@ -11118,13 +11118,164 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-动态规划
+#if false
+
+class Solution {
+public:
+	int integerBreak(int n) {//整数拆分
+		vector<int> dp(n + 1, 0);
+		for (int i = 2; i <= n; i++) {
+			int tmp = 0;
+			for (int j = 1; j < i; j++) {
+				tmp = max(tmp, max(j * (i - j), j * dp[i - j]));
+			}
+			dp[i] = tmp;
+		}
+		return dp[n];
+	}
+	bool canPartition(vector<int>& nums) {//分割等和子集
+		size_t numsLen = nums.size();
+		if (numsLen < 2) {
+			return false;
+		}
+		int target = 0, maxVal = 0;
+		for (int& num : nums) {
+			target += num;
+			maxVal = max(maxVal, num);
+		}
+		if (target % 2 == 1 || maxVal > target / 2) {
+			return false;
+		}
+		target /= 2;
+		vector<vector<bool>> dp(numsLen, vector<bool>(target + 1, false));
+		//dp[i][j]: 截止到下标i，是否有恰好等于j的和
+		for (int i = 0; i < numsLen; i++) {
+			dp[i][0] = true;
+		}
+		dp[0][nums[0]] = true;
+		for (int i = 1; i < numsLen; i++) {
+			int cur = nums[i];
+			for (int j = 0; j < cur; j++) {
+				dp[i][j] = dp[i - 1][j];
+			}
+			for (int j = cur; j <= target; j++) {
+				dp[i][j] = dp[i - 1][j] | dp[i - 1][j - cur];
+			}
+		}
+		return dp[numsLen - 1][target];
+	}
+	int eraseOverlapIntervals(vector<vector<int>>& intervals) {//无重叠区间
+		size_t intvCnt = intervals.size();
+		if (intvCnt < 2) {
+			return 0;
+		}
+		sort(intervals.begin(), intervals.end());
+		vector<int> dp(intvCnt, 1);
+		for (int i = 1; i < intvCnt; i++) {
+			for (int j = 0; j < i; j++) {
+				if (intervals[j][1] <= intervals[i][0]) {
+					dp[i] = max(dp[i], dp[j] + 1);
+				}
+			}
+		}
+		return intvCnt - *max_element(dp.begin(), dp.end());
+	}
+	int findMaxForm(vector<string>& strs, int m, int n) {//一和零
+		vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+		for (string& str : strs) {
+			pair<int, int> cnt = findMaxFormSub(str);
+			int zeros = cnt.first, ones = cnt.second;
+			for (int i = m; i >= zeros; i--) {
+				for (int j = n; j >= ones; j--) {
+					dp[i][j] = max(dp[i][j], dp[i - zeros][j - ones] + 1);
+				}
+			}
+		}
+		return dp[m][n];
+	}
+	pair<int, int> findMaxFormSub(string& str) {
+		int zero = 0, one = 0;
+		for (char& ch : str) {
+			if (ch == '0') {
+				zero++;
+			}
+			else {
+				one++;
+			}
+		}
+		return { zero, one };
+	}
+	int minHeightShelves(vector<vector<int>>& books, int shelf_width) {//填充书架
+		int bookCnt = books.size();
+		vector<int> dp(bookCnt + 1, INT_MAX);
+		dp[books.size()] = 0;
+		for (int i = bookCnt - 1; i > -1; i--) {
+			int maxHeight = 0;
+			int leftWt = shelf_width;
+			for (int j = i; j < bookCnt && leftWt >= books[j][0]; j++) {
+				maxHeight = max(maxHeight, books[j][1]);
+				dp[i] = min(dp[i], dp[j + 1] + maxHeight);
+				leftWt -= books[j][0];
+			}
+		}
+		return dp[0];
+	}
+	int lastStoneWeightII(vector<int>& stones) {//最后一块石头的重量 II
+		int stoneCnt = stones.size();
+		int target = 0, sum = 0;
+		for (int& stone : stones) {
+			sum += stone;
+		}
+		target = sum / 2;
+		vector<int> dp(target + 1);
+		for (int& stone : stones) {
+			for (int j = target; j >= stone; j--) {
+				dp[j] = max(dp[j], dp[j - stone] + stone);
+			}
+		}
+		return sum - dp[target] * 2;
+	}
+	int numMusicPlaylists(int N, int L, int K) {//播放列表的数量
+		const int divider = 1000000007;
+		//令 dp[i][j] 为播放列表长度为 i 包含恰好 j 首不同歌曲的数量
+		vector<vector<long long>> dp(L + 1, vector<long long>(N + 1, 0));
+		dp[0][0] = 1;
+		for (int i = 1; i <= L; i++) {
+			for (int j = 1; j <= N; j++) {
+				dp[i][j] += dp[i - 1][j - 1] * (N - j + 1);
+				dp[i][j] += max(0, j - K) * dp[i - 1][j];
+				dp[i][j] %= divider;
+			}
+		}
+		return (int)dp[L][N];
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "1-2--3--4-5--6--7";
+	string b = "(()())(())";
+	vector<int> inpt1 = { 1 };
+	vector<int> inpt2 = { 1, 3, 4, 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{ 0, 1, 1, 1, 0, 1 },
+		{ 0, 0, 0, 0, 0, 1 },
+		{ 0, 0, 1, 0, 0, 1 },
+		{ 1, 1, 0, 1, 1, 0 },
+		{ 1, 0, 0, 1, 0, 0 },
+	};
+	mySolution;
+	return 0;
+}
+#endif
+
+//cookBook-DFS, BFS
 #if true
 
 class Solution {
 public:
-	int climbStairs(int n) {
-
-	}
+	;
 };
 
 int main(int argc, char* argv[]) {
