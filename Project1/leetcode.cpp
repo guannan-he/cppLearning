@@ -11275,7 +11275,307 @@ int main(int argc, char* argv[]) {
 
 class Solution {
 public:
-	;
+	vector<string> restoreIpAddresses(string s) {//复原 IP 地址
+		int sLen = s.size();
+		vector<string> res;
+		if (sLen < 4) {
+			return res;
+		}
+		vector<int> ipAddr;
+		restoreIpAddressesSub(res, ipAddr, s, 0, sLen);
+		return res;
+	}
+	void restoreIpAddressesSub(vector<string>& res, vector<int>& ipAddr, string& s, int cur, int sLen) {
+		if (ipAddr.size() == 4) {
+			if (cur == sLen) {
+				res.push_back(restoreIpAddressesSub2(ipAddr));
+			}
+			return;
+		}
+		if (cur == sLen) {
+			return;
+		}
+		int tmp = 0;
+		if (s[cur] == '0') {
+			ipAddr.push_back(0);
+			restoreIpAddressesSub(res, ipAddr, s, cur + 1, sLen);
+			ipAddr.pop_back();
+			return;
+		}
+		while (cur < sLen) {
+			tmp *= 10;
+			tmp += s[cur] - '0';
+			if (tmp < 256) {
+				ipAddr.push_back(tmp);
+				restoreIpAddressesSub(res, ipAddr, s, cur + 1, sLen);
+				ipAddr.pop_back();
+			}
+			else {
+				break;
+			}
+			cur++;
+		}
+		return;
+	}
+	string restoreIpAddressesSub2(vector<int>& ipAddr) {
+		string res;
+		for (int& num : ipAddr) {
+			res += to_string(num) + '.';
+		}
+		res.pop_back();
+		return res;
+	}
+	vector<vector<int>> combine(int n, int k) {//组合
+		vector<vector<int>> res;
+		vector<int> tmp;
+		combineSub(res, tmp, k, 1, n);
+		return res;
+	}
+	void combineSub(vector<vector<int>>& res, vector<int>& tmp, int k, int cur, int n) {
+		if (tmp.size() + (n - cur + 1) < k) {
+			return;
+		}
+		if (tmp.size() == k) {
+			res.push_back(tmp);
+			return;
+		}
+		if (cur == n + 1) {
+			return;
+		}
+		tmp.push_back(cur);
+		combineSub(res, tmp, k, cur + 1, n);
+		tmp.pop_back();
+		combineSub(res, tmp, k, cur + 1, n);
+		return;
+	}
+	vector<int> grayCode(int n) {//格雷编码
+		vector<int> res(1, 0);
+		int cnt = pow(2, n);
+		for (int i = 1; i < cnt; i++) {
+			res.push_back(i ^ (i >> 1));
+		}
+		return res;
+	}
+	vector<vector<int>> permuteUnique(vector<int>& nums) {//全排列 II
+		vector<vector<int>> res;
+		vector<int> tmp;
+		vector<bool> vist(nums.size(), false);
+		sort(nums.begin(), nums.end());
+		permuteUniqueSub(res, nums, tmp, 0, nums.size(), vist);
+		return res;
+	}
+	void permuteUniqueSub(vector<vector<int>>& res, vector<int>& nums, vector<int>& tmp, int cur, int numCnt, vector<bool>& vist) {
+		if (cur == numCnt) {
+			res.push_back(tmp);
+			return;
+		}
+		for (int i = 0; i < numCnt; i++) {
+			if (vist[i] || (i > 0 && nums[i] == nums[i - 1] && !vist[i - 1])) {//最后一个是剪枝
+				continue;
+			}
+			vist[i] = true;
+			tmp.push_back(nums[i]);
+			permuteUniqueSub(res, nums, tmp, cur + 1, nums.size(), vist);
+			vist[i] = false;
+			tmp.pop_back();
+		}
+		return;
+	}
+	void solveSudoku(vector<vector<char>>& board) {//解数独
+		//记录某个数字是否存在
+		vector<vector<bool>> rolExist(9, vector<bool>(9, false));
+		vector<vector<bool>> colExist(9, vector<bool>(9, false));
+		vector<vector<vector<bool>>> blockExist(3, vector<vector<bool>>(3, vector<bool>(9, false)));
+		vector<pair<int, int>> pos;
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (board[i][j] == '.') {
+					pos.push_back(make_pair(i, j));
+				}
+				else {
+					int tmp = board[i][j] - '0' - 1;//范围：1-9
+					rolExist[i][tmp] = true;
+					colExist[j][tmp] = true;
+					blockExist[i / 3][j / 3][tmp] = true;
+				}
+			}
+		}
+		bool valid = false;
+		solveSudokuSub(board, rolExist, colExist, blockExist, pos, 0, valid);
+	}
+	void solveSudokuSub(vector<vector<char>>& board, vector<vector<bool>>& rolExist, vector<vector<bool>>& colExist, vector<vector<vector<bool>>>& blockExist, vector<pair<int, int>>& pos, int cur, bool& valid) {
+		if (cur == pos.size()) {
+			valid = true;
+			return;
+		}
+		int rol = pos[cur].first, col = pos[cur].second;
+		for (int i = 0; i < 9 && !valid; i++) {
+			if (!rolExist[rol][i] && !colExist[col][i] && !blockExist[rol / 3][col / 3][i]) {
+				rolExist[rol][i] = true;
+				colExist[col][i] = true;
+				blockExist[rol / 3][col / 3][i] = true;
+				board[rol][col] = i + 1 + '0';//直接改期盼，不用回溯，因为已经保存在三个bool数组中
+				solveSudokuSub(board, rolExist, colExist, blockExist, pos, cur + 1, valid);
+				rolExist[rol][i] = false;
+				colExist[col][i] = false;
+				blockExist[rol / 3][col / 3][i] = false;
+			}
+		}
+		return;
+	}
+	vector<vector<string>> solveNQueens(int n) {//N 皇后
+		vector<string> tmp(n, string(n, '.'));
+		vector<vector<string>> res;
+		vector<bool> colExist(n, false), LLExist(2 * n - 1, false), LRExist(2 * n - 1, false);
+		solveNQueensSub(res, tmp, colExist, LLExist, LRExist, n, 0);
+		return res;
+	}
+	void solveNQueensSub(vector<vector<string>>& res, vector<string>& tmp, vector<bool>& colExist, vector<bool>& LLExist, vector<bool>& LRExist, int n, int pos) {
+		if (pos == n) {//在第i行安置皇后，试探皇后在j列
+			res.push_back(tmp);
+			return;
+		}
+		for (int i = 0; i < n; i++) {
+			if (!colExist[i] && !LRExist[i + pos] && !LLExist[n - 1 - i + pos]) {
+				colExist[i] = true;
+				LRExist[i + pos] = true;
+				LLExist[n - 1 - i + pos] = true;
+				tmp[i][pos] = 'Q';
+				solveNQueensSub(res, tmp, colExist, LLExist, LRExist, n, pos + 1);
+				tmp[i][pos] = '.';
+				colExist[i] = false;
+				LRExist[i + pos] = false;
+				LLExist[n - 1 - i + pos] = false;
+			}
+		}
+		return;
+	}
+	int totalNQueens(int n) {//N皇后 II
+		int res = 0;
+		vector<bool> colExist(n, false), LLExist(2 * n - 1, false), LRExist(2 * n - 1, false);
+		totalNQueensSub(res, colExist, LLExist, LRExist, n, 0);
+		return res;
+	}
+	void totalNQueensSub(int& res, vector<bool>& colExist, vector<bool>& LLExist, vector<bool>& LRExist, int n, int pos) {
+		if (pos == n) {
+			res++;
+			return;
+		}
+		for (int i = 0; i < n; i++) {
+			if (!colExist[i] && !LRExist[pos + i] && !LLExist[n - 1 - i + pos]) {
+				colExist[i] = true;
+				LRExist[pos + i] = true;
+				LLExist[n - 1 - i + pos] = true;
+				totalNQueensSub(res, colExist, LLExist, LRExist, n, pos + 1);
+				colExist[i] = false;
+				LRExist[pos + i] = false;
+				LLExist[n - 1 - i + pos] = false;
+			}
+		}
+	}
+	//string getPermutation(int n, int k) {//排列序列
+	//	//DFS暴力超时
+	//	vector<bool> vist(n, false);
+	//	vector<string> strSet;
+	//	string tmp;
+	//	getPermutationSub(strSet, tmp, vist, 0, n);
+	//	return strSet[k - 1];
+	//}
+	//void getPermutationSub(vector<string>& strSet, string& tmp, vector<bool>& vist, int pos, int n) {
+	//	if (pos == n) {
+	//		strSet.push_back(tmp);
+	//	}
+	//	for (int i = 0; i < n; i++) {
+	//		if (!vist[i]) {
+	//			tmp.push_back(i + 1 + '0');
+	//			vist[i] = true;
+	//			getPermutationSub(strSet, tmp, vist, pos + 1, n);
+	//			vist[i] = false;
+	//			tmp.pop_back();
+	//		}
+	//	}
+	//	return;
+	//}
+	string getPermutation(int n, int k) {//排列序列
+		vector<int> frac(n);
+		frac[0] = 1;
+		for (int i = 1; i < n; i++) {
+			frac[i] = i * frac[i - 1];
+		}
+		k--;
+		vector<int> valid(n + 1, 1);
+		string res;
+		for (int i = 1; i <= n; i++) {
+			int order = k / frac[n - i] + 1;
+			for (int j = 1; j <= n; j++) {
+				order -= valid[j];
+				if (!order) {
+					res += '0' + j;
+					valid[j] = 0;
+					break;
+				}
+			}
+			k %= frac[n - i];
+		}
+		return res;
+	}
+	bool isAdditiveNumber(string str) {//累加数
+		//依次取一个数
+		vector<long double> tmp;
+		return isAdditiveNumberSub(str, tmp);
+	}
+	bool isAdditiveNumberSub(string str, vector<long double>& tmp) {
+		int cnt = tmp.size();
+		if (cnt >= 3 && tmp[cnt - 1] != tmp[cnt - 2] + tmp[cnt - 3]) {
+			return false;
+		}
+		int strLen = str.size();
+		if (strLen == 0 && cnt >= 3) {
+			return true;
+		}
+		for (int i = 0; i < strLen; i++) {
+			string cur = str.substr(0, i + 1);
+			if (cur[0] == '0' && cur.size() != 1) {
+				break;
+			}
+			tmp.push_back(stold(cur));
+			if (isAdditiveNumberSub(str.substr(i + 1), tmp)) {
+				return true;
+			}
+			tmp.pop_back();
+		}
+		return false;
+	}
+	int countNumbersWithUniqueDigits(int n) {//计算各个位数不同的数字个数
+		if (n == 0) {
+			return 1;
+		}
+		int res = 10, uniq = 9, avail = 9;
+		while (n > 1 && avail > 0) {
+			uniq *= avail;
+			res += uniq;
+			avail--;
+			n--;
+		}
+		return res;
+	}
+	vector<int> lexicalOrder(int n) {//字典序排数
+		vector<int> res;
+		for (int i = 1; i <= 9; i++) {
+			lexicalOrderSub(res, i, n);
+		}
+		return res;
+	}
+	void lexicalOrderSub(vector<int>& res, int current, int n) {
+		if (current > n) {
+			return;
+		}
+		res.push_back(current);
+		for (int i = 0; i <= 9; i++) {
+			lexicalOrderSub(res, current * 10 + i, n);
+		}
+		return;
+	}
 };
 
 int main(int argc, char* argv[]) {
@@ -11292,7 +11592,18 @@ int main(int argc, char* argv[]) {
 		{ 1, 1, 0, 1, 1, 0 },
 		{ 1, 0, 0, 1, 0, 0 },
 	};
-	mySolution;
+	vector<vector<char>> board = {
+		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+	};
+	mySolution.solveNQueens(2);
 	return 0;
 }
 #endif
