@@ -11576,21 +11576,272 @@ public:
 		}
 		return;
 	}
+	int findTargetSumWays(vector<int>& nums, int target) {//目标和--暴力DFS
+		int res = 0;
+		int numsLen = nums.size();
+		findTargetSumWaysSub(nums, target, 0, numsLen, 0, res);
+		return res;
+	}
+	void findTargetSumWaysSub(vector<int>& nums, int& target, int cur, int& numsLen, int acc, int& res) {
+		if (cur == numsLen) {
+			if (acc == target) {
+				res++;
+			}
+			return;
+		}
+		findTargetSumWaysSub(nums, target, cur + 1, numsLen, acc + nums[cur], res);
+		findTargetSumWaysSub(nums, target, cur + 1, numsLen, acc - nums[cur], res);
+		return;
+	}
+	int minMutation(string start, string end, vector<string>& bank) {//最小基因变化
+		unordered_map<string, bool> vist;
+		string current = start;
+		for (string& str : bank) {
+			vist[str] = false;
+		}
+		vist[current] = true;
+		int res = INT_MAX;
+		minMutationSub(bank, vist, current, end, res, 0);
+		return res == INT_MAX ? -1 : res;
+	}
+	void minMutationSub(vector<string>& bank, unordered_map<string, bool>& vist, string current, string& end, int& res, int tmp) {
+		if (current == end) {
+			res = min(res, tmp);
+			return;
+		}
+		for (string& str : bank) {
+			if (!vist[str]) {
+				if (minMutationCheck(current, str) == 1) {
+					vist[str] = true;
+					minMutationSub(bank, vist, str, end, res, tmp + 1);
+					vist[str] = false;
+				}
+			}
+		}
+		return;
+	}
+	int minMutationCheck(string& str1, string& str2) {
+		int res = 0;
+		int sLen = str1.size();
+		for (int i = 0; i < sLen; i++) {
+			if (str1[i] != str2[i]) {
+				res++;
+			}
+		}
+		return res;
+	}
+	vector<vector<int>> findSubsequences(vector<int>& nums) {//递增子序列
+		vector<vector<int>> res;
+		vector<int> tmp;
+		findSubsequencesSub(res, tmp, nums, 0, INT_MIN);
+		return res;
+	}
+	void findSubsequencesSub(vector<vector<int>>& res, vector<int>& tmp, vector<int>& nums, int cur, int last) {
+		if (cur == nums.size()) {
+			if (tmp.size() > 1) {
+				res.push_back(tmp);
+			}
+			return;
+		}
+		if (nums[cur] >= last) {
+			tmp.push_back(nums[cur]);
+			findSubsequencesSub(res, tmp, nums, cur + 1, nums[cur]);
+			tmp.pop_back();
+		}
+		if (nums[cur] != last) {
+			findSubsequencesSub(res, tmp, nums, cur + 1, last);
+		}
+		return;
+	}
+	int countArrangement(int n) {//优美的排列
+		vector<bool> vist(n + 1, false);
+		int res = 0;
+		countArrangementSub(vist, res, 1, n);
+		return res;
+	}
+	void countArrangementSub(vector<bool>& vist, int& res, int cur, int n) {
+		if (cur > n) {
+			res++;
+			return;
+		}
+		for (int i = 1; i <= n; i++) {
+			if (!vist[i] && (cur % i == 0 || i % cur == 0)) {
+				vist[i] = true;
+				countArrangementSub(vist, res, cur + 1, n);
+				vist[i] = false;
+			}
+		}
+		return;
+	}
+	vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {//扫雷游戏
+		size_t rol = board.size(), col = board[0].size();
+		vector<vector<bool>> vist(rol, vector<bool>(col, false));
+		queue<pair<int, int>> que;
+		vector<vector<int>> dir = { {-1, 0}, {0, 1}, {1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1} };
+		que.push(make_pair(click[0], click[1]));
+		while (!que.empty()) {
+			int rolCur = que.front().first, colCur = que.front().second;
+			que.pop();
+			if (vist[rolCur][colCur]) {
+				continue;
+			}
+			vist[rolCur][colCur] = true;
+			if (board[rolCur][colCur] == 'M') {
+				board[rolCur][colCur] = 'X';
+				return board;
+			}
+			int mineCnt = 0;
+			for (int i = 0; i < 8; i++) {//确定地雷数目
+				int tmpRol = rolCur + dir[i][0];
+				int tmpCol = colCur + dir[i][1];
+				if (tmpRol < 0 || tmpRol >= rol || tmpCol < 0 || tmpCol >= col) {
+					continue;
+				}
+				if (board[tmpRol][tmpCol] == 'M') {
+					mineCnt++;
+					continue;
+				}
+			}
+			board[rolCur][colCur] = mineCnt == 0 ? 'B' : mineCnt + '0';
+			if (board[rolCur][colCur] != 'B') {
+				//只有周边没有地雷的情况下，周围的方块才会被添加
+				continue;
+			}
+			for (int i = 0; i < 8; i++) {//添加周围方块
+				int tmpRol = rolCur + dir[i][0];
+				int tmpCol = colCur + dir[i][1];
+				if (tmpRol < 0 || tmpRol >= rol || tmpCol < 0 || tmpCol >= col) {
+					continue;
+				}
+				que.push(make_pair(tmpRol, tmpCol));
+			}
+		}
+		return board;
+	}
+	bool pyramidTransition(string bottom, vector<string>& allowed) {//金字塔转换矩阵
+		int heit = bottom.size();
+		//构建金字塔
+		string str;
+		vector<string> tower;
+		for (int i = 1; i < heit; i++) {
+			str.push_back('.');
+			tower.push_back(str);
+		}
+		tower.push_back(bottom);
+		int total = (heit - 1) * heit / 2;
+		bool res = false;
+		//构建坐标哈希表
+		unordered_map<int, pair<int, int>> curMap;
+		heit--;
+		int cur = 0;
+		while (heit > -1) {
+			for (int i = 0; i < heit; i++) {
+				curMap[cur] = make_pair(heit - 1, i);
+				cur++;
+			}
+			heit--;
+		}
+		pyramidTransitionSub(allowed, tower, res, 0, total, curMap, allowed.size());
+		return res;
+	}
+	void pyramidTransitionSub(vector<string>& allowed, vector<string>& tower, bool& res, int cur, int total, unordered_map<int, pair<int, int>>& curMap, int listCnt) {
+		if (cur == total) {
+			res = true;
+			return;
+		}
+		int rolCur = curMap[cur].first, colCur = curMap[cur].second;
+		char targetL = tower[rolCur + 1][colCur], targetR = tower[rolCur + 1][colCur + 1];
+		for (int i = 0; i < listCnt && !res; i++){//剪枝，找到答案就返回
+			if (allowed[i][0] == targetL && allowed[i][1] == targetR) {
+				tower[rolCur][colCur] = allowed[i][2];
+				pyramidTransitionSub(allowed, tower, res, cur + 1, total, curMap, listCnt);
+				tower[rolCur][colCur] = '.';
+			}
+		}
+		return;
+	}
+	vector<string> letterCasePermutation(string s) {//字母大小写全排列
+		int cur = s.size() - 1;
+		vector<string> res;
+		res.push_back("");
+		string tmp;
+		while (cur >= 0) {
+			if (isalpha(s[cur])) {
+				vector<string> resCopy = res;
+				res.clear();
+				for (string& str : resCopy) {
+					res.push_back((char)toupper(s[cur]) + tmp + str);
+					res.push_back((char)tolower(s[cur]) + tmp + str);
+				}
+				tmp.clear();
+			}
+			else {
+				tmp = s[cur] + tmp;
+			}
+			cur--;
+		}
+		for (string& str : res) {
+			str = tmp + str;
+		}
+		return res;
+	}
+	int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {//大礼包
+		int res = INT_MAX;
+		int initCost = 0;
+		for (int i = 0; i < price.size(); i++) {
+			initCost += price[i] * needs[i];
+		}
+		shoppingOffersSub(price, special, needs, res, initCost, 0);
+		return res;
+	}
+	void shoppingOffersSub(vector<int>& price, vector<vector<int>>& special, vector<int> needs, int& res, int cost, int cur) {
+		if (cur == special.size()) {
+			res = min(res, cost);
+			return;
+		}
+		//选择当前的
+		vector<int> needsCopy(needs);
+		bool chose = true;
+		int currentCost = cost;
+		for (int i = 0; i < needs.size(); i++) {
+			if (needs[i] < special[cur][i]) {
+				chose = false;
+				break;
+			}
+			needsCopy[i] -= special[cur][i];
+			currentCost -= special[cur][i] * price[i];
+		}
+		currentCost += special[cur][needs.size()];
+		if (chose) {
+			shoppingOffersSub(price, special, needsCopy, res, currentCost, cur);
+		}
+		//不选择当前的
+		shoppingOffersSub(price, special, needs, res, cost, cur + 1);
+		return;
+	}
+	string crackSafe(int n, int k) {
+		int kn = pow(k, n), kn_1 = pow(k, n - 1);//将所有n-1位数作为节点的节点个数
+		vector<int> num(kn_1, k - 1);//表示k^(n-1)个节点的下一位可以从k-1选到0，当前索引处对应的元素值表示该节点已经把比元素值大的值都作为下一数字添加过了
+		string s(kn + (n - 1), '0');//字符串初始化，（结果一定是kn+n-1位）
+		for (int i = n - 1, node = 0; i < s.size(); ++i) {//i从n-1开始递增 （第一个密码是n-1个0（00...为起始点））
+			s[i] = num[node]-- + '0';//更新字符串。先运算 再--，表示下一次该节点要选的下一数字
+			node = node * k - (s[i - (n - 1)] - '0') * kn_1 + num[node] + 1;//更新当前节点。
+			//左移操作：1.*k,2.减去左侧超出的一位代表的数字（这位数字已经到了k^(n-1)上，所以后面×一个k(n-1)）,3.加上右边进来的新数字(刚才-1用于下次的选路径，但这次的节点还没更新呢，要把这个1加回来)
+		}
+		return s;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "1-2--3--4-5--6--7";
 	string b = "(()())(())";
-	vector<int> inpt1 = { 1 };
-	vector<int> inpt2 = { 1, 3, 4, 2 };
+	vector<int> inpt1 = { 2, 5 };
+	vector<int> inpt2 = { 3, 2 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
-		{ 0, 1, 1, 1, 0, 1 },
-		{ 0, 0, 0, 0, 0, 1 },
-		{ 0, 0, 1, 0, 0, 1 },
-		{ 1, 1, 0, 1, 1, 0 },
-		{ 1, 0, 0, 1, 0, 0 },
+		{3, 0, 5},
+		{1, 2, 10}
 	};
 	vector<vector<char>> board = {
 		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
@@ -11603,7 +11854,8 @@ int main(int argc, char* argv[]) {
 		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
 		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
 	};
-	mySolution.solveNQueens(2);
+	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
+	mySolution.shoppingOffers(inpt1, nums, inpt2);
 	return 0;
 }
 #endif
