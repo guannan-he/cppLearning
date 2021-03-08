@@ -11271,7 +11271,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-DFS, BFS
-#if true
+#if false
 
 class Solution {
 public:
@@ -11830,18 +11830,401 @@ public:
 		}
 		return s;
 	}
+	vector<int> splitIntoFibonacci(string s) {//将数组拆分成斐波那契序列
+		vector<int> res;
+		bool done = false;
+		splitIntoFibonacciSub(res, s, 0, s.size(), done);
+		return res;
+	}
+	void splitIntoFibonacciSub(vector<int>& res, string& s, int cur, int sLen, bool& done) {
+		if (cur == sLen && res.size() > 2) {
+			done = true;
+		}
+		int tmp = 0;
+		for (int i = cur; i < sLen && !done; i++) {
+			tmp *= 10;
+			tmp += s[i] - '0';
+			if (res.size() < 2 || (long(res[res.size() - 2]) + long(res[res.size() - 1]) < INT_MAX && res[res.size() - 2] + res[res.size() - 1] == tmp)) {
+				res.push_back(tmp);
+				splitIntoFibonacciSub(res, s, i + 1, sLen, done);
+				if (done) {
+					break;
+				}
+				res.pop_back();
+			}
+			if (tmp == 0 || tmp > INT_MAX / 10) {
+				break;
+			}
+		}
+	}
+	vector<int> eventualSafeNodes(vector<vector<int>>& graph) {//找到最终的安全状态
+		vector<int> res;
+		int nodeCnt = graph.size();
+		vector<int> memo(nodeCnt, 0);//记忆节点状态0 : 未知, 1 : 有环, 2 : 无环
+		for (int i = 0; i < nodeCnt; i++) {
+			vector<bool> vist(nodeCnt, false);
+			vist[i] = true;
+			if (!eventualSafeNodesSub(graph, vist, memo, i)) {//是否有环
+				res.push_back(i);
+			}
+		}
+		return res;
+	}
+	bool eventualSafeNodesSub(vector<vector<int>>& graph, vector<bool>& vist, vector<int>& memo, int cur) {
+		if (graph[cur].size() == 0) {
+			memo[cur] = 2;
+			return false;
+		}
+		for (int& i : graph[cur]) {
+			if (vist[i]) {//访问过，有环
+				memo[i] = 1;
+				return true;
+			}
+			if (memo[i] == 2) {//待访问节点确定无环
+				continue;
+			}
+			vist[i] = true;
+			if (memo[i] == 1 || eventualSafeNodesSub(graph, vist, memo, i)) {
+				memo[i] = 1;
+				return true;
+			}
+			vist[i] = false;
+		}
+		memo[cur] = 2;
+		return false;
+	}
+	vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {//喧闹和富有
+		int peopleCnt = quiet.size();
+		vector<int> res(peopleCnt, -1), inDegree(peopleCnt, 0);
+		vector<vector<int>> inferiorGraph(peopleCnt);
+		for (vector<int>& rich : richer) {//比较穷的邻居
+			inferiorGraph[rich[0]].push_back(rich[1]);
+			inDegree[rich[1]]++;//比这个邻居更富的人数
+		}
+		queue<int> que;
+		for (int i = 0; i < peopleCnt; i++) {
+			if (inDegree[i] == 0) {//最富的
+				que.push(i);
+			}
+			res[i] = i;
+		}
+		while (!que.empty()) {
+			int cur = que.front();
+			que.pop();
+			for (int& neigh : inferiorGraph[cur]) {
+				if (quiet[res[cur]] < quiet[res[neigh]]) {//更新更安静的
+					res[neigh] = res[cur];
+				}
+				inDegree[neigh]--;
+				if (inDegree[neigh] == 0) {
+					que.push(neigh);
+				}
+			}
+		}
+		return res;
+	}
+	int numBusesToDestination(vector<vector<int>>& routes, int source, int target) {//公交路线
+		if (source == target) {
+			return 0;
+		}
+		int busCnt = routes.size();
+		unordered_map<int, unordered_set<int>> graph;
+		for (int i = routes.size() - 1; i > -1; i--) {//站为节点
+			for (int& j : routes[i]) {
+				graph[j].insert(i);
+			}
+		}
+		queue<int> que;
+		int level = 0;
+		vector<bool> vist(busCnt, false);
+		que.push(source);
+		while (!que.empty()) {
+			level++;
+			for (int i = que.size(); i > 0; i--) {
+				int cur = que.front();
+				que.pop();
+				for (const int& bus : graph[cur]) {
+					if (vist[bus]) {
+						continue;
+					}
+					vist[bus] = true;
+					for (int& stop : routes[bus]) {
+						if (stop == target) {
+							return level;
+						}
+						que.push(stop);
+					}
+				}
+			}
+		}
+		return -1;
+	}
+	int numEnclaves(vector<vector<int>>& grid) {//飞地的数量
+		int rolSize = grid.size(), colSize = grid[0].size();
+		if (rolSize == 1 || colSize == 1) {
+			return 0;
+		}
+		int res = 0;
+		vector<vector<bool>> vist(rolSize, vector<bool>(colSize, false));
+		vector<vector<int>> dir = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
+		queue<pair<int, int>> que;
+		for (int i = 0; i < rolSize; i++) {
+			if (grid[i][0] == 1) {
+				que.push(make_pair(i, 0));
+			}
+			if (grid[i][colSize - 1] == 1) {
+				que.push(make_pair(i, colSize - 1));
+			}
+		}
+		for (int i = 0; i < colSize; i++) {
+			if (grid[0][i] == 1) {
+				que.push(make_pair(0, i));
+			}
+			if (grid[rolSize - 1][i] == 1) {
+				que.push(make_pair(rolSize - 1, i));
+			}
+		}
+		while (!que.empty()) {
+			int rolCur = que.front().first, colCur = que.front().second;
+			que.pop();
+			if (vist[rolCur][colCur]) {
+				continue;
+			}
+			vist[rolCur][colCur] = true;
+			grid[rolCur][colCur] = 0;
+			for (int i = 0; i < 4; i++) {
+				int tmpRol = rolCur + dir[i][0], tmpCol = colCur + dir[i][1];
+				if (tmpRol < 0 || tmpRol == rolSize || tmpCol < 0 || tmpCol == colSize) {
+					continue;
+				}
+				if (grid[tmpRol][tmpCol] == 1) {
+					que.push(make_pair(tmpRol, tmpCol));
+				}
+			}
+		}
+		for (int i = 0; i < rolSize; i++) {
+			for (int j = 0; j < colSize; j++) {
+				res += grid[i][j];
+			}
+		}
+		return res;
+	}
+	int closedIsland(vector<vector<int>>& grid) {//统计封闭岛屿的数目
+		int rolSize = grid.size(), colSize = grid[0].size();
+		if (rolSize == 1 || colSize == 1) {
+			return 0;
+		}
+		int res = 0;
+		vector<vector<bool>> vist(rolSize, vector<bool>(colSize, false));
+		vector<vector<int>> dir = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
+		queue<pair<int, int>> que;
+		//消除地图周围的陆地
+		for (int i = 0; i < rolSize; i++) {
+			if (grid[i][0] == 0) {
+				closedIslandSub(grid, vist, i, 0, rolSize, colSize);
+			}
+			if (grid[i][colSize - 1] == 0) {
+				closedIslandSub(grid, vist, i, colSize - 1, rolSize, colSize);
+			}
+		}
+		for (int i = 0; i < colSize; i++) {
+			if (grid[0][i] == 0) {
+				closedIslandSub(grid, vist, 0, i, rolSize, colSize);
+			}
+			if (grid[rolSize - 1][i] == 0) {
+				closedIslandSub(grid, vist, rolSize - 1, i, rolSize, colSize);
+			}
+		}
+		//统计陆地数量
+		for (int i = 0; i < rolSize; i++) {
+			for (int j = 0; j < colSize; j++) {
+				if (grid[i][j] == 0) {
+					res++;
+					closedIslandSub(grid, vist, i, j, rolSize, colSize);
+				}
+			}
+		}
+		return res;
+	}
+	inline void closedIslandSub(vector<vector<int>>& grid, vector<vector<bool>>& vist, int rolCur, int colCur, int rolSize, int colSize) {
+		vector<vector<int>> dir = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
+		queue<pair<int, int>> que;
+		que.push(make_pair(rolCur, colCur));
+		while (!que.empty()) {
+			int rolCur = que.front().first, colCur = que.front().second;
+			que.pop();
+			if (vist[rolCur][colCur]) {
+				continue;
+			}
+			vist[rolCur][colCur] = true;
+			grid[rolCur][colCur] = 1;
+			for (int i = 0; i < 4; i++) {
+				int tmpRol = rolCur + dir[i][0], tmpCol = colCur + dir[i][1];
+				if (tmpRol < 0 || tmpRol == rolSize || tmpCol < 0 || tmpCol == colSize) {
+					continue;
+				}
+				if (grid[tmpRol][tmpCol] == 0) {
+					que.push(make_pair(tmpRol, tmpCol));
+				}
+			}
+		}
+		return;
+	}
+	int numTilePossibilities(string str) {//活字印刷
+		int sLen = str.size();
+		vector<bool> vist(sLen, false);
+		sort(str.begin(), str.end());
+		int res = 0;
+		numTilePossibilitiesSub(str, vist, res, sLen);
+		return res;
+	}
+	void numTilePossibilitiesSub(string& str, vector<bool>& vist, int& res, int& sLen) {
+		for (int i = 0; i < sLen; i++) {
+			if (i > 0 && str[i - 1] == str[i] && !vist[i - 1]) {//排序后剪枝
+				continue;
+			}
+			if (!vist[i]) {
+				vist[i] = true;
+				res++;
+				numTilePossibilitiesSub(str, vist, res, sLen);
+				vist[i] = false;
+			}
+		}
+		return;
+	}
+	int uniquePathsIII(vector<vector<int>>& grid) {//不同路径 III
+		int rolSize = grid.size(), colSize = grid[0].size();
+		vector<vector<int>> dir = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
+		pair<int, int> startPoint, endPoint;
+		int blankCnt = 0;
+		for (int i = 0; i < rolSize; i++) {
+			for (int j = 0; j < colSize; j++) {
+				if (grid[i][j] == 1) {
+					startPoint = make_pair(i, j);
+				}
+				if (grid[i][j] == 2) {
+					endPoint = make_pair(i, j);
+				}
+				if (grid[i][j] == 0) {
+					blankCnt++;
+				}
+			}
+		}
+		int res = 0;
+		vector<vector<bool>> vist(rolSize, vector<bool>(colSize, false));
+		uniquePathsIIISub(grid, vist, dir, res, rolSize, colSize, endPoint, startPoint, blankCnt);
+		return res;
+	}
+	void uniquePathsIIISub(vector<vector<int>>& grid, vector<vector<bool>>& vist, vector<vector<int>>& dir, int& res, int& rolSize, int& colSize, pair<int, int>& endPoint, pair<int, int> startPoint, int blankCnt) {
+		if (startPoint.first == endPoint.first && startPoint.second == endPoint.second) {
+			if (blankCnt == -1) {
+				res++;
+			}
+			return;
+		}
+		for (int i = 0; i < 4; i++) {
+			int tmpRol = startPoint.first + dir[i][0], tmpCol = startPoint.second + dir[i][1];
+			if (tmpRol < 0 || tmpRol == rolSize || tmpCol < 0 || tmpCol == colSize) {
+				continue;
+			}
+			if (vist[tmpRol][tmpCol]) {
+				continue;
+			}
+			vist[tmpRol][tmpCol] = true;
+			if (grid[tmpRol][tmpCol] == 0 || grid[tmpRol][tmpCol] == 2) {
+				uniquePathsIIISub(grid, vist, dir, res, rolSize, colSize, endPoint, make_pair(tmpRol, tmpCol), blankCnt - 1);
+			}
+			vist[tmpRol][tmpCol] = false;
+		}
+		return;
+	}
+	int numSquarefulPerms(vector<int>& nums) {//正方形数组的数目
+		vector<bool> vist(nums.size(), false);
+		int res = 0;
+		vector<int> tmp;
+		sort(nums.begin(), nums.end());
+		numSquarefulPermsSub(nums, tmp, res, vist);
+		return res;
+	}
+	void numSquarefulPermsSub(vector<int>& nums, vector<int>& tmp, int& res, vector<bool>& vist) {
+		if (tmp.size() == nums.size()) {
+			res++;
+			return;
+		}
+		for (int i = 0; i < nums.size(); i++) {
+			if (vist[i] || i > 0 && nums[i] == nums[i - 1] && !vist[i - 1]) {
+				continue;
+			}
+			vist[i] = true;
+			if (tmp.size() < 1 || (tmp[tmp.size() - 1] + nums[i] == (int)sqrt(tmp[tmp.size() - 1] + nums[i]) * (int)sqrt(tmp[tmp.size() - 1] + nums[i]))) {
+				tmp.push_back(nums[i]);
+				numSquarefulPermsSub(nums, tmp, res, vist);
+				tmp.pop_back();
+			}
+			vist[i] = false;
+		}
+		return;
+	}
+	int shortestPathAllKeys(vector<string>& grid) {//获取所有钥匙的最短路径
+		int rolSize = grid.size(), colSize = grid[0].size();
+		vector<vector<int>> dir = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
+		int keyCnt = 0;
+		queue<vector<int>> que;
+		for (int i = 0; i < rolSize; i++) {
+			for (int j = 0; j < colSize; j++) {
+				if (grid[i][j] >= 'a' && grid[i][j] <= 'z') {
+					keyCnt++;
+				}
+				else if (grid[i][j] == '@') {
+					que.push({ i, j, 0 });
+				}
+			}
+		}
+		int target = (1 << keyCnt) - 1;
+		vector<vector<vector<int>>> distance(rolSize, vector<vector<int>>(colSize, vector<int>(target, -1)));
+		distance[que.front()[0]][que.front()[1]][0] = 0;
+		while (!que.empty()) {
+			vector<int> cur = que.front();
+			que.pop();
+			for (int i = 0; i < 4; i++) {
+				int tmpRol = cur[0] + dir[i][0], tmpCol = cur[1] + dir[i][1];
+				if (tmpRol < 0 || tmpRol == rolSize || tmpCol < 0 || tmpCol == colSize || grid[tmpRol][tmpCol] == '#') {
+					//越界或者是墙
+					continue;
+				}
+				if (grid[tmpRol][tmpCol] >= 'A' && grid[tmpRol][tmpCol] <= 'Z' && !(cur[2] & (1 << (grid[tmpRol][tmpCol] - 'A')))) {
+					//有锁没钥匙
+					continue;
+				}
+				int keyStat = cur[2];
+				if (grid[tmpRol][tmpCol] >= 'a' && grid[tmpRol][tmpCol] <= 'z') {
+					//当前是钥匙就新增钥匙状态
+					keyStat |= 1 << (grid[tmpRol][tmpCol] - 'a');
+					if (keyStat == target) {
+						return distance[cur[0]][cur[1]][cur[2]] + 1;
+					}
+				}
+				if (distance[tmpRol][tmpCol][keyStat] == -1) {
+					distance[tmpRol][tmpCol][keyStat] = distance[cur[0]][cur[1]][cur[2]] + 1;
+					que.push({ tmpRol, tmpCol, keyStat });
+				}
+			}
+		}
+		return -1;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "1-2--3--4-5--6--7";
 	string b = "(()())(())";
-	vector<int> inpt1 = { 2, 5 };
+	vector<int> inpt1 = { 64, 44, 5, 11 };
 	vector<int> inpt2 = { 3, 2 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
-		{3, 0, 5},
-		{1, 2, 10}
+		{1, 0, 0, 0},
+		{0, 0, 0, 0},
+		{0, 0, 2, -1}
 	};
 	vector<vector<char>> board = {
 		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
@@ -11854,8 +12237,47 @@ int main(int argc, char* argv[]) {
 		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
 		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
 	};
+	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
 	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
-	mySolution.shoppingOffers(inpt1, nums, inpt2);
+	mySolution.numSquarefulPerms(inpt1);
+	return 0;
+}
+#endif
+
+//cookBook-二分搜索
+#if true
+
+class Solution {
+public:
+	;
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "1-2--3--4-5--6--7";
+	string b = "(()())(())";
+	vector<int> inpt1 = { 64, 44, 5, 11 };
+	vector<int> inpt2 = { 3, 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{1, 0, 0, 0},
+		{0, 0, 0, 0},
+		{0, 0, 2, -1}
+	};
+	vector<vector<char>> board = {
+		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+	};
+	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
+	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
+	mySolution;
 	return 0;
 }
 #endif
