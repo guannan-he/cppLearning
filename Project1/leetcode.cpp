@@ -10802,7 +10802,7 @@ public:
 		queue<TreeNode*> que;
 		que.push(root);
 		int level = 0, xLev = -1, yLev = -1;
-		TreeNode* fx = nullptr, *fy = nullptr;
+		TreeNode* fx = nullptr, * fy = nullptr;
 		while (!que.empty() && (xLev == -1 || yLev == -1)) {
 			int qLen = que.size();
 			while (qLen > 0 && (xLev == -1 || yLev == -1)) {
@@ -11064,7 +11064,7 @@ public:
 	}
 	vector<int> sumOfDistancesInTree(int N, vector<vector<int>>& edges) {//树中距离之和
 		if (N == 0 || edges.empty()) {
-			return {0};
+			return { 0 };
 		}
 		vector<int> cnt(N, 1);
 		vector<int> res(N);
@@ -11751,7 +11751,7 @@ public:
 		}
 		int rolCur = curMap[cur].first, colCur = curMap[cur].second;
 		char targetL = tower[rolCur + 1][colCur], targetR = tower[rolCur + 1][colCur + 1];
-		for (int i = 0; i < listCnt && !res; i++){//剪枝，找到答案就返回
+		for (int i = 0; i < listCnt && !res; i++) {//剪枝，找到答案就返回
 			if (allowed[i][0] == targetL && allowed[i][1] == targetR) {
 				tower[rolCur][colCur] = allowed[i][2];
 				pyramidTransitionSub(allowed, tower, res, cur + 1, total, curMap, listCnt);
@@ -12249,20 +12249,249 @@ int main(int argc, char* argv[]) {
 
 class Solution {
 public:
-	;
+	struct TreeNode {
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+		TreeNode() : val(0), left(nullptr), right(nullptr) {}
+		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+		TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
+	};
+	int countNodes(TreeNode* root) {//完全二叉树的节点个数
+		if (root == nullptr) {
+			return 0;
+		}
+		int depth = -1;
+		TreeNode* cur = root;
+		while (cur != nullptr) {
+			depth++;
+			cur = cur->left;
+		}
+		int low = 1 << depth, high = (1 << (depth + 1)) - 1;
+		while (low < high) {
+			int mid = low + (high - low + 1) / 2;
+			if (countNodesSub(root, depth, mid)) {
+				low = mid;
+			}
+			else {
+				high = mid - 1;
+			}
+		}
+		return low;
+	}
+	bool countNodesSub(TreeNode* root, int level, int k) {
+		int bit = 1 << (level - 1);
+		while (root != nullptr && bit > 0) {
+			if (!(bit & k)) {
+				root = root->left;
+			}
+			else {
+				root = root->right;
+			}
+			bit >>= 1;
+		}
+		return root != nullptr;
+	}
+	bool isSubsequence(string s, string t) {//判断子序列
+		size_t sLen = s.size(), tLen = t.size(), sCur = 0, tCur = 0;
+		while (sCur < sLen && tCur < tLen) {
+			if (s[sCur] == t[tCur]) {
+				sCur++;
+			}
+			tCur++;
+		}
+		return sCur == sLen;
+	}
+	int hIndex(vector<int>& nums) {//H 指数 II
+		int numsLen = nums.size();
+		int left = 0, right = numsLen;
+		while (left < right) {
+			int mid = left + (right - left) / 2;
+			if (nums[mid] < numsLen - mid) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		return numsLen - left;
+	}
+	int calculateMinimumHP(vector<vector<int>>& grid) {//地下城游戏
+		int rolSize = grid.size(), colSize = grid[0].size();
+		vector<vector<int>> dp(rolSize + 1, vector<int>(colSize + 1, INT_MAX));
+		dp[rolSize][colSize - 1] = 1, dp[rolSize - 1][colSize] = 1;
+		for (int i = rolSize - 1; i > -1; i--) {
+			for (int j = colSize - 1; j > -1; j--) {
+				int tmp = min(dp[i + 1][j], dp[i][j + 1]);
+				dp[i][j] = max(tmp - grid[i][j], 1);
+			}
+		}
+		return dp[0][0];
+	}
+	int maxEnvelopes(vector<vector<int>>& envelopes) {//俄罗斯套娃信封问题
+		sort(envelopes.begin(), envelopes.end(), [](vector<int>& v1, vector<int>& v2) {
+			return v1[0] < v2[0] || (v1[0] == v2[0] && v1[1] < v2[1]);
+			});
+		int enveCnt = envelopes.size();
+		vector<int> dp(enveCnt, 1);
+		for (int i = 1; i < enveCnt; i++) {
+			for (int j = 0; j < i; j++) {
+				if (envelopes[j][0] < envelopes[i][0] && envelopes[j][1] < envelopes[i][1]) {
+					dp[i] = max(dp[i], dp[j] + 1);
+				}
+			}
+		}
+		return *max_element(dp.begin(), dp.end());
+	}
+	int arrangeCoins(int n) {//排列硬币
+		if (n <= 0) {
+			return 0;
+		}
+		int res = 1;
+		while (n >= res) {
+			n -= res;
+			res++;
+		}
+		return res - 1;
+	}
+	int findRadius(vector<int>& houses, vector<int>& heaters) {//供暖器
+		sort(houses.begin(), houses.end());
+		sort(heaters.begin(), heaters.end());
+		int left = 0;
+		int right = max(abs(heaters[heaters.size() - 1] - houses[0]), abs(heaters[0] - houses[houses.size() - 1]));
+		while (left < right) {
+			int  mid = left + (right - left) / 2;
+			if (findRadiusSub(houses, heaters, mid)) {
+				//能覆盖
+				right = mid;
+			}
+			else {
+				//mid确定不能覆盖，所以+1
+				left = mid + 1;
+			}
+		}
+		return left;
+	}
+	bool findRadiusSub(vector<int>& houses, vector<int>& heaters, int radius) {
+		int houseCnt = houses.size(), heaterCnt = heaters.size(), houseCur = 0, heaterCur = 0;
+		while (houseCur < houseCnt && heaterCur < heaterCnt) {
+			int house = houses[houseCur], heater = heaters[heaterCur];
+			if (abs(heater - house) <= radius) {
+				houseCur++;
+			}
+			else {
+				heaterCur++;
+			}
+		}
+		return houseCur == houseCnt;
+	}
+	vector<int> findRightInterval(vector<vector<int>>& intervals) {//寻找右区间
+		vector<pair<int, int>> curMap;
+		int intervalCnt = intervals.size();
+		for (int i = 0; i < intervalCnt; i++) {
+			curMap.push_back(make_pair(intervals[i][0], i));
+		}
+		sort(curMap.begin(), curMap.end());
+		vector<int> res;
+		for (int i = 0; i < intervalCnt; i++) {
+			res.push_back(findRightIntervalSub(curMap, intervals[i][1]));
+		}
+		return res;
+	}
+	int findRightIntervalSub(vector<pair<int, int>>& curMap, int num) {
+		int left = 0, right = curMap.size();
+		while (left < right) {
+			int mid = left + (right - left) / 2;
+			if (curMap[mid].first < num) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		return left == curMap.size() ? -1 : curMap[left].second;
+	}
+	string smallestGoodBase(string n) {//最小好进制
+		long long num = stol(n);
+		long long res = num - 1;//默认答案
+		for (int base = 59; base > 1; base--) {
+			int k = pow(num, 1.0 / base);
+			if (k > 1) {
+				long long sum = 1, mul = 1;
+				for (int i = 1; i <= base; i++) {
+					mul *= k;
+					sum += mul;
+					if (sum == num) {
+						res = k;
+						break;
+					}
+				}
+			}
+		}
+		return to_string(res);
+	}
 };
+
+//class Solution {
+//public:
+//	Solution(vector<int>& w) {//按权重随机选择
+//		nums = w;
+//		int numsLen = nums.size();
+//		for (int i = 1; i < numsLen; i++) {
+//			nums[i] += nums[i - 1];
+//		}
+//		lo = 0, hi = nums[numsLen - 1];
+//		return;
+//	}
+//
+//	int pickIndex() {
+//		int r = rand() % (hi - lo) + 1;
+//		return lower_bound(nums.begin(), nums.end(), r) - nums.begin();
+//	}
+//private:
+//	vector<int> nums;
+//	int lo, hi;
+//};
+
+//class Solution {//非重叠矩形中的随机点
+//public:
+//	Solution(vector<vector<int>>& rects) {
+//		int rectCnt = rects.size();
+//		rectBackup = rects;
+//		int last = 0;
+//		for (vector<int>& rect : rects) {
+//			last += (rect[2] - rect[0] + 1) * (rect[3] - rect[1] + 1);
+//			cur.push_back(last);
+//		}
+//		hi = cur[rectCnt - 1];
+//		return;
+//	}
+//
+//	vector<int> pick() {
+//		int r = rand() % hi + 1;
+//		int rect = lower_bound(cur.begin(), cur.end(), r) - cur.begin();
+//		int x = rand() % (rectBackup[rect][2] - rectBackup[rect][0] + 1) + rectBackup[rect][0];
+//		int y = rand() % (rectBackup[rect][3] - rectBackup[rect][1] + 1) + rectBackup[rect][1];
+//		return { x, y };
+//	}
+//private:
+//	vector<int> cur;
+//	vector<vector<int>> rectBackup;
+//	int hi;
+//};
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "1-2--3--4-5--6--7";
 	string b = "(()())(())";
-	vector<int> inpt1 = { 64, 44, 5, 11 };
-	vector<int> inpt2 = { 3, 2 };
+	vector<int> inpt1 = { 1, 2, 3 };
+	vector<int> inpt2 = { 2 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
-		{1, 0, 0, 0},
-		{0, 0, 0, 0},
-		{0, 0, 2, -1}
+		{82918473, -57180867, 82918476, -57180863},
+		{83793579, 18088559, 83793580, 18088560},
+		{66574245, 26243152, 66574246, 26243153},
+		{72983930, 11921716, 72983934, 11921720}
 	};
 	vector<vector<char>> board = {
 		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
@@ -12277,7 +12506,7 @@ int main(int argc, char* argv[]) {
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
 	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
-	mySolution;
+	mySolution.smallestGoodBase("13");
 	return 0;
 }
 #endif
