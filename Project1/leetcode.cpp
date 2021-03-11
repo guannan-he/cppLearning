@@ -12245,7 +12245,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-二分搜索
-#if true
+#if false
 
 class Solution {
 public:
@@ -12430,6 +12430,311 @@ public:
 		}
 		return to_string(res);
 	}
+	bool judgeSquareSum(int c) {//平方数之和
+		int left = 0, right = sqrt(c);
+		while (left <= right) {
+			long long tmp = (long long)left * left + right * right;
+			if (tmp == c) {
+				return true;
+			}
+			else if (tmp > c) {
+				right--;
+			}
+			else {
+				left++;
+			}
+		}
+		return false;
+	}
+	int findKthNumber(int m, int n, int k) {//乘法表中第k小的数
+		int lo = 1, hi = m * n;
+		while (lo < hi) {
+			int mid = lo + (hi - lo) / 2;
+			if (!findKthNumberSub(m, n, mid, k)) {
+				lo = mid + 1;
+			}
+			else {
+				;
+				hi = mid;
+			}
+		}
+		return lo;
+	}
+	bool findKthNumberSub(int m, int n, int mid, int k) {
+		int cnt = 0;
+		for (int i = 1; i <= m; i++) {
+			cnt += min(n, mid / i);
+		}
+		return cnt >= k;
+	}
+	vector<int> kthSmallestPrimeFraction(vector<int>& nums, int k) {//第 K 个最小的素数分数
+		double lo = 0.0, hi = 1.0;
+		int numsLen = nums.size();
+		while (lo < hi) {
+			double mid = (lo + hi) / 2;
+			int cnt = 0;
+			vector<int> res = { 0, 1 };
+			int j = 0;
+			for (int i = 0; i < numsLen; i++) {
+				while (j < numsLen && nums[i] >= mid * nums[j]) {
+					j++;
+				}
+				cnt += numsLen - j;
+				if (j < numsLen && res[0] * nums[j] < res[1] * nums[i]) {
+					res = { nums[i], nums[j] };
+				}
+			}
+			if (cnt == k) {
+				return res;
+			}
+			else if (cnt < k) {
+				lo = mid;
+			}
+			else {
+				hi = mid;
+			}
+		}
+		return {};
+	}
+	int peakIndexInMountainArray(vector<int>& arr) {//山脉数组的峰顶索引
+		int left = 1, right = arr.size() - 2;
+		while (left <= right) {
+			int mid = left + (right - left) / 2;
+			if (arr[mid] > arr[mid - 1] && arr[mid] > arr[mid + 1]) {
+				return mid;
+			}
+			else if (arr[mid] < arr[mid + 1]) {
+				left = mid + 1;
+			}
+			else {
+				right = mid - 1;
+			}
+		}
+		return 0;
+	}
+	class RecentCounter {//最近的请求次数
+	public:
+		RecentCounter() {
+			return;
+		}
+
+		int ping(int t) {
+			time[0] = t - 3000;
+			time[1] = t;
+			int cnt = 0;
+			log.push_back(t);
+			cnt = log.end() - lower_bound(log.begin(), log.end(), time[0]);
+			return cnt;
+		}
+	private:
+		vector<int> time = { -3000, 0 };
+		vector<int> log;
+	};
+	int minEatingSpeed(vector<int>& nums, int h) {//爱吃香蕉的珂珂
+		sort(nums.begin(), nums.end());
+		int left = 1, right = nums[nums.size() - 1];
+		while (left < right) {
+			int mid = left + (right - left) / 2;
+			if (!minEatingSpeedSub(nums, h, mid)) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		return left;
+	}
+	bool minEatingSpeedSub(vector<int>& nums, int h, int spd) {
+		//能不能在规定时间吃完
+		int cnt = 0;
+		for (int& num : nums) {
+			cnt += num / spd;
+			if (num % spd != 0) {
+				cnt++;
+			}
+		}
+		return cnt <= h;
+	}
+	class TimeMap {//基于时间的键值存储
+	public:
+		/** Initialize your data structure here. */
+		TimeMap() {
+
+		}
+
+		void set(string key, string value, int timestamp) {
+			keyMap[key][timestamp] = value;
+			return;
+		}
+
+		string get(string key, int timestamp) {
+			if (keyMap.count(key) < 1) {
+				return "";
+			}
+			auto it = keyMap[key].upper_bound(timestamp);
+			if (it == keyMap[key].begin()) {
+				return "";
+			}
+			return (--it)->second;
+		}
+	private:
+		unordered_map<string, map<int, string>> keyMap;
+	};
+
+	class TopVotedCandidate {////在线选举
+	public:
+		TopVotedCandidate(vector<int>& persons, vector<int>& times) {
+			int N = persons.size();
+			int lead = 0;
+			vector<int> count(N, 0);
+			for (int i = 0; i < N; i++) {
+				count[persons[i]]++;
+				// Note: use >= to include case tie case, choose the latest voted candidate
+				if (count[persons[i]] >= count[lead]) {
+					lead = persons[i];
+				}
+				mp[times[i]] = lead;
+			}
+		}
+
+		int q(int t) {
+			auto iter = mp.upper_bound(t);
+			auto last = prev(iter); // floor key
+			return last->second;
+		}
+
+	private:
+		map<int, int> mp; // time stamp to lead
+	};
+	int preimageSizeFZF(int K) {//阶乘函数后 K 个零
+		long long left = 0, right = 5l * K;
+		while (left <= right) {
+			long long mid = left + (right - left) / 2;
+			int zeroCnt = preimageSizeFZFSub(mid);
+			if (zeroCnt == K) {
+				return 5;
+			}
+			else if (zeroCnt > K) {
+				right = mid - 1;
+			}
+			else {
+				left = mid + 1;
+			}
+		}
+		return 0;
+	}
+	int preimageSizeFZFSub(long long num) {
+		int res = 0;
+		while (num != 0) {
+			res += num / 5;
+			num /= 5;
+		}
+		return res;
+	}
+	int nthMagicalNumber(int n, int a, int b) {//第 N 个神奇数字
+		const int mod = 1000000007;
+		int L = a * b / gcd(a, b);//最小公倍数
+		long long left = min(a, b), right = 1e15;
+		while (left < right) {
+			long long mid = left + (right - left) / 2;
+			if (mid / a + mid / b - mid / L < n) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		return (int)(left % mod);
+	}
+	int gcd(int x, int y) {
+		if (x == 0) return y;
+		return gcd(y % x, x);
+	}
+	vector<int> maxDepthAfterSplit(string seq) {//有效括号的嵌套深度
+		vector<int> res;
+		int cnt = 0;
+		for (char& ch : seq) {
+			if (ch == '(') {
+				cnt++;
+				res.push_back(cnt % 2);
+			}
+			else {
+				res.push_back(cnt % 2);
+				cnt--;
+			}
+		}
+		return res;
+	}
+	int nthUglyNumber(int n, int a, int b, int c) {//丑数 III
+		long long ab = 1l * a * b / gcd(a, b), ac = 1l * a * c / gcd(a, c), bc = 1l * b * c / gcd(b, c);
+		long long abc = 1l * a * bc / gcd(a, bc);
+		long long left = min(min(a, b), c), right = n * left;
+		while (left < right) {
+			long long mid = left + (right - left) / 2;
+			if (mid / a + mid / b + mid / c + mid / abc - mid / ab - mid / ac - mid / bc < n) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		return (int)left;
+	}
+	int smallestDivisor(vector<int>& nums, int threshold) {//使结果不超过阈值的最小除数
+		int left = 1, right = *max_element(nums.begin(), nums.end());
+		while (left < right) {
+			int mid = left + (right - left) / 2;
+			if (smallestDivisorSub(nums, mid) > threshold) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		return left;
+	}
+	int smallestDivisorSub(vector<int>& nums, int mid) {
+		int res = 0;
+		for (int& num : nums) {
+			res += num / mid;
+			if (num % mid != 0) {
+				res++;
+			}
+		}
+		return res;
+	}
+	vector<int> threeEqualParts(vector<int>& arr) {//三等分
+		vector<int> bits;
+		int arrLen = arr.size();
+		for (int i = 0; i < arrLen; i++) {
+			if (arr[i] == 1) {
+				bits.push_back(i);
+			}
+		}
+		if (bits.size() % 3 != 0) {
+			return { -1, -1 };
+		}
+		if (bits.empty()) {
+			return { 0, 2 };
+		}
+		int oneCnt = bits.size() / 3;
+		int backZero = arrLen - 1 - bits.back();
+		if (backZero > bits[2 * oneCnt] - bits[2 * oneCnt - 1] - 1 || backZero > bits[oneCnt] - bits[oneCnt - 1] - 1) {
+			return { -1, -1 };
+		}
+		vector<int> fst(bits.begin(), bits.begin() + oneCnt);
+		vector<int> sec(bits.begin() + oneCnt, bits.begin() + 2 * oneCnt);
+		vector<int> trd(bits.begin() + 2 * oneCnt, bits.end());
+		for (int i = oneCnt - 1; i > 0; i--) {
+			;
+			if (fst[i] - fst[i - 1] != sec[i] - sec[i - 1] || fst[i] - fst[i - 1] != trd[i] - trd[i - 1]) {
+				return { -1, -1 };
+			}
+		}
+		int i = bits[oneCnt - 1] + backZero;
+		int j = bits[2 * oneCnt - 1] + backZero + 1;
+		return { i, j };
+	}
 };
 
 //class Solution {
@@ -12506,7 +12811,46 @@ int main(int argc, char* argv[]) {
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
 	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
-	mySolution.smallestGoodBase("13");
+	mySolution.preimageSizeFZF(3);
+	return 0;
+}
+#endif
+
+//cookBook-数学
+#if true
+
+class Solution {
+public:
+	
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "1-2--3--4-5--6--7";
+	string b = "(()())(())";
+	vector<int> inpt1 = { 1, 2, 3 };
+	vector<int> inpt2 = { 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{82918473, -57180867, 82918476, -57180863},
+		{83793579, 18088559, 83793580, 18088560},
+		{66574245, 26243152, 66574246, 26243153},
+		{72983930, 11921716, 72983934, 11921720}
+	};
+	vector<vector<char>> board = {
+		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+	};
+	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
+	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
+	mySolution;
 	return 0;
 }
 #endif
