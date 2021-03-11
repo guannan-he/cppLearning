@@ -12821,14 +12821,139 @@ int main(int argc, char* argv[]) {
 
 class Solution {
 public:
-	
+	bool isPalindrome(int x) {//回文数
+		if (x == 0) {
+			return true;
+		}
+		if (x < 0 || x % 10 == 0) {
+			return false;
+		}
+		long long xCopy = x, tmp = 0;
+		while (x != 0) {
+			tmp *= 10;
+			tmp += x % 10;
+			x /= 10;
+		}
+		return tmp == xCopy;
+	}
+	string convertToTitle(int columnNumber) {//Excel表列名称
+		string res;
+		while (columnNumber != 0) {
+			res.insert(res.begin(), (columnNumber - 1) % 26 + 'A');
+			columnNumber = (columnNumber - 1) / 26;
+		}
+		return res;
+	}
+	int titleToNumber(string columnTitle) {//Excel表列序号
+		int res = 0;
+		for (char& ch : columnTitle) {
+			res *= 26;
+			res += ch - 'A' + 1;
+		}
+		return res;
+	}
+	int trailingZeroes(int n) {//阶乘后的零
+		int res = 0;
+		while (n != 0) {
+			res += n / 5;
+			n /= 5;
+		}
+		return res;
+	}
+	int addDigits(int num) {//各位相加
+		return (num - 1) % 9 + 1;
+	}
+	bool isUgly(int n) {//丑数
+		if (n == 0) {
+			return false;
+		}
+		while (n % 2 == 0) {
+			n /= 2;
+		}
+		while (n % 3 == 0) {
+			n /= 3;
+		}
+		while (n % 5 == 0) {
+			n /= 5;
+		}
+		return n == 1;
+	}
+	bool isPowerOfThree(int n) {//3的幂
+		if (n == 0) {
+			return false;
+		}
+		while (n % 3 == 0) {
+			n /= 3;
+		}
+		return n == 1;
+	}
+	int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {//矩形面积
+		int x = max(A, E), y = max(B, F);
+		int z = min(C, G), w = min(D, H);
+		return (int)(computeAreaSub(A, B, C, D) + computeAreaSub(E, F, G, H) - computeAreaSub(x, y, z, w));
+	}
+	long long computeAreaSub(int x, int y, int z, int w) {
+		long long l = 0l + z - x, h = 0l + w - y;
+		if (l <= 0 || h <= 0) {
+			return 0;
+		}
+		return h * l;
+	}
+	int superPow(int a, vector<int>& b) {//超级次方
+		if (a < 2) {
+			return a;
+		}
+		vector<long long> baseList(10, 1);
+		int moder = 1337;
+		for (int i = 1; i < 10; i++) {
+			baseList[i] = baseList[i - 1] * a % moder;
+		}
+		long long res = 1l;
+		for (int& num : b) {
+			long long tmp = res;
+			for (int i = 1; i < 10; i++) {
+				res = res * tmp % moder;
+			}
+			res = res * baseList[num] % moder;
+		}
+		return res % moder;
+	}
+	int maxCount(int m, int n, vector<vector<int>>& ops) {//范围求和 II
+		for (vector<int>& lim : ops) {
+			m = min(lim[0], m);
+			n = min(lim[1], n);
+		}
+		return m * n;
+	}
+	bool checkPerfectNumber(int num) {//完美数
+		if (num < 2) {
+			return false;
+		}
+		int res = 1;
+		int ub = sqrt(num) + 1;
+		for (int i = 2; i < ub; i++) {
+			if (num % i == 0) {
+				res += i;
+				res += num / i;
+			}
+		}
+		return res == num;
+	}
+	int minMoves(vector<int>& nums) {//最小操作次数使数组元素相等
+		int sum = 0, minVal = INT_MAX;
+		for (int& num : nums) {
+			minVal = min(minVal, num);
+			sum += num;
+		}
+		return sum - minVal * nums.size();
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "1-2--3--4-5--6--7";
 	string b = "(()())(())";
-	vector<int> inpt1 = { 1, 2, 3 };
+	vector<int> inpt1 = { 1, 0 };
 	vector<int> inpt2 = { 2 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
@@ -12850,7 +12975,7 @@ int main(int argc, char* argv[]) {
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
 	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
-	mySolution;
+	mySolution.checkPerfectNumber(28);
 	return 0;
 }
 #endif
