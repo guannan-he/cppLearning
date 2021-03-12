@@ -12817,7 +12817,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-数学
-#if true
+#if false
 
 class Solution {
 public:
@@ -12947,20 +12947,346 @@ public:
 		}
 		return sum - minVal * nums.size();
 	}
+	vector<int> findErrorNums(vector<int>& nums) {//错误的集合
+		unordered_set<int> numSet;
+		vector<int> res(2, 0);
+		int sum = (nums.size() + 1) * nums.size() / 2;
+		for (int& num : nums) {
+			if (numSet.count(num) > 0) {
+				res[0] = num;
+			}
+			numSet.insert(num);
+			sum -= num;
+		}
+		res[1] = res[0] + sum;
+		return res;
+	}
+	int numRabbits(vector<int>& answers) {//森林中的兔子
+		unordered_map<int, int> rabbits;
+		int res = 0;
+		for (int& num : answers) {
+			rabbits[num]++;
+			if (rabbits[num] == num + 1) {
+				res += rabbits[num];
+				rabbits[num] = 0;
+			}
+		}
+		for (auto& it : rabbits) {
+			if (it.second != 0) {
+				res += it.first + 1;
+			}
+		}
+		return res;
+	}
+	double largestTriangleArea(vector<vector<int>>& points) {//最大三角形面积
+		double res = 0.0;
+		int pointCnt = points.size();
+		for (int i = 0; i < pointCnt; i++) {
+			for (int j = i + 1; j < pointCnt; j++) {
+				for (int k = j + 1; k < pointCnt; k++) {
+					res = max(res, largestTriangleAreaSub(points[i], points[j], points[k]));
+				}
+			}
+		}
+		return res;
+	}
+	double largestTriangleAreaSub(vector<int>& p, vector<int>& q, vector<int>& r) {
+		return 0.5 * abs(p[0] * q[1] + q[0] * r[1] + r[0] * p[1] - p[1] * q[0] - q[1] * r[0] - r[1] * p[0]);
+	}
+	bool isRectangleOverlap(vector<int>& rec1, vector<int>& rec2) {//矩形重叠
+		int x = max(rec1[0], rec2[0]), y = max(rec1[1], rec2[1]);
+		int z = min(rec1[2], rec2[2]), w = min(rec1[3], rec2[3]);
+		if (z - x <= 0 || w - y <= 0) {
+			return false;
+		}
+		return true;
+	}
+	vector<vector<int>> spiralMatrixIII(int R, int C, int r0, int c0) {//螺旋矩阵 III
+		vector<vector<int>> copy;
+		copy.push_back({ r0, c0 });
+		int last = 2;
+		int radius = 1;
+		while (last <= R * C) {
+			last = spiralMatrixIIISub(R, C, r0, c0, radius, last, copy);
+			radius++;
+		}
+		return copy;
+	}
+	int spiralMatrixIIISub(int rolSize, int colSize, int r0, int c0, int radius, int start, vector<vector<int>>& copy) {
+		for (int i = r0 - radius + 1; i <= r0 + radius; i++) {
+			if (i < 0 || i >= rolSize || c0 + radius >= colSize) {//右
+				continue;
+			}
+			start++;
+			copy.push_back({ i, c0 + radius });
+		}
+		for (int i = c0 + radius - 1; i >= c0 - radius; i--) {
+			if (i < 0 || i >= colSize || r0 + radius >= rolSize) {//下
+				continue;
+			}
+			start++;
+			copy.push_back({ r0 + radius, i });
+		}
+		for (int i = r0 + radius - 1; i >= r0 - radius; i--) {
+			if (i < 0 || i >= rolSize || c0 - radius < 0) {//左
+				continue;
+			}
+			start++;
+			copy.push_back({ i, c0 - radius });
+		}
+		for (int i = c0 - radius + 1; i <= c0 + radius; i++) {
+			if (r0 - radius < 0 || i < 0 || i >= colSize) {//上
+				continue;
+			}
+			start++;
+			copy.push_back({ r0 - radius, i });
+		}
+		return start;
+	}
+	int surfaceArea(vector<vector<int>>& grid) {//三维形体的表面积
+		int gridLen = grid.size();
+		vector<vector<int>> dir = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+		int res = 0;
+		for (int i = 0; i < gridLen; i++) {
+			for (int j = 0; j < gridLen; j++) {
+				if (grid[i][j] > 0) {
+					res += grid[i][j] * 4 + 2;
+					for (int k = 0; k < 4; k++) {
+						int tmpRol = i + dir[k][0], tmpCol = j + dir[k][1];
+						if (tmpRol < 0 || tmpRol >= gridLen || tmpCol < 0 || tmpCol >= gridLen) {
+							continue;
+						}
+						res -= min(grid[i][j], grid[tmpRol][tmpCol]);
+					}
+				}
+			}
+		}
+		return res;
+	}
+	string largestTimeFromDigits(vector<int>& arr) {//给定数字能组成的最大时间--回溯
+		vector<bool> vist(4, false);
+		int hourTmp = 0, minTmp = 0;
+		int res = -1;
+		for (int i = 0; i < 4; i++) {
+			if (arr[i] > 2) {
+				continue;
+			}
+			vist[i] = true;
+			for (int j = 0; j < 4; j++) {
+				if (vist[j]) {
+					continue;
+				}
+				if (arr[i] * 10 + arr[j] > 23) {
+					continue;
+				}
+				hourTmp = arr[i] * 10 + arr[j];
+				vist[j] = true;
+				for (int k = 0; k < 4; k++) {
+					if (vist[k] || arr[k] > 5){
+						continue;
+					}
+					vist[k] = true;
+					for (int w = 0; w < 4; w++) {
+						if (vist[w]) {
+							continue;
+						}
+						minTmp = arr[k] *10 + arr[w];
+						res = max(res, hourTmp * 100 + minTmp);
+					}
+					vist[k] = false;
+				}
+				vist[j] = false;
+			}
+			vist[i] = false;
+		}
+		if (res == -1) {
+			return "";
+		}
+		string str1 = to_string(res / 100), str2 = to_string(res % 100);
+		if (str1.size() == 1) {
+			str1.insert(str1.begin(), '0');
+		}
+		if (str2.size() == 1) {
+			str2.insert(str2.begin(), '0');
+		}
+		return str1 + ':' + str2;
+	}
+	vector<int> powerfulIntegers(int x, int y, int bound) {//强整数
+		unordered_set<int> resSet;
+		int tmpX = 1;
+		while (tmpX < bound) {
+			int tmpY = 1;
+			while (tmpX + tmpY <= bound) {
+				resSet.insert(tmpX + tmpY);
+				if (y == 1) {
+					break;
+				}
+				tmpY *= y;
+			}
+			if (x == 1) {
+				break;
+			}
+			tmpX *= x;
+		}
+		vector<int> res;
+		for (auto& it : resSet) {
+			res.push_back(it);
+		}
+		return res;
+	}
+	int tribonacci(int n) {//第 N 个泰波那契数
+		if (n == 0) {
+			return 0;
+		}
+		else if (n < 3) {
+			return 1;
+		}
+		int n_3 = 0, n_2 = 1, n_1 = 1;
+		int res = 0;
+		while (n > 2) {
+			res = n_3 + n_2 + n_1;
+			n_3 = n_2;
+			n_2 = n_1;
+			n_1 = res;
+			n--;
+		}
+		return res;
+	}
+	int dayOfYear(string date) {//一年中的第几天
+		int year = stoi(date.substr(0, 4)), month = stoi(date.substr(5, 2)), day = stoi(date.substr(8, 2));
+		int res = 0;
+		vector<int> prefix = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+		res = prefix[month - 1] + day;
+		if ((year % 400 == 0) || ((year % 4 == 0) && (year % 100 != 0))) {
+			if (month > 2) {
+				res++;
+			}
+		}
+		return res;
+	}
+	int numPrimeArrangements(int n) {//质数排列
+		if (n < 2) {
+			return n;
+		}
+		vector<bool> dp(n + 1, true);
+		dp[0] = false;
+		dp[1] = false;
+		int cnt = 0;
+		for (int i = 2; i <= n; i++) {
+			if (dp[i]) {
+				cnt++;
+				int j = i + i;
+				while (j <= n) {
+					dp[j] = false;
+					j += i;
+				}
+			}
+		}
+		long long res = 1l;
+		int moder = 1000000007;
+		n -= cnt;
+		while (cnt > 0) {
+			res *= cnt--;
+			res %= moder;
+		}
+		while (n > 0) {
+			res *= n--;
+			res %= moder;
+		}
+		return (int)res;
+	}
+	int subtractProductAndSum(int n) {//整数的各位积和之差
+		int tmp1 = 1, tmp2 = 0;
+		while (n != 0) {
+			tmp1 *= n % 10;
+			tmp2 += n % 10;
+			n /= 10;
+		}
+		return tmp1 - tmp2;
+	}
+	bool divisorGame(int N) {//除数博弈
+		return N % 2 == 0;
+	}
+	bool isBoomerang(vector<vector<int>>& points) {//有效的回旋镖
+		return(points[0][0] * points[1][1] + points[2][0] * points[0][1] + points[1][0] * points[2][1] != points[1][0] * points[0][1] + points[2][0] * points[1][1] + points[0][0] * points[2][1]);
+	}
+	string baseNeg2(int N) {//负二进制转换
+		if (N == 0) {
+			return "0";
+		}
+		string res;
+		while (N != 0) {
+			int tmp = N % -2;
+			N /= -2;
+			if (tmp < 0) {
+				tmp += 2;
+				N++;
+			}
+			res = to_string(tmp) + res;
+		}
+		return res;
+	}
+	vector<int> addNegabinary(vector<int>& arr1, vector<int>& arr2) {//负二进制数相加
+		reverse(arr1.begin(), arr1.end());
+		reverse(arr2.begin(), arr2.end());
+		int arr1Len = arr1.size(), arr2Len = arr2.size();
+		if (arr1Len < arr2Len) {
+			for (int i = 0; i < arr2Len - arr1Len; i++) {
+				arr1.push_back(0);
+			}
+		}
+		else if (arr2Len < arr1Len) {
+			for (int i = 0; i < arr1Len - arr2Len; i++) {
+				arr2.push_back(0);
+			}
+		}
+		vector<int> res;
+		int arrLen = max(arr1Len, arr2Len);
+		int carry = 0;
+		for (int i = 0; i < arrLen; i++) {
+			int tmp = arr1[i] + arr2[i] + carry;
+			if (tmp == 0 || tmp == 1) {
+				res.push_back(tmp);
+				carry = 0;
+			}
+			else if (tmp == -1) {
+				res.push_back(1);
+				carry = 1;
+			}
+			else if (tmp == 2) {
+				res.push_back(0);
+				carry = -1;
+			}
+			else if (tmp == 3) {
+				res.push_back(1);
+				carry = -1;
+			}
+		}
+		if (carry == 1) {
+			res.push_back(1);
+		}
+		else if (carry == -1) {
+			res.push_back(1);
+			res.push_back(1);
+		}
+		while (res.size() > 1 && res.back() == 0) {
+			res.pop_back();
+		}
+		reverse(res.begin(), res.end());
+		return res;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "1-2--3--4-5--6--7";
 	string b = "(()())(())";
-	vector<int> inpt1 = { 1, 0 };
-	vector<int> inpt2 = { 2 };
+	vector<int> inpt1 = { 1, 1 };
+	vector<int> inpt2 = { 0 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
-		{82918473, -57180867, 82918476, -57180863},
-		{83793579, 18088559, 83793580, 18088560},
-		{66574245, 26243152, 66574246, 26243153},
-		{72983930, 11921716, 72983934, 11921720}
+		{1, 0},
+		{0, 2}
 	};
 	vector<vector<char>> board = {
 		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
@@ -12975,7 +13301,44 @@ int main(int argc, char* argv[]) {
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
 	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
-	mySolution.checkPerfectNumber(28);
+	mySolution.addNegabinary(inpt1, inpt2);
+	return 0;
+}
+#endif
+
+//cookBook-哈希表
+#if true
+
+class Solution {
+public:
+	
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "1-2--3--4-5--6--7";
+	string b = "(()())(())";
+	vector<int> inpt1 = { 1, 1 };
+	vector<int> inpt2 = { 0 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{1, 0},
+		{0, 2}
+	};
+	vector<vector<char>> board = {
+		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+	};
+	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
+	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
+	mySolution;
 	return 0;
 }
 #endif
