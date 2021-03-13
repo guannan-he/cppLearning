@@ -13307,17 +13307,253 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-哈希表
-#if true
+#if false
 
 class Solution {
 public:
-	
+	int repeatedNTimes(vector<int>& nums) {//重复 N 次的元素
+		int target = nums.size() / 2;
+		unordered_map<int, int> numMap;
+		for (int& num : nums) {
+			if (++numMap[num] == target) {
+				return num;
+			}
+		}
+		return -1;
+	}
+	bool uniqueOccurrences(vector<int>& arr) {//独一无二的出现次数
+		unordered_map<int, int> arrMap;
+		for (int& num : arr) {
+			++arrMap[num];
+		}
+		unordered_set<int> freqSet;
+		for (auto& it : arrMap) {
+			if (freqSet.count(it.second) > 0) {
+				return false;
+			}
+			freqSet.insert(it.second);
+		}
+		return true;
+	}
+	bool wordPattern(string pattern, string s) {//单词规律
+		unordered_map<char, string> chMap;
+		unordered_map<string, char> strMap;
+		int cur = 0, sLen = s.size();
+		for (char& ch : pattern) {
+			int curLast = cur;
+			if (cur >= sLen) {
+				return false;
+			}
+			while (cur < sLen && s[cur] != ' ') {
+				cur++;
+			}
+			string tmp = s.substr(curLast, cur - curLast);
+			cur++;
+			if (chMap.count(ch) < 1 && strMap.count(tmp) < 1) {
+				chMap[ch] = tmp;
+				strMap[tmp] = ch;
+			}
+			else if (chMap.count(ch) < 1 || strMap.count(tmp) < 1 || chMap[ch] != tmp || strMap[tmp] != ch) {
+				return false;
+			}
+		}
+		return cur == sLen + 1;
+	}
+	int distributeCandies(vector<int>& candyType) {//分糖果
+		unordered_map<int, int> candyMap;
+		for (int& candy : candyType) {
+			candyMap[candy]++;
+		}
+		return min(candyMap.size(), candyType.size() / 2);
+	}
+	int findLHS(vector<int>& nums) {//最长和谐子序列
+		unordered_map<int, int> numMap;
+		int res = 0;
+		for (int& num : nums) {
+			numMap[num]++;
+		}
+		for (auto& it : numMap) {
+			if (numMap.count(it.first + 1)) {
+				res = max(res, it.second + numMap[it.first + 1]);
+			}
+			if (numMap.count(it.first - 1)) {
+				res = max(res, it.second + numMap[it.first - 1]);
+			}
+		}
+		return res;
+	}
+	vector<string> uncommonFromSentences(string A, string B) {//两句话中的不常见单词
+		unordered_map<string, int> strMap;
+		A = A + ' ' + B + ' ';
+		int sLen = A.size(), cur = 0, last = 0;
+		while (cur < sLen) {
+			if (A[cur] != ' ') {
+				cur++;
+				continue;
+			}
+			strMap[A.substr(last, cur - last)]++;
+			last = cur + 1;
+			cur++;
+		}
+		vector<string> res;
+		for (auto& it : strMap) {
+			if (it.second == 1) {
+				res.push_back(it.first);
+			}
+		}
+		return res;
+	}
+	vector<string> subdomainVisits(vector<string>& cpdomains) {//子域名访问计数
+		unordered_map<string, int> urlCnt;
+		for (string& s : cpdomains) {
+			int sLen = s.size(), cur = 0, cnt = 0;
+			while (s[cur] != ' ') {
+				cur++;
+			}
+			cnt = stoi(s.substr(0, cur));
+			s = '.' + s.substr(cur + 1, sLen - cur);
+			sLen = s.size(), cur = 0;
+			while (cur < sLen) {
+				if (s[cur] != '.') {
+					cur++;
+					continue;
+				}
+				string tmp = s.substr(cur + 1, sLen - cur);
+				cur++;
+				urlCnt[tmp] += cnt;
+			}
+		}
+		vector<string> res;
+		for (auto& it : urlCnt) {
+			res.push_back(to_string(it.second) + ' ' + it.first);
+		}
+		return res;
+	}
+	class MagicDictionary {//实现一个魔法字典
+	public:
+		/** Initialize your data structure here. */
+		MagicDictionary() {
+			return;
+		}
+
+		void buildDict(vector<string> dictionary) {
+			for (string& s : dictionary) {
+				int sLen = s.size();
+				for (int i = 0; i < sLen; i++) {
+					string sCopy = s;
+					sCopy[i] = '*';
+					wordDict[sCopy].insert(s);
+				}
+			}
+			return;
+		}
+
+		bool search(string s) {
+			if (wordDict.count(s) > 0) {
+				return false;
+			}
+			int sLen = s.size();
+			for (int i = 0; i < sLen; i++) {
+				string sCopy = s;
+				sCopy[i] = '*';
+				if (wordDict.count(sCopy) > 0) {
+					if (wordDict[sCopy].size() > 1 || wordDict[sCopy].count(s) < 1) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	private:
+		unordered_map<string, unordered_set<string>> wordDict;
+	};
+	vector<int> findSubstring(string s, vector<string>& words) {//串联所有单词的子串
+		vector<int> res;
+		int sLen = s.size();
+		if (sLen == 0 || words.empty()) {
+			return res;
+		}
+		int wordCnt = words.size(), wordLen = words[0].size();
+		if (wordCnt * wordLen > sLen) {
+			return res;
+		}
+		unordered_map<string, int> wordMap;
+		for (string& word : words) {
+			++wordMap[word];
+		}
+		for (int i = 0; i < wordLen; i++) {
+			int left = i, right = i, cnt = 0;
+			unordered_map<string, int> currMap;
+			while (right + wordLen <= sLen) {
+				string tmp = s.substr(right, wordLen);
+				right += wordLen;
+				if (wordMap.count(tmp) > 0) {
+					++currMap[tmp];
+					++cnt;
+					while (currMap[tmp] > wordMap[tmp]) {
+						string ts = s.substr(left, wordLen);
+						left += wordLen;
+						--cnt;
+						--currMap[ts];
+					}
+					if (cnt == wordCnt) {
+						res.push_back(left);
+					}
+				}
+				else {
+					left = right; 
+					currMap.clear();
+					cnt = 0;
+				}
+			}
+		}
+		return res;
+	}
+	class WordFilter {//前缀和后缀搜索
+	public:
+		WordFilter(vector<string>& words) {
+			int wordCnt = words.size();
+			for (int i = 0; i < wordCnt; i++) {
+				vector<string> prefix, suffix;
+				string prefixTmp = "**********", suffixTmp = "**********";
+				int wordLen = words[i].size();
+				for (int j = 0; j < wordLen; j++) {
+					prefixTmp[j] = words[i][j];
+					suffixTmp[9 - j] = words[i][wordLen - 1 - j];
+					prefix.push_back(prefixTmp);
+					suffix.push_back(suffixTmp);
+				}
+				for (int j = 0; j < wordLen; j++) {
+					for (int k = 0; k < wordLen; k++) {
+						wordWt[prefix[j]][suffix[k]] = i;
+					}
+				}
+			}
+			return;
+		}
+
+		int f(string prefix, string suffix) {
+			while (prefix.size() < 10) {
+				prefix.push_back('*');
+			}
+			while (suffix.size() < 10) {
+				suffix = '*' + suffix;
+			}
+			if (wordWt.count(prefix) < 1 || wordWt[prefix].count(suffix) < 1) {
+				return -1;
+			}
+			return wordWt[prefix][suffix];
+		}
+	private:
+		unordered_map<string, unordered_map<string, int>> wordWt;
+	};
 };
+
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	string a = "1-2--3--4-5--6--7";
-	string b = "(()())(())";
+	string a = "this apple is sweet";
+	string b = "this apple is sour";
 	vector<int> inpt1 = { 1, 1 };
 	vector<int> inpt2 = { 0 };
 	vector<int> inpt3 = { 1, 2, 1 };
@@ -13337,7 +13573,45 @@ int main(int argc, char* argv[]) {
 		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
-	vector<string> tmp = { "ACC","ACB","ABD","DAA","BDC","BDB","DBC","BBD","BBC","DBD","BCC","CDD","ABA","BAB","DDC","CCD","DDA","CCA","DDD" };
+	vector<string> tmp = { "apple" };
+	mySolution.findSubstring("wordgoodgoodgoodbestword", tmp);
+	return 0;
+}
+#endif
+
+//cookBook-排序
+#if true
+
+class Solution {
+public:
+	;
+};
+
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "this apple is sweet";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 1, 1 };
+	vector<int> inpt2 = { 0 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{1, 0},
+		{0, 2}
+	};
+	vector<vector<char>> board = {
+		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+	};
+	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
+	vector<string> tmp = { "apple" };
 	mySolution;
 	return 0;
 }
