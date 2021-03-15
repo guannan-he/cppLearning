@@ -13082,7 +13082,7 @@ public:
 				hourTmp = arr[i] * 10 + arr[j];
 				vist[j] = true;
 				for (int k = 0; k < 4; k++) {
-					if (vist[k] || arr[k] > 5){
+					if (vist[k] || arr[k] > 5) {
 						continue;
 					}
 					vist[k] = true;
@@ -13090,7 +13090,7 @@ public:
 						if (vist[w]) {
 							continue;
 						}
-						minTmp = arr[k] *10 + arr[w];
+						minTmp = arr[k] * 10 + arr[w];
 						res = max(res, hourTmp * 100 + minTmp);
 					}
 					vist[k] = false;
@@ -13501,7 +13501,7 @@ public:
 					}
 				}
 				else {
-					left = right; 
+					left = right;
 					currMap.clear();
 					cnt = 0;
 				}
@@ -13584,7 +13584,264 @@ int main(int argc, char* argv[]) {
 
 class Solution {
 public:
-	;
+	struct ListNode {
+		int val;
+		ListNode* next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
+	vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {//插入区间
+		int intervalCnt = intervals.size();
+		int cur = 0;
+		vector<vector<int>> res;
+		bool placed = false;
+		for (vector<int>& intv : intervals) {
+			if (intv[1] < newInterval[0]) {
+				res.push_back(intv);
+			}
+			else if (intv[0] > newInterval[1]) {
+				if (!placed) {
+					res.push_back(newInterval);
+					placed = true;
+				}
+				res.push_back(intv);
+			}
+			else {
+				newInterval[0] = min(newInterval[0], intv[0]);
+				newInterval[1] = max(newInterval[1], intv[1]);
+			}
+		}
+		if (!placed) {
+			res.push_back(newInterval);
+		}
+		return res;
+	}
+	void sortColors(vector<int>& nums) {//颜色分类
+		sortColorsSub(nums, 0, nums.size() - 1);
+		return;
+	}
+	void sortColorsSub(vector<int>& nums, int left, int right) {
+		if (left >= right) {
+			return;
+		}
+		int pivot = nums[left];
+		int i = left, j = right;
+		while (i < j) {
+			while (i < j && nums[j] >= pivot) {
+				j--;
+			}
+			if (i < j) {
+				nums[i++] = nums[j];
+			}
+			while (i < j && nums[i] <= pivot) {
+				i++;
+			}
+			if (i < j) {
+				nums[j--] = nums[i];
+			}
+		}
+		nums[i] = pivot;
+		sortColorsSub(nums, left, i - 1);
+		sortColorsSub(nums, i + 1, right);
+		return;
+	}
+	ListNode* myBuildList(vector<int>& nums) {
+		ListNode* rootNode = new ListNode;
+		ListNode* currentNode = rootNode;
+		for (int& num : nums) {
+			currentNode->next = new ListNode;
+			currentNode = currentNode->next;
+			currentNode->val = num;
+		}
+		return rootNode->next;
+	}
+	ListNode* insertionSortList(ListNode* head) {//对链表进行插入排序
+		if (head == nullptr || head->next == nullptr) {
+			return head;
+		}
+		ListNode* root = new ListNode;
+		root->next = head;
+		ListNode* cur = head->next, * prev = head;
+		while (cur != nullptr) {
+			if (cur->val >= prev->val) {
+				cur = cur->next;
+				prev = prev->next;
+			}
+			else {
+				ListNode* tmp = root;
+				while (tmp->next->val <= cur->val) {
+					tmp = tmp->next;
+				}
+				prev->next = cur->next;
+				cur->next = tmp->next;
+				tmp->next = cur;
+				cur = prev->next;
+			}
+		}
+		return root->next;
+	}
+	int findKthLargest(vector<int>& nums, int k) {//数组中的第K个最大元素
+		findKthLargestSub(nums, 0, nums.size() - 1);
+		return nums[nums.size() - k];
+	}
+	void findKthLargestSub(vector<int>& nums, int left, int right) {
+		if (left >= right) {
+			return;
+		}
+		int i = left, j = right, pivot = nums[left];
+		while (i < j) {
+			while (i < j && nums[j] >= pivot) {
+				j--;
+			}
+			if (i < j) {
+				nums[i++] = nums[j];
+			}
+			while (i < j && nums[i] < pivot) {
+				i++;
+			}
+			if (i < j) {
+				nums[j--] = nums[i];
+			}
+		}
+		nums[i] = pivot;
+		findKthLargestSub(nums, left, i - 1);
+		findKthLargestSub(nums, i + 1, right);
+		return;
+	}
+	bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {//存在重复元素 III
+		if (t < 0) {
+			return false;
+		}
+		long long wt = 1ll + t;
+		unordered_map<long long, long long> numMap;
+		int numsLen = nums.size();
+		for (int i = 0; i < numsLen; i++) {
+			long long tmp = containsNearbyAlmostDuplicateID(nums[i], wt);
+			if (numMap.count(tmp) > 0) {
+				return true;
+			}
+			if (numMap.count(tmp - 1) > 0 && abs(nums[i] - numMap[tmp - 1]) < wt) {
+				return true;
+			}
+			if (numMap.count(tmp + 1) > 0 && abs(nums[i] - numMap[tmp + 1]) < wt) {
+				return true;
+			}
+			numMap[tmp] = (long long)nums[i];
+			if (i >= k) {
+				numMap.erase(containsNearbyAlmostDuplicateID(nums[i - k], wt));
+			}
+		}
+		return false;
+	}
+	long long containsNearbyAlmostDuplicateID(long long x, long long wt) {
+		return x < 0 ? (x + 1) / wt - 1 : x / wt;
+	}
+	int hIndex(vector<int>& citations) {//H 指数
+		int citationsCnt = citations.size();
+		hIndexSub(citations, 0, citationsCnt - 1);
+		int left = 0, right = citationsCnt;
+		while (left < right) {
+			int mid = left + (right - left) / 2;
+			if (citations[mid] < citationsCnt - mid) {
+				left = mid + 1;
+			}
+			else {
+				right = mid;
+			}
+		}
+		return citationsCnt - left;
+	}
+	void hIndexSub(vector<int>& nums, int left, int right) {
+		if (left >= right) {
+			return;
+		}
+		int i = left, j = right, pivot = nums[left];
+		while (i < j) {
+			while (i < j && nums[j] >= pivot) {
+				j--;
+			}
+			if (i < j) {
+				nums[i++] = nums[j];
+			}
+			while (i < j && nums[i] < pivot) {
+				i++;
+			}
+			if (i < j) {
+				nums[j--] = nums[i];
+			}
+		}
+		nums[i] = pivot;
+		hIndexSub(nums, left, i - 1);
+		hIndexSub(nums, i + 1, right);
+		return;
+	}
+	//int maximumGap(vector<int>& nums) {//最大间距
+	//	int numsLen = nums.size();
+	//	if (numsLen < 2) {
+	//		return 0;
+	//	}
+	//	int res = 0;
+	//	maximumGapSub(nums, 0, numsLen - 1);
+	//	for (int i = 1; i < numsLen; i++) {
+	//		res = max(res, nums[i] - nums[i - 1]);
+	//	}
+	//	return res;
+	//}
+	//void maximumGapSub(vector<int>& nums, int left, int right) {
+	//	if (left >= right) {
+	//		return;
+	//	}
+	//	int i = left, j = right, pivot = nums[left];
+	//	while (i < j) {
+	//		while(i < j && nums[j] >= pivot) {
+	//			j-- ;
+	//		}
+	//		if (i < j) {
+	//			nums[i++] = nums[j];
+	//		}
+	//		while (i < j && nums[i] < pivot) {
+	//			i++;
+	//		}
+	//		if (i < j) {
+	//			nums[j--] = nums[i];
+	//		}
+	//	}
+	//	nums[i] = pivot;
+	//	maximumGapSub(nums, left, i - 1);
+	//	maximumGapSub(nums, i + 1, right);
+	//	return;
+	//}
+	int maximumGap(vector<int>& nums) {//最大间距
+		//采用基数排序法
+		int numsLen = nums.size();
+		if (numsLen < 2) {
+			return 0;
+		}
+		int exp = 1, maxElem = *max_element(nums.begin(), nums.end());
+		vector<int> buffer(numsLen);
+		while (exp <= maxElem) {
+			vector<int> digitCnt(10, 0);
+			for (int i = 0; i < numsLen; i++) {//求同一数位上相同数值元素数量
+				digitCnt[(nums[i] / exp) % 10]++;
+			}
+			for (int i = 1; i < 10; i++) {
+				digitCnt[i] += digitCnt[i - 1];
+			}
+			for (int i = numsLen - 1; i > -1; i--) {
+				//怎么这么神奇？
+				int digit = (nums[i] / exp) % 10;
+				buffer[--digitCnt[digit]] = nums[i];
+			}
+			copy(buffer.begin(), buffer.end(), nums.begin());
+			exp *= 10;
+		}
+		int res = 0;
+		for (int i = 1; i < numsLen; i++) {
+			res = max(res, nums[i] - nums[i - 1]);
+		}
+		return res;
+	}
 };
 
 
@@ -13592,7 +13849,7 @@ int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "this apple is sweet";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 1, 1 };
+	vector<int> inpt1 = { 3, 6, 9, 1 };
 	vector<int> inpt2 = { 0 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
@@ -13612,7 +13869,7 @@ int main(int argc, char* argv[]) {
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
 	vector<string> tmp = { "apple" };
-	mySolution;
+	mySolution.maximumGap(inpt1);
 	return 0;
 }
 #endif
