@@ -13842,6 +13842,118 @@ public:
 		}
 		return res;
 	}
+	vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {//查找和最小的K对数字
+		vector<vector<int>> res;
+		int nums1Len = nums1.size(), nums2Len = nums2.size();
+		int cnt = nums1Len * nums2Len;
+		vector<pair<int, int>> tmp;
+		for (int i = 0; i < nums1Len; i++) {
+			for (int j = 0; j < nums2Len; j++) {
+				tmp.push_back(make_pair(nums1[i], nums2[j]));
+			}
+		}
+		sort(tmp.begin(), tmp.end(), [](pair<int, int> pr1, pair<int, int> pr2) {
+			return pr1.first + pr1.second < pr2.first + pr2.second; });
+		int cur = 0;
+		k = min(k, cnt);
+		while (cur < k) {
+			res.push_back({ tmp[cur].first, tmp[cur].second });
+			cur++;
+		}
+		return res;
+	}
+	int findContentChildren(vector<int>& nums1, vector<int>& nums2) {//分发饼干
+		int res = 0, nums1Len = nums1.size(), nums2Len = nums2.size(), cur1 = 0, cur2 = 0;
+		sort(nums1.begin(), nums1.end());
+		sort(nums2.begin(), nums2.end());
+		while (cur1 < nums1Len && cur2 < nums2Len) {
+			if (nums1[cur1] <= nums2[cur2]) {
+				cur1++;
+				cur2++;
+				res++;
+			}
+			else {
+				cur2++;
+			}
+		}
+		return res;
+	}
+	string findLongestWord(string s, vector<string>& dictionary) {//通过删除字母匹配到字典里最长单词
+		string res;
+		sort(dictionary.begin(), dictionary.end());
+		for (string& str : dictionary) {
+			if (findLongestWordSub(s, str) && str.size() > res.size()) {
+				res = str;
+			}
+		}
+		return res;
+	}
+	bool findLongestWordSub(string& str1, string& str2) {
+		int str1Len = str1.size(), str2Len = str2.size();
+		int cur1 = 0, cur2 = 0;
+		while (cur1 < str1Len && cur2 < str2Len) {
+			if (str1[cur1] == str2[cur2]) {
+				cur2++;
+			}
+			cur1++;
+		}
+		return cur2 == str2Len;
+	}
+	string reorganizeString(string S) {//重构字符串
+		if (S.length() < 2) {
+			return S;
+		}
+		vector<int> counts(26, 0);
+		int maxCount = 0;
+		int length = S.length();
+		for (int i = 0; i < length; i++) {
+			char c = S[i];
+			counts[c - 'a']++;
+			maxCount = max(maxCount, counts[c - 'a']);
+		}
+		if (maxCount > (length + 1) / 2) {
+			return "";
+		}
+		string reorganizeArray(length, ' ');
+		int evenIndex = 0, oddIndex = 1;
+		int halfLength = length / 2;
+		for (int i = 0; i < 26; i++) {
+			char c = 'a' + i;
+			while (counts[i] > 0 && counts[i] <= halfLength && oddIndex < length) {
+				reorganizeArray[oddIndex] = c;
+				counts[i]--;
+				oddIndex += 2;
+			}
+			while (counts[i] > 0) {
+				reorganizeArray[evenIndex] = c;
+				counts[i]--;
+				evenIndex += 2;
+			}
+		}
+		return reorganizeArray;
+	}
+};
+class Solution1 {//黑名单中的随机数
+public:
+
+	unordered_map<int, int> m;
+	int wlen;
+
+	Solution1(int n, vector<int> b) {
+		wlen = n - b.size();
+		unordered_set<int> w;
+		for (int i = wlen; i < n; i++) w.insert(i);
+		for (int x : b) w.erase(x);
+		auto wi = w.begin();
+		for (int x : b)
+			if (x < wlen)
+				m[x] = *wi++;
+	}
+
+	int pick() {
+		int k = rand() % wlen;
+		return m.count(k) ? m[k] : k;
+	}
 };
 
 
@@ -13849,8 +13961,8 @@ int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "this apple is sweet";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 3, 6, 9, 1 };
-	vector<int> inpt2 = { 0 };
+	vector<int> inpt1 = { 1, 1, 2 };
+	vector<int> inpt2 = { 1, 2, 3 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
 		{1, 0},
@@ -13869,7 +13981,7 @@ int main(int argc, char* argv[]) {
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
 	vector<string> tmp = { "apple" };
-	mySolution.maximumGap(inpt1);
+	mySolution.kSmallestPairs(inpt1, inpt2, 10);
 	return 0;
 }
 #endif
