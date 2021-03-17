@@ -13580,7 +13580,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-排序
-#if true
+#if false
 
 class Solution {
 public:
@@ -13590,6 +13590,13 @@ public:
 		ListNode() : val(0), next(nullptr) {}
 		ListNode(int x) : val(x), next(nullptr) {}
 		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
+	struct TreeNode {
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+		
 	};
 	vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {//插入区间
 		int intervalCnt = intervals.size();
@@ -13932,6 +13939,246 @@ public:
 		}
 		return reorganizeArray;
 	}
+	bool isAlienSorted(vector<string>& words, string order) {//验证外星语词典
+		if (words.size() < 2) {
+			return true;
+		}
+		int charCnt = order.size();
+		unordered_map<char, int> newOrder;
+		for (int i = 0; i < charCnt; i++) {
+			newOrder[order[i]] = i;
+		}
+		string last = words[0];
+		for (string& str : words) {
+			if (!isAlienSortedSub(last, str, newOrder)) {
+				return false;
+			}
+			last = str;
+		}
+		return true;
+	}
+	bool isAlienSortedSub(string& str1, string& str2, unordered_map<char, int>& newOrder) {
+		int cur1 = 0, cur2 = 0, str1Len = str1.size(), str2Len = str2.size();
+		while (cur1 < str1Len && cur2 < str2Len) {
+			if (newOrder[str1[cur1]] < newOrder[str2[cur2]]) {
+				return true;
+			}
+			else if (newOrder[str1[cur1]] == newOrder[str2[cur2]]) {
+				cur1++;
+				cur2++;
+			}
+			else {
+				return false;
+			}
+		}
+		return cur1 == str1Len;
+	}
+	int largestPerimeter(vector<int>& nums) {//三角形的最大周长
+		int numsLen = nums.size();
+		if (numsLen < 3) {
+			return 0;
+		}
+		sort(nums.begin(), nums.end());
+		for (int i = numsLen - 1; i > 1; i--) {
+			int a = nums[i], b = nums[i - 1], c = nums[i - 2];
+			if (a + b > c && a + c > b && b + c > a) {
+				return a + b + c;
+			}
+		}
+		return 0;
+	}
+	int largestSumAfterKNegations(vector<int>& nums, int k) {//K 次取反后最大化的数组和
+		sort(nums.begin(), nums.end());
+		int cur = 0, numsLen = nums.size();
+		while (cur < numsLen && nums[cur] < 0 && k > 0) {
+			nums[cur] = -nums[cur];
+			cur++;
+			k--;
+		}
+		sort(nums.begin(), nums.end());
+		int res = 0;
+		for (int& num : nums) {
+			res += num;
+		}
+		if (k % 2 == 1) {
+			return res - 2 * nums[0];
+		}
+		return res;
+	}
+	vector<vector<int>> allCellsDistOrder(int R, int C, int r0, int c0) {//距离顺序排列矩阵单元格
+		vector<vector<int>> tmp;
+		for (int i = 0; i < R; i++) {
+			for (int j = 0; j < C; j++) {
+				tmp.push_back({ i, j , r0, c0});
+			}
+		}
+		sort(tmp.begin(), tmp.end(), [](vector<int>& vtr1, vector<int>& vtr2) {
+			int r0 = vtr1[2], c0 = vtr1[3];
+			return abs(vtr1[0] - r0) + abs(vtr1[1] - c0) < abs(vtr2[0] - r0) + abs(vtr2[1] - c0);
+		});
+		vector<vector<int>> res;
+		for (vector<int>& vtr : tmp) {
+			res.push_back({ vtr[0], vtr[1] });
+		}
+		return res;
+	}
+	vector<int> rearrangeBarcodes(vector<int>& nums) {//距离相等的条形码
+		int numsLen = nums.size();
+		if (numsLen < 3) {
+			return nums;
+		}
+		vector<int> res(numsLen);
+		vector<int> numMap(*max_element(nums.begin(), nums.end()) + 1);
+		for (int& num : nums) {
+			numMap[num]++;
+		}
+		//sort(numMap.begin(), numMap.end());
+		int oddCur = 1, evenCur = 0;
+		for (int i = 0; i < numMap.size(); i++) {
+			//先填入奇数，后填入偶数
+			while (numMap[i] > 0 && numMap[i] <= numsLen / 2 && oddCur < numsLen) {
+				res[oddCur] = i;
+				numMap[i]--;
+				oddCur += 2;
+			}
+			while (numMap[i] > 0) {
+				res[evenCur] = i;
+				numMap[i]--;
+				evenCur += 2;
+			}
+		}
+		return res;
+	}
+	vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {//最接近原点的 K 个点
+		sort(points.begin(), points.end(), [](vector<int>& vtr1, vector<int>& vtr2) {
+			double d1 = 0.0 + sqrt(vtr1[0] * vtr1[0] + vtr1[1] * vtr1[1]);
+			double d2 = 0.0 + sqrt(vtr2[0] * vtr2[0] + vtr2[1] * vtr2[1]);
+			return d1 < d2;
+		});
+		vector<vector<int>> res(points.begin(), points.begin() + k);
+		return res;
+	}
+	vector<int> getAllElements(TreeNode* root1, TreeNode* root2) {//两棵二叉搜索树中的所有元素
+		vector<int> res;
+		stack<TreeNode*> stk1, stk2;
+		while ((root1 != nullptr || !stk1.empty()) && (root2 != nullptr || !stk2.empty())) {
+			if (root1 != nullptr || root2 != nullptr) {
+				if (root1 != nullptr) {
+					stk1.push(root1);
+					root1 = root1->left;
+				}
+				if (root2 != nullptr) {
+					stk2.push(root2);
+					root2 = root2->left;
+				}
+			}
+			else {
+				TreeNode* tmp1 = stk1.top();
+				TreeNode* tmp2 = stk2.top();
+				if (tmp1->val < tmp2->val) {
+					res.push_back(tmp1->val);
+					stk1.pop();
+					root1 = tmp1->right;
+				}
+				else {
+					res.push_back(tmp2->val);
+					stk2.pop();
+					root2 = tmp2->right;
+				}
+			}
+		}
+		while ((root1 != nullptr || !stk1.empty())) {
+			if (root1 != nullptr) {
+				stk1.push(root1);
+				root1 = root1->left;
+			}
+			else {
+				TreeNode* tmp1 = stk1.top();
+				res.push_back(tmp1->val);
+				stk1.pop();
+				root1 = tmp1->right;
+			}
+		}
+		while ((root2 != nullptr || !stk2.empty())) {
+			if (root2 != nullptr) {
+				stk2.push(root2);
+				root2 = root2->left;
+			}
+			else {
+				TreeNode* tmp2 = stk2.top();
+				res.push_back(tmp2->val);
+				stk2.pop();
+				root2 = tmp2->right;
+			}
+		}
+		return res;
+	}
+	int carFleet(int target, vector<int>& position, vector<int>& speed) {//车队
+		int res = 0;
+		if (position.empty() || speed.empty()) {
+			return res;
+		}
+		int carCnt = speed.size();
+		map<int, double> reachTime;
+		for (int i = 0; i < carCnt; i++) {
+			reachTime[-position[i]] = (0.0 + target - position[i]) / speed[i];//最先到的排前面
+		}
+		double time = 0.0;
+		for (auto& it : reachTime) {
+			if (it.second <= time) {
+				continue;
+			}
+			time = it.second;
+			res++;
+		}
+		return res;
+	}
+	vector<int> pancakeSort(vector<int>& nums) {//煎饼排序
+		vector<int> res;
+		int numsLen = nums.size();
+		for (int i = numsLen; i > 0; i--) {
+			if (nums[i - 1] != i) {
+				int cur = 0;
+				while (nums[cur] != i) {
+					cur++;
+				}
+				res.push_back(cur + 1);
+				pancakeSortSub(nums, 0, cur);
+				res.push_back(i);
+				pancakeSortSub(nums, 0, i - 1);
+			}
+		}
+		return res;
+	}
+	void pancakeSortSub(vector<int>& nums, int left, int right) {
+		while (left < right) {
+			swap(nums[left++], nums[right--]);
+		}
+		return;
+	}
+	int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {//规划兼职工作
+		int jobCnt = startTime.size();
+		vector<int> job(jobCnt + 1);
+		iota(job.begin(), job.end(), 0);
+		sort(job.begin() + 1, job.end(), [&](int& a, int& b) {
+			return endTime[a - 1] < endTime[b - 1];
+		});
+		vector<int> prev(jobCnt + 1);
+		for (int i = 1; i <= jobCnt; i++) {
+			for (int j = i - 1; j > 0; j--) {
+				if (endTime[job[j] - 1] <= startTime[job[i] - 1]) {
+					prev[i] = j;
+					break;
+				}
+			}
+		}
+		vector<int> dp(jobCnt + 1);
+		dp[1] = profit[job[1] - 1];
+		for (int i = 1; i <= jobCnt; i++) {
+			dp[i] = max(dp[i - 1], profit[job[i] - 1] + dp[prev[i]]);
+		}
+		return dp[jobCnt];
+	}
 };
 class Solution1 {//黑名单中的随机数
 public:
@@ -13959,10 +14206,10 @@ public:
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	string a = "this apple is sweet";
+	string a = "hlabcdefgijkmnopqrstuvwxyz";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 1, 1, 2 };
-	vector<int> inpt2 = { 1, 2, 3 };
+	vector<int> inpt1 = { 3, 2, 4, 1 };
+	vector<int> inpt2 = { 2,4,1,1,3 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
 		{1, 0},
@@ -13980,8 +14227,58 @@ int main(int argc, char* argv[]) {
 		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
-	vector<string> tmp = { "apple" };
-	mySolution.kSmallestPairs(inpt1, inpt2, 10);
+	vector<string> tmp = { "hello","leetcode" };
+	mySolution.pancakeSort(inpt1);
+	return 0;
+}
+#endif
+
+//cookBook-位运算
+#if true
+
+class Solution {
+public:
+	struct ListNode {
+		int val;
+		ListNode* next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
+	struct TreeNode {
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+
+	};
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "hlabcdefgijkmnopqrstuvwxyz";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 3, 2, 4, 1 };
+	vector<int> inpt2 = { 2,4,1,1,3 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{1, 0},
+		{0, 2}
+	};
+	vector<vector<char>> board = {
+		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+	};
+	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
+	vector<string> tmp = { "hello","leetcode" };
+	mySolution;
 	return 0;
 }
 #endif
