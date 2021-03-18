@@ -14252,13 +14252,196 @@ public:
 		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 
 	};
+	int singleNumberII(vector<int>& nums) {//只出现一次的数字 II
+		int lowBit = 0, highBit = 0;
+		for (int& num : nums) {
+			lowBit = lowBit ^ num & ~highBit;
+			highBit = highBit ^ num & ~lowBit;
+		}
+		return lowBit;
+	}
+	int rangeBitwiseAnd(int left, int right) {//数字范围按位与
+		if (left == 0) {
+			return 0;
+		}
+		int res = 0;
+		while (left != right) {
+			left >>= 1;
+			right >>= 1;
+			res++;
+		}
+		res = left << res;
+		return res;
+	}
+	bool isPowerOfTwo(int n) {//2的幂
+		return n > 0 && ((n & (n - 1)) == 0);
+	}
+	bool isPowerOfFour(int n) {//4的幂
+		if (n < 1) {
+			return false;
+		}
+		while (n > 0 && (n & 1) == 0) {
+			n >>= 1;
+			if ((n & 1) == 1) {
+				return false;
+			}
+			n >>= 1;
+		}
+		return n == 1;
+	}
+	int getSum(int a, int b) {//两整数之和
+		while (b != 0) {
+			int tmp = a ^ b;
+			b = ((unsigned int)(a & b)) << 1;
+			a = tmp;
+		}
+		return a;
+	}
+	char findTheDifference(string s, string t) {//找不同
+		char res = 0;
+		for (char& ch : s) {
+			res ^= ch;
+		}
+		for (char& ch : t) {
+			res ^= ch;
+		}
+		return res;
+	}
+	int integerReplacement(int n) {//整数替换
+		int res = 0;
+		unsigned long long tmp = n;
+		while (tmp > 1) {
+			if ((tmp & 1) == 0) {
+				tmp >>= 1;
+			}
+			else if ((tmp + 1) % 4 == 0 && tmp != 3) {
+			tmp++;
+			}
+			else {
+			tmp--;
+			}
+			res++;
+		}
+		return res;
+	}
+	vector<int> countBits(int num) {//比特位计数
+		vector<int> res(num + 1, 0);
+		int highBit = 0;
+		for (int i = 1; i <= num; i++) {
+			if ((i & (i - 1)) == 0) {
+				highBit = i;
+			}
+			res[i] = res[i - highBit] + 1;
+		}
+		return res;
+	}
+	vector<string> findRepeatedDnaSequences(string s) {//重复的DNA序列
+		unordered_map<long long, int> dnaMap;
+		unordered_map<char, int> base = { {'A', 1 }, {'C', 2 }, {'G', 3 }, {'T', 4 } };
+		unordered_map<int, char> baseInv = { {1, 'A' }, {2, 'C'}, {3, 'G'}, {4, 'T'} };
+		long long tmp = 0;
+		for (char& ch : s) {
+			if (tmp > 999999999) {
+				dnaMap[tmp]++;
+				tmp %= 1000000000;
+			}
+			tmp *= 10;
+			tmp += base[ch];
+		}
+		dnaMap[tmp]++;
+		vector<string> res;
+		for (auto& it : dnaMap) {
+			if (it.second < 2) {
+				continue;
+			}
+			tmp = it.first;
+			string curr;
+			while (tmp > 0) {
+				curr = baseInv[(int)(tmp % 10)] + curr;
+				tmp /= 10;
+			}
+			res.push_back(curr);
+		}
+		return res;
+	}
+	vector<int> singleNumber(vector<int>& nums) {//只出现一次的数字 III
+		int res = 0;
+		for (int& num : nums) {
+			res ^= num;
+		}
+		int div = 1;
+		while ((div & res) == 0) {
+			div <<= 1;
+		}
+		int a = 0, b = 0;
+		for (int& num : nums) {
+			if (div & num) {
+				a ^= num;
+			}
+			else {
+				b ^= num;
+			}
+		}
+		return { a, b };
+	}
+	int maxProduct(vector<string>& words) {//最大单词长度乘积
+		int res = 0;
+		int wordCnt = words.size();
+		vector<int> tmp(wordCnt);
+		for (int i = 0; i < wordCnt; i++) {
+			string& str = words[i];
+			int strVal = 0;
+			for (char& ch : str) {
+				strVal |= (1 << (ch - 'a'));
+			}
+			tmp[i] = strVal;
+		}
+		for (int i = 0; i < wordCnt; i++) {
+			for (int j = i + 1; j < wordCnt; j++) {
+				if ((tmp[i] & tmp[j]) == 0) {
+					int tmpVal = words[i].size() * words[j].size();
+					res = max(res, tmpVal);
+				}
+			}
+		}
+		return res;
+	}
+	bool validUtf8(vector<int>& data) {//UTF-8 编码验证
+		int availCnt = 0;
+		for (int& num : data) {
+			if (availCnt == 0) {//没有待处理的字节
+				if (num < 128) {//当前字节为单字节
+					continue;
+				}
+				if (num < 192) {//多余字节
+					return false;
+				}
+				int cur = 255;
+				availCnt = 7;
+				while ((cur & num) != cur) {
+					cur = (cur << 1) & 255;
+					availCnt--;
+				}
+				if (availCnt > 3) {//过长字节
+					return false;
+				}
+			}
+			else if ((num & 192) == 128) {
+				availCnt--;
+			}
+			else {
+				return false;
+			}
+		}
+		return availCnt == 0;
+	}
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	string a = "hlabcdefgijkmnopqrstuvwxyz";
+	string a = "AAGATCCGTCCCCCCAAGATCCGTC";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 3, 2, 4, 1 };
+	vector<int> inpt1 = { 250,145,145,145,145 };
 	vector<int> inpt2 = { 2,4,1,1,3 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
@@ -14277,8 +14460,8 @@ int main(int argc, char* argv[]) {
 		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
-	vector<string> tmp = { "hello","leetcode" };
-	mySolution;
+	vector<string> tmp = { "abcw","baz","foo","bar","xtfn","abcdef" };
+	mySolution.validUtf8(inpt1);
 	return 0;
 }
 #endif
