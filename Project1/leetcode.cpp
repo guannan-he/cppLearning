@@ -14234,7 +14234,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-位运算
-#if true
+#if false
 
 class Solution {
 public:
@@ -14435,6 +14435,124 @@ public:
 		}
 		return availCnt == 0;
 	}
+	vector<string> readBinaryWatch(int num) {//二进制手表
+		vector<string> res;
+		for (int i = 0; i < 1024; i++) {
+			if (readBinaryWatchSub(i, num)) {
+				int hour = (i & 960) >> 6;
+				int mint = i & 63;
+				if (hour < 12 && mint < 10) {
+					res.push_back(to_string(hour) + ':' + '0' + to_string(mint));
+				}
+				else if (hour < 12 && mint < 60) {
+					res.push_back(to_string(hour) + ':' + to_string(mint));
+				}
+			}
+		}
+		return res;
+	}
+	inline bool readBinaryWatchSub(int num, int target) {
+		int cur = 1, cnt = 0;
+		for (int i = 0; i < 10; i++) {
+			if (num & cur) {
+				cnt++;
+			}
+			cur <<= 1;
+		}
+		return target == cnt;
+	}
+	string toHex(int num) {//数字转换为十六进制数
+		if (num == 0) {
+			return "0";
+		}
+		unsigned int curr = (unsigned int)num;
+		string res;
+		while (curr != 0) {
+			int tmp = curr & 15;
+			if (tmp < 10) {
+				res = (char)(tmp + '0') + res;
+			}
+			else {
+				res = (char)(tmp + 'a' - 10) + res;
+			}
+			curr >>= 4;
+		}
+		return res;
+	}
+	int findComplement(int num) {//数字的补数
+		unsigned int cur = 1;
+		unsigned int curr = (unsigned int)num;
+		while (cur <= curr) {
+			cur <<= 1;
+		}
+		cur -= curr + 1;
+		return cur;
+	}
+	int totalHammingDistance(vector<int>& nums) {//汉明距离总和
+		int numsLen = nums.size(), res = 0;
+		if (numsLen == 0) {
+			return 0;
+		}
+		vector<int> cnt(32);
+		for (int& num : nums) {
+			int i = 0;
+			while (num != 0) {
+				cnt[i] += num & 1;
+				num >>= 1;
+				i++;
+			}
+		}
+		for (int& val : cnt) {
+			res += val * (numsLen - val);
+		}
+		return res;
+	}
+	bool hasAlternatingBits(int n) {//交替位二进制数
+		bool status = (n & 1) != 0;
+		n >>= 1;
+		while (n != 0) {
+			if (((n & 1) != 0) == status) {
+				return false;
+			}
+			status = !status;
+			n >>= 1;
+		}
+		return true;
+	}
+	int countPrimeSetBits(int L, int R) {//二进制表示中质数个计算置位
+		unordered_set<int> uniq = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31 };
+		int res = 0;
+		for (int i = L; i <= R; i++) {
+			int cur = 1;
+			int cnt = 0;
+			while (cur <= i) {
+				if (cur & i) {
+					cnt++;
+				}
+				cur <<= 1;
+			}
+			if (uniq.count(cnt) > 0) {
+				res++;
+			}
+		}
+		return res;
+	}
+	int subarrayBitwiseORs(vector<int>& nums) {//子数组按位或操作
+		int numsLen = nums.size();
+		unordered_set<int> res;
+		vector<int> dp(nums);
+		for (int r = 0; r < numsLen; r++) {
+			res.insert(dp[r]);
+			for (int l = r - 1; l > -1; l--) {
+				if ((dp[l] | dp[r]) == dp[l]) {
+					break;
+				}
+				dp[l] |= dp[r];
+				res.insert(dp[l]);
+			}
+		}
+		return res.size();
+	}
 };
 
 int main(int argc, char* argv[]) {
@@ -14461,7 +14579,58 @@ int main(int argc, char* argv[]) {
 	};
 	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
 	vector<string> tmp = { "abcw","baz","foo","bar","xtfn","abcdef" };
-	mySolution.validUtf8(inpt1);
+	mySolution.toHex(-1);
+	return 0;
+}
+#endif
+
+//cookBook-并查集
+#if true
+
+class Solution {
+public:
+	struct ListNode {
+		int val;
+		ListNode* next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
+	struct TreeNode {
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+
+	};
+	
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "AAGATCCGTCCCCCCAAGATCCGTC";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 250,145,145,145,145 };
+	vector<int> inpt2 = { 2,4,1,1,3 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{1, 0},
+		{0, 2}
+	};
+	vector<vector<char>> board = {
+		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+	};
+	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
+	vector<string> tmp = { "abcw","baz","foo","bar","xtfn","abcdef" };
+	mySolution;
 	return 0;
 }
 #endif
