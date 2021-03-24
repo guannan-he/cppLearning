@@ -14585,6 +14585,1035 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-并查集
+#if false
+
+class Solution {
+public:
+	struct ListNode {
+		int val;
+		ListNode* next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode* next) : val(x), next(next) {}
+	};
+	struct TreeNode {
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+	};
+	int longestConsecutive(vector<int>& nums) {//最长连续序列
+		unordered_set<int> numSet;
+		for (int& num : nums) {
+			numSet.insert(num);
+		}
+		int current = 0, res = 0;
+		for (int& num : nums) {
+			if (numSet.count(num - 1) > 0) {
+				continue;
+			}
+			current = 1;
+			while (numSet.count(num + current) > 0) {
+				current++;
+			}
+			res = max(res, current);
+		}
+		return res;
+	}
+	class UnionFind {
+	public:
+		//自己的父节点是自己
+		UnionFind(int num) {
+			for (int i = 0; i < num; i++) {
+				parent.push_back(i);
+				weight.push_back(1.0);
+			}
+			return;
+		}
+		int find(int x) {
+			if (x != parent[x]) {
+				int ori = parent[x];
+				parent[x] = find(ori);
+				weight[x] *= weight[ori];
+			}
+			return parent[x];
+		}
+		double isConnected(int x, int y) {
+			int rootX = find(x), rootY = find(y);
+			if (rootX == rootY) {
+				return weight[x] / weight[y];
+			}
+			return -1.0;
+		}
+		void nyUnion(int x, int y, double val) {
+			int rootX = find(x), rootY = find(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootX] = rootY;
+			weight[rootX] = weight[y] * val / weight[x];
+			return;
+		}
+	private:
+		vector<int> parent;
+		vector<double> weight;
+	};
+	vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {//除法求值
+		int eqCnt = equations.size();
+		UnionFind myUnion(2 * eqCnt);
+		//获取节点--id对应
+		unordered_map<string, int> curMap;
+		int id = 0;
+		for (int i = 0; i < eqCnt; i++) {
+			string& str1 = equations[i][0];
+			string& str2 = equations[i][1];
+			if (curMap.count(str1) < 1) {
+				curMap[str1] = id++;
+			}
+			if (curMap.count(str2) < 1) {
+				curMap[str2] = id++;
+			}
+			//连接有向图
+			myUnion.nyUnion(curMap[str1], curMap[str2], values[i]);
+		}
+		//查询
+		int irqCnt = queries.size();
+		vector<double> res(irqCnt, -1);
+		for (int i = 0; i < irqCnt; i++) {
+			string& str1 = queries[i][0];
+			string& str2 = queries[i][1];
+			if (curMap.count(str1) > 0 && curMap.count(str2) > 0) {
+				int id1 = curMap[str1], id2 = curMap[str2];
+				res[i] = myUnion.isConnected(id1, id2);
+			}
+		}
+		return res;
+	}
+	class findRedundantConnectionSub {
+	public:
+		findRedundantConnectionSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void addToTree(int x, int y) {
+			parent[findParent(x)] = findParent(y);
+			return;
+		}
+		bool check(int x, int y) {//是否具有相同连接分量
+			int rootX = findParent(x), rootY = findParent(y);
+			if (rootX == rootY) {
+				return true;
+			}
+			return false;
+		}
+	private:
+		vector<int> parent;
+	};
+	vector<int> findRedundantConnection(vector<vector<int>>& edges) {//冗余连接
+		unordered_map<int, int> curMap;
+		int id = 0;
+		for (vector<int>& edge : edges) {
+			if (curMap.count(edge[0]) < 1) {
+				curMap[edge[0]] = id++;
+			}
+			if (curMap.count(edge[1]) < 1) {
+				curMap[edge[1]] = id++;
+			}
+		}
+		int edgeCnt = edges.size();
+		findRedundantConnectionSub mySub(2 * edgeCnt);
+		for (vector<int>& edge : edges) {
+			int x = curMap[edge[0]], y = curMap[edge[1]];
+			if (mySub.check(x, y)) {
+				return edge;
+			}
+			mySub.addToTree(x, y);
+		}
+		return{};
+	}
+	class findRedundantDirectedConnectionSub {
+	public:
+		findRedundantDirectedConnectionSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+		}
+		int findPatent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findPatent(parent[x]);
+			}
+			return parent[x];
+		}
+		bool checkPatent(int x, int y) {
+			if (findPatent(x) == findPatent(y)) {
+				return true;
+			}
+			return false;
+		}
+		void addToTree(int x, int y) {
+			parent[findPatent(x)] = findPatent(y);
+			return;
+		}
+	private:
+		vector<int> parent;
+	};
+	vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {//冗余连接 II
+		int edgeCnt = edges.size();
+		findRedundantDirectedConnectionSub mySub(edgeCnt + 1);
+		vector<int> parent(edgeCnt + 1);//最后一次刷新的父节点
+		for (int i = 0; i <= edgeCnt; i++) {
+			parent[i] = i;
+		}
+		int conflict = -1, cycle = -1;
+		for (int i = 0; i < edgeCnt; i++) {
+			vector<int>& edge = edges[i];
+			int node1 = edge[0], node2 = edge[1];
+			if (parent[node2] != node2) {//再次连接已连接节点(不一定有环)
+				conflict = i;
+			}
+			else {
+				parent[node2] = node1;
+				if (mySub.checkPatent(node1, node2)) {//连接出现环
+					cycle = i;
+				}
+				else {
+					mySub.addToTree(node1, node2);
+				}
+			}
+		}
+		if (conflict < 0) {//环连接到根节点
+			return edges[cycle];
+		}
+		else if (cycle >= 0) {//有环出现,删除环节点的父节点和环节点
+			return{parent[edges[conflict][1]], edges[conflict][1] };
+		}
+		return edges[conflict];//无环出现
+	}
+	class findCircleNumSub {
+	public:
+		findCircleNumSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void addToTree(int x, int y) {//把x添加到y
+			parent[findParent(x)] = findParent(y);
+			return;
+		}
+		int getRes(void) {
+			unordered_set<int> capCnt;
+			for (int i = 0; i < parent.size(); i++) {
+				int tmp = findParent(i);
+				capCnt.insert(tmp);
+			}
+			return capCnt.size();
+		}
+	private:
+		vector<int> parent;
+	};
+	int findCircleNum(vector<vector<int>>& isConnected) {//省份数量
+		int itemCnt = isConnected.size();
+		if (itemCnt < 2) {
+			return itemCnt;
+		}
+		findCircleNumSub mySub(itemCnt);
+		for (int i = 0; i < itemCnt; i++) {
+			for (int j = i + 1; j < itemCnt; j++) {
+				if (isConnected[i][j] == 0) {
+					continue;
+				}
+				mySub.addToTree(i, j);
+			}
+		}
+		return mySub.getRes();
+	}
+	class accountsMergeSub {
+	public:
+		accountsMergeSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			parent[findParent(y)] = findParent(x);
+			return;
+		}
+	private:
+		vector<int> parent;
+	};
+	vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {//账户合并
+		unordered_map<string, int> mailID;
+		unordered_map<string, string> mailName;
+		//分配ID
+		int id = 0;
+		for (vector<string>& mail : accounts) {
+			int mailCnt = mail.size();
+			string& name = mail[0];
+			for (int i = 1; i < mailCnt; i++) {
+				if (mailID.count(mail[i]) < 1) {
+					mailID[mail[i]] = id++;
+					mailName[mail[i]] = name;
+				}
+			}
+		}
+		//归并
+		accountsMergeSub mySub(id);
+		for (vector<string>& account : accounts) {
+			string& firstMail = account[1];
+			int mailCnt = account.size();
+			for (int i = 2; i < mailCnt; i++) {
+				mySub.merge(mailID[firstMail], mailID[account[i]]);
+			}
+		}
+		vector<vector<string>> res;
+		map<int, unordered_set<string>> mailCluster;
+		for (auto& it : mailID) {
+			int rootMail = mySub.findParent(mailID[it.first]);
+			mailCluster[rootMail].insert(it.first);
+		}
+		//生成答案
+		for (auto& it : mailCluster) {
+			string& name = mailName[*it.second.begin()];
+			vector<string> tmp = { name };
+			for (auto& mail : it.second) {
+				tmp.push_back(mail);
+			}
+			sort(tmp.begin() + 1, tmp.end());
+			res.push_back(tmp);
+		}
+		return res;
+	}
+	class minSwapsCouplesSub {
+	public:
+		minSwapsCouplesSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			parent[findParent(y)] = findParent(x);
+			return;
+		}
+	private:
+		vector<int> parent;
+	};
+	int minSwapsCouples(vector<int>& row) {//情侣牵手
+		int peopleCnt = row.size(), coupleCnt = peopleCnt / 2;
+		//添加
+		minSwapsCouplesSub uf(coupleCnt);
+		for (int i = 0; i < peopleCnt; i += 2) {
+			//情侣编号
+			int left = row[i] / 2;
+			int right = row[i + 1] / 2;
+			uf.merge(left, right);
+		}
+		unordered_map<int, int> curMap;
+		for (int i = 0; i < coupleCnt; i++) {
+			int tmp = uf.findParent(i);
+			curMap[tmp]++;
+		}
+		int res = 0;
+		for (auto& it : curMap) {
+			res += it.second - 1;
+		}
+		return res;
+	}
+	class swimInWaterSub {
+	public:
+		swimInWaterSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			parent[findParent(y)] = findParent(x);
+			return;
+		}
+	private:
+		vector<int> parent;
+	};
+	int swimInWater(vector<vector<int>>& grid) {//水位上升的泳池中游泳
+		int gridDim = grid.size();
+		swimInWaterSub uf(gridDim * gridDim);
+		vector<pair<int, int>> curMap(gridDim * gridDim);
+		for (int i = 0; i < gridDim; i++) {
+			for (int j = 0; j < gridDim; j++) {
+				curMap[grid[i][j]] = make_pair(i, j);
+			}
+		}
+		vector<vector<int>> dir = { {-1, 0}, {1, 0}, {0, 1}, {0, -1} };
+		for (int i = 0; i < gridDim * gridDim; i++) {
+			int rolCur = curMap[i].first, colCur = curMap[i].second;
+			for (int j = 0; j < 4; j++) {
+				int tmpRol = rolCur + dir[j][0], tmpCol = colCur + dir[j][1];
+				if (tmpRol < 0 || tmpRol == gridDim || tmpCol < 0 || tmpCol == gridDim) {
+					continue;
+				}
+				if (grid[tmpRol][tmpCol] <= i) {
+					uf.merge(rolCur * gridDim + colCur, tmpRol * gridDim + tmpCol);
+				}
+			}
+			if (uf.findParent(0) == uf.findParent(gridDim * gridDim - 1)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	class hitBricksSub {
+	public:
+		hitBricksSub(int n) {
+			parent.resize(n);
+			nodeCnt.resize(n, 1);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = findParent(x), rootY = findParent(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootY] = rootX;
+			nodeCnt[rootX] += nodeCnt[rootY];
+			return;
+		}
+		int retNodeCnt(int x) {
+			return nodeCnt[findParent(x)];
+		}
+	private:
+		vector<int> parent, nodeCnt;
+	};
+	vector<int> hitBricks(vector<vector<int>>& grid, vector<vector<int>>& hits) {//打砖块
+		int rolSize = grid.size(), colSize = grid[0].size();
+		int hitCnt = hits.size();
+		hitBricksSub uf(rolSize * colSize + 1);
+		//标记要敲掉的转
+		for (vector<int>& hit : hits) {
+			if (grid[hit[0]][hit[1]] == 1) {
+				grid[hit[0]][hit[1]] = 2;
+			}
+		}
+		//添加各个簇到并查集
+		for (int i = 0; i < rolSize; i++) {
+			for (int j = 0; j < colSize; j++) {
+				if (grid[i][j] != 1) {
+					continue;
+				}
+				if (i == 0) {//墙上的
+					uf.merge(rolSize * colSize, i * colSize + j);
+				}
+				if (i > 0 && grid[i - 1][j] == 1) {//上面有转
+					uf.merge((i - 1) * colSize + j, i * colSize + j);
+				}
+				if (j > 0 && grid[i][j - 1] == 1) {//左面有砖
+					uf.merge(i * colSize + j - 1, i * colSize + j);
+				}
+			}
+		}
+		vector<vector<int>> dir = { {-1, 0}, {1, 0}, {0, 1}, {0, -1} };
+		vector<int> res(hitCnt);
+		for (int i = hitCnt - 1; i > -1; i--) {
+			int rolCur = hits[i][0], colCur = hits[i][1];
+			if (grid[rolCur][colCur] == 0) {//剩下的全是2
+				res[i] = 0;
+				continue;
+			}
+			int prev = uf.retNodeCnt(rolSize * colSize);
+			if (rolCur == 0) {
+				uf.merge(rolSize * colSize, colCur);//以防倒三角类型
+			}
+			for (int j = 0; j < 4; j++) {
+				int tmpRol = rolCur + dir[j][0], tmpCol = colCur + dir[j][1];
+				if (tmpRol < 0 || tmpRol >= rolSize || tmpCol < 0 || tmpCol >= colSize) {
+					continue;
+				}
+				if (grid[tmpRol][tmpCol] == 1) {
+					uf.merge(rolCur * colSize + colCur, tmpRol * colSize + tmpCol);
+				}
+			}
+			int curr = uf.retNodeCnt(rolSize * colSize);
+			res[i] = max(0, curr - prev - 1);
+			grid[rolCur][colCur] = 1;
+		}
+		return res;
+	}
+	class numSimilarGroupsSub {
+	public:
+		numSimilarGroupsSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = findParent(x), rootY = findParent(y);
+			parent[rootY] = rootX;
+			return;
+		}
+		int clusterCnt() {
+			unordered_set<int> clusterSet;
+			int parentCnt = parent.size();
+			for (int i = 0; i < parentCnt; i++) {
+				clusterSet.emplace(findParent(i));
+			}
+			return clusterSet.size();
+		}
+	private:
+		vector<int> parent;
+	};
+	int numSimilarGroups(vector<string>& strs) {//相似字符串组
+		unordered_map<string, int> strMap;
+		int strCnt = strs.size();
+		int id = 0;
+		for (string& str : strs) {
+			if (strMap.count(str) < 1) {
+				strMap[str] = id++;
+			}
+		}
+		numSimilarGroupsSub uf(id);
+		for (int i = 0; i < strCnt; i++) {
+			for (int j = i + 1; j < strCnt; j++) {
+				if (numSimilarGroupsSililar(strs[i], strs[j])) {
+					uf.merge(strMap[strs[i]], strMap[strs[j]]);
+				}
+			}
+		}
+		int res = uf.clusterCnt();
+		return res;
+	}
+	bool numSimilarGroupsSililar(string& str1, string& str2) {
+		int strLen = str1.size();
+		string tmp;
+		for (int i = 0; i < strLen; i++) {
+			if (str1[i] != str2[i]) {
+				tmp.push_back(abs(str1[i] - str2[i]));
+			}
+		}
+		if (tmp.size() != 2) {
+			return false;
+		}
+		for (int i = 1; i < tmp.size(); i++) {
+			if (tmp[i] != tmp[0]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	class minMalwareSpreadISub {
+	public:
+		minMalwareSpreadISub(int n) {
+			parent.resize(n);
+			clusterCnt.resize(n, 1);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = findParent(x), rootY = findParent(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootY] = rootX;
+			clusterCnt[rootX] += clusterCnt[rootY];
+			return;
+		}
+		int retClusterNode(int x) {
+			return clusterCnt[findParent(x)];
+		}
+	private:
+		vector<int> parent;
+		vector<int> clusterCnt;
+	};
+	int minMalwareSpreadI(vector<vector<int>>& grid, vector<int>& initial) {//尽量减少恶意软件的传播
+		int gridDim = grid.size();
+		minMalwareSpreadISub uf(gridDim);
+		for(int i = 0; i < gridDim; i++) {
+			for (int j = i + 1; j < gridDim; j++) {
+				if (grid[i][j] == 0) {
+					continue;
+				}
+				uf.merge(i, j);
+			}
+		}
+		int initialCnt = initial.size();
+		vector<int> infected(gridDim);
+		for (int& num : initial) {
+			//保存这一个簇由几个节点感染；
+			infected[uf.findParent(num)]++;
+		}
+		sort(initial.begin(), initial.end());
+		int maxCnt = INT_MIN, res = initial[0];
+		for (int& num : initial) {
+			int rootNum = uf.findParent(num);
+			if (infected[rootNum] != 1) {
+				continue;
+			}
+			int tmp = uf.retClusterNode(num);
+			if (tmp > maxCnt) {
+				maxCnt = tmp;
+				res = num;
+			}
+		}
+		return res;
+	}
+	class minMalwareSpreadSub {
+	public:
+		minMalwareSpreadSub(int n) {
+			parent.resize(n);
+			clusterCnt.resize(n, 1);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int findParent(int x) {
+			if (x != parent[x]) {
+				parent[x] = findParent(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = findParent(x), rootY = findParent(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootY] = rootX;
+			clusterCnt[rootX] += clusterCnt[rootY];
+			return;
+		}
+		int retClusterNode(int x) {
+			return clusterCnt[findParent(x)];
+		}
+	private:
+		vector<int> parent;
+		vector<int> clusterCnt;
+	};
+	int minMalwareSpread(vector<vector<int>>& grid, vector<int>& initial) {//尽量减少恶意软件的传播 II
+		int gridDim = grid.size();
+		sort(initial.begin(), initial.end());
+		int maxCnt = INT_MAX, res = initial[0];
+		for (int& node : initial) {
+			minMalwareSpreadSub uf(gridDim);
+			for (int i = 0; i < gridDim; i++) {
+				if (i == node) {
+					continue;
+				}
+				for (int j = i + 1; j < gridDim; j++) {
+					if (j == node) {
+						continue;
+					}
+					if (grid[i][j] == 1) {
+						uf.merge(i, j);
+					}
+				}
+			}
+			unordered_set<int> rootSet;
+			for (int& infectNode : initial) {
+				rootSet.insert(uf.findParent(infectNode));
+			}
+			int nodeCnt = 0;
+			for (auto& rootNode : rootSet) {
+				nodeCnt += uf.retClusterNode(rootNode);
+			}
+			if (nodeCnt < maxCnt) {
+				maxCnt = nodeCnt;
+				res = node;
+			}
+		}
+		return res;
+	}
+	class removeStonesSub {
+	public:
+		removeStonesSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int find(int x) {
+			if (x != parent[x]) {
+				parent[x] = find(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = find(x), rootY = find(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootY] = rootX;
+			return;
+		}
+		int connectNodeCnt() {
+			int res = 0, n = parent.size();
+			for (int i = 0; i < n; i++) {
+				if (i == parent[i]) {
+					res++;
+				}
+			}
+			return res;
+		}
+	private:
+		vector<int> parent;
+	};
+	int removeStones(vector<vector<int>>& stones) {//移除最多的同行或同列石头
+		int stoneCnt = stones.size();
+		if (stoneCnt < 2) {
+			return 0;
+		}
+		removeStonesSub uf(stoneCnt);
+		for (int i = 0; i < stoneCnt; i++) {
+			for (int j = i + 1; j < stoneCnt; j++) {
+				if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+					uf.merge(i, j);
+				}
+			}
+		}
+		return stoneCnt - uf.connectNodeCnt();
+	}
+	class largestComponentSizeSub {
+	public:
+		largestComponentSizeSub(int n) {
+			parent.resize(n);
+			nodeCnt.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			for (int i = 100001; i < n; i++) {
+				nodeCnt[i] = 1;
+			}
+			return;
+		}
+		int find(int x) {
+			if (x != parent[x]) {
+				parent[x] = find(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = find(x), rootY = find(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootY] = rootX;
+			nodeCnt[rootX] += nodeCnt[rootY];
+			return;
+		}
+		int maxConnected(int start) {
+			int res = 0, n = parent.size();
+			for (int i = start; i < n; i++) {
+				int tmp = find(i);
+				res = max(res, nodeCnt[tmp]);
+			}
+			return res;
+		}
+	private:
+		vector<int> parent;
+		vector<int> nodeCnt;
+	};
+	int largestComponentSize(vector<int>& nums) {//按公因数计算最大组件大小
+		//sort(nums.begin(), nums.end());
+		int numsLen = nums.size();
+		largestComponentSizeSub uf(numsLen + 100001);
+		for (int i = 0; i < numsLen; i++) {
+			for (int j = 1; j * j <= nums[i]; j++) {
+				if (nums[i] % j == 0) {
+					if (j != 1) {
+						uf.merge(j, i + 100001);
+					}
+					uf.merge(nums[i] / j, i + 100001);
+				}
+			}
+		}
+		int res = 0;
+		return uf.maxConnected(100001);
+	}
+	class regionsBySlashesSub {
+	public:
+		regionsBySlashesSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int find(int x) {
+			if (x != parent[x]) {
+				parent[x] = find(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = find(x), rootY = find(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootY] = rootX;
+			return;
+		}
+		int countCluster() {
+			int n = parent.size();
+			int res = 0;
+			for (int i = 0; i < n; i++) {
+				if (parent[i] == i){
+					res++;
+				}
+			}
+			return res;
+		}
+	private:
+		vector<int> parent;
+	};
+	int regionsBySlashes(vector<string>& grid) {//由斜杠划分区域
+		int gridDim = grid.size(), totalGrid = gridDim * gridDim;
+		//每一个方块最多有两种分割方式，按照上右下左编号为1234
+		regionsBySlashesSub uf(totalGrid * 4);
+		vector<vector<int>> dir = { {-1, 0}, {1, 0}, {0, 1}, {0, -1} };
+		for (int i = 0; i < gridDim; i++) {
+			for (int j = 0; j < gridDim; j++) {
+				int base = i * gridDim + j;
+				if (grid[i][j] == ' ') {
+					for (int k = 1; k < 4; k++) {
+						uf.merge(base, k * totalGrid + base);
+					}
+				}
+				else if (grid[i][j] == '/') {
+					uf.merge(base, 3 * totalGrid + base);
+					uf.merge(2 * totalGrid + base, totalGrid + base);
+				}
+				else {
+					uf.merge(base, totalGrid + base);
+					uf.merge(2 * totalGrid + base, 3 * totalGrid + base);
+				}
+				if (i > 0) {
+					uf.merge((i - 1) * gridDim + j + totalGrid * 2, base);
+				}
+				if (j > 0) {
+					uf.merge(i * gridDim + j - 1 + totalGrid, totalGrid * 3 + base);
+				}
+			}
+		}
+		return uf.countCluster();
+	}
+	class equationsPossibleSub {
+	public:
+		equationsPossibleSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int find(int x) {
+			if (x != parent[x]) {
+				parent[x] = find(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = find(x), rootY = find(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootY] = rootX;
+			return;
+		}
+		int countCluster() {
+			int n = parent.size();
+			int res = 0;
+			for (int i = 0; i < n; i++) {
+				if (parent[i] == i) {
+					res++;
+				}
+			}
+			return res;
+		}
+	private:
+		vector<int> parent;
+	};
+	bool equationsPossible(vector<string>& equations) {//等式方程的可满足性
+		equationsPossibleSub uf(26);
+		int id = 0;
+		unordered_map<char, int> curMap;
+		for (string& eq : equations) {
+			if (curMap.count(eq[0]) < 1) {
+				curMap[eq[0]] = id++;
+			}
+			if (curMap.count(eq[3]) < 1) {
+				curMap[eq[3]] = id++;
+			}
+		}
+		for (string& eq : equations) {
+			if (eq[1] == '=') {
+				uf.merge(curMap[eq[0]], curMap[eq[3]]);
+			}
+		}
+		for (string& eq : equations) {
+			if (eq[1] == '!') {
+				int rootX = uf.find(curMap[eq[0]]), rootY = uf.find(curMap[eq[3]]);
+				if (rootX == rootY) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	class smallestStringWithSwapsSub {
+	public:
+		smallestStringWithSwapsSub(int n) {
+			parent.resize(n);
+			for (int i = 0; i < n; i++) {
+				parent[i] = i;
+			}
+			return;
+		}
+		int find(int x) {
+			if (x != parent[x]) {
+				parent[x] = find(parent[x]);
+			}
+			return parent[x];
+		}
+		void merge(int x, int y) {
+			int rootX = find(x), rootY = find(y);
+			if (rootX == rootY) {
+				return;
+			}
+			parent[rootY] = rootX;
+			return;
+		}
+		int countCluster() {
+			int n = parent.size();
+			int res = 0;
+			for (int i = 0; i < n; i++) {
+				if (parent[i] == i) {
+					res++;
+				}
+			}
+			return res;
+		}
+	private:
+		vector<int> parent;
+	};
+	string smallestStringWithSwaps(string s, vector<vector<int>>& pairs) {//交换字符串中的元素
+		int sLen = s.size();
+		smallestStringWithSwapsSub uf(sLen);
+		for (vector<int>& pair : pairs) {
+			uf.merge(pair[0], pair[1]);
+		}
+		unordered_map<int, vector<char>> charMap;
+		for (int i = 0; i < sLen; i++) {
+			charMap[uf.find(i)].push_back(s[i]);
+		}
+		for (auto& it : charMap) {
+			sort(it.second.begin(), it.second.end());
+		}
+		string res(sLen, ' ');
+		for (int i = sLen - 1; i > -1; i--) {
+			int cur = uf.find(i);
+			res[i] = *(charMap[cur].end() - 1);
+			charMap[cur].pop_back();
+		}
+		return res;
+	}
+};
+
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "dcab";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 4, 6, 15, 35 };
+	vector<int> inpt2 = { 2,4,1,1,3 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{1, 1, 0},
+		{1, 1, 0},
+		{0, 0, 1}
+	};
+	vector<vector<int>> board = {
+		{1,0,0,0,1,0,0,0,0,0,1},
+		{0,1,0,1,0,0,0,0,0,0,0},
+		{0,0,1,0,0,0,0,1,0,0,0},
+		{0,1,0,1,0,1,0,0,0,0,0},
+		{1,0,0,0,1,0,0,0,0,0,0},
+		{0,0,0,1,0,1,0,0,1,1,0},
+		{0,0,0,0,0,0,1,1,0,0,0},
+		{0,0,1,0,0,0,1,1,0,0,0},
+		{0,0,0,0,0,1,0,0,1,0,0},
+		{0,0,0,0,0,1,0,0,0,1,0},
+		{1,0,0,0,0,0,0,0,0,0,1}
+	};
+	vector<vector<int>> equations = { {0, 3}, {1, 2} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution.smallestStringWithSwaps(a, equations);
+	return 0;
+}
+#endif
+
+//cookBook-线段树
 #if true
 
 class Solution {
@@ -14601,35 +15630,38 @@ public:
 		TreeNode* left;
 		TreeNode* right;
 		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
-
 	};
 	
 };
 
 int main(int argc, char* argv[]) {
 	Solution mySolution;
-	string a = "AAGATCCGTCCCCCCAAGATCCGTC";
+	string a = "dcab";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 250,145,145,145,145 };
+	vector<int> inpt1 = { 4, 6, 15, 35 };
 	vector<int> inpt2 = { 2,4,1,1,3 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
-		{1, 0},
-		{0, 2}
+		{1, 1, 0},
+		{1, 1, 0},
+		{0, 0, 1}
 	};
-	vector<vector<char>> board = {
-		{'5', '3', '.', '.', '7', '.', '.', '.', '.'},
-		{'6', '.', '.', '1', '9', '5', '.', '.', '.'},
-		{'.', '9', '8', '.', '.', '.', '.', '6', '.'},
-		{'8', '.', '.', '.', '6', '.', '.', '.', '3'},
-		{'4', '.', '.', '8', '.', '3', '.', '.', '1'},
-		{'7', '.', '.', '.', '2', '.', '.', '.', '6'},
-		{'.', '6', '.', '.', '.', '.', '2', '8', '.'},
-		{'.', '.', '.', '4', '1', '9', '.', '.', '5'},
-		{'.', '.', '.', '.', '8', '.', '.', '7', '9'},
+	vector<vector<int>> board = {
+		{1,0,0,0,1,0,0,0,0,0,1},
+		{0,1,0,1,0,0,0,0,0,0,0},
+		{0,0,1,0,0,0,0,1,0,0,0},
+		{0,1,0,1,0,1,0,0,0,0,0},
+		{1,0,0,0,1,0,0,0,0,0,0},
+		{0,0,0,1,0,1,0,0,1,1,0},
+		{0,0,0,0,0,0,1,1,0,0,0},
+		{0,0,1,0,0,0,1,1,0,0,0},
+		{0,0,0,0,0,1,0,0,1,0,0},
+		{0,0,0,0,0,1,0,0,0,1,0},
+		{1,0,0,0,0,0,0,0,0,0,1}
 	};
-	unordered_set<int> r1Set(inpt1.begin(), inpt1.end());
-	vector<string> tmp = { "abcw","baz","foo","bar","xtfn","abcdef" };
+	vector<vector<int>> equations = { {0, 3}, {1, 2} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
 	mySolution;
 	return 0;
 }
