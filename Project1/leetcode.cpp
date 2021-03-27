@@ -15631,6 +15631,712 @@ public:
 		TreeNode* right;
 		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 	};
+	class getSkylineSub {
+	public:
+		getSkylineSub(int n) {
+			d.resize(n * 4 + 5, 0);
+			lazy.resize(n * 4 + 5, 0);
+			return;
+		}
+		void update(int nodeLeft, int nodeRight, int left, int right, int val, int id) {
+			//更新区间最大值，节点左右范围，查询区间范围，更新值，节点id（1开始）
+			if (nodeLeft >= left && nodeRight <= right) {//查询区间完全覆盖节点
+				lazy[id] = max(val, lazy[id]);
+				d[id] = max(lazy[id], d[id]);
+				return;
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int sonLeft = id * 2, sonRight = id * 2 + 1;
+			if (lazy[id] && nodeLeft != nodeRight) {//后半句判断是不是叶子节点，由于只考虑最大值，只有更新
+				lazy[sonLeft] = max(lazy[sonLeft], lazy[id]);
+				lazy[sonRight] = max(lazy[sonRight], lazy[id]);
+				d[sonLeft] = max(d[sonLeft], lazy[sonLeft]);
+				d[sonRight] = max(d[sonRight], lazy[sonRight]);
+				lazy[id] = 0;
+			}
+			if (left <= nodeMid) {//跨区间向左更新
+				update(nodeLeft, nodeMid, left, right, val, sonLeft);
+			}
+			if (right > nodeMid) {//跨期间向右更新
+				update(nodeMid + 1, nodeRight, left, right, val, sonRight);
+			}
+			d[id] = max(d[sonLeft], d[sonRight]);
+			return;
+		}
+		int qury(int nodeLeft, int nodeRight, int left, int right, int id) {
+			if (nodeLeft >= left && nodeRight <= right) {
+				return d[id];
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int sonLeft = id * 2, sonRight = id * 2 + 1;
+			if (lazy[id] && nodeLeft != nodeRight) {
+				lazy[sonLeft] = max(lazy[sonLeft], lazy[id]);
+				lazy[sonRight] = max(lazy[sonRight], lazy[id]);
+				d[sonLeft] = max(d[sonLeft], lazy[sonLeft]);
+				d[sonRight] = max(d[sonRight], lazy[sonRight]);
+				lazy[id] = 0;
+			}
+			int res = 0;
+			if (left <= nodeMid) {
+				res = max(res, qury(nodeLeft, nodeMid, left, right, sonLeft));
+			}
+			if (right > nodeMid) {
+				res = max(res, qury(nodeMid + 1, nodeRight, left, right, sonRight));
+			}
+			return res;
+		}
+	private:
+		vector<int> d, lazy;
+	};
+	vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {//天际线问题
+		unordered_map<int, int> curMap, reverseCurMap;
+		set<int> curSet;
+		for (auto& it : buildings) {
+			curSet.insert(it[0]);
+			curSet.insert(it[1]);
+			curSet.insert(it[1] - 1);
+		}
+		int id = 1;
+		for (auto& it : curSet) {
+			curMap[it] = id;
+			reverseCurMap[id] = it;
+			id++;
+		}
+		getSkylineSub segTree(id--);
+		for (auto& it : buildings) {
+			segTree.update(1, id, curMap[it[0]], curMap[it[1] - 1], it[2], 1);
+		}
+		vector<vector<int>> res;
+		int last = -1;
+		for (int i = 1; i <= id; i++) {
+			int tmp = segTree.qury(1, id, i, i, 1);
+			if (tmp != last) {
+				res.push_back({ reverseCurMap[i], tmp });
+			}
+			last = tmp;
+		}
+		return res;
+	}
+	class NumArrayI {//区域和检索 - 数组不可变
+	public:
+		NumArrayI(vector<int>& nums) {
+			int numsLen = nums.size();
+			data = nums;
+			data.insert(data.begin(), 0);
+			for (int i = 1; i <= numsLen; i++) {
+				data[i] += data[i - 1];
+			}
+			return;
+		}
+
+		int sumRange(int left, int right) {
+			return data[right + 1] - data[left];
+		}
+	private:
+		vector<int> data;
+	};
+	class NumArray {//区域和检索 - 数组可修改
+	public:
+		NumArray(vector<int>& nums) {
+			numsLen = nums.size();
+			data.resize(numsLen * 4, 0);
+			lazy.resize(numsLen * 4, 0);
+			for (int i = 0; i < numsLen; i++) {
+				update(i + 1, nums[i]);
+			}
+			return;
+		}
+		void update(int index, int val) {
+			update(1, numsLen, index, index, val, 1);
+			return;
+		}
+		int sumRange(int left, int right) {
+			return qury(1, numsLen, left + 1, right + 1, 1);
+		}
+	private:
+		vector<int> data, lazy;
+		int numsLen;
+		void update(int nodeLeft, int nodeRight, int segLeft, int segRight, int val, int nodeID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {//更改整个区间内容
+				data[nodeID] = (nodeRight - nodeLeft + 1) * val;//和
+				lazy[nodeID] = val;//单点
+				return;
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = nodeID * 2, rightSon = nodeID * 2 + 1;
+			if (lazy[nodeID] != 0) {
+				data[leftSon] = lazy[nodeID] * (nodeMid - nodeLeft + 1);
+				data[rightSon] = lazy[nodeID] * (nodeRight - nodeMid);
+				lazy[leftSon] = lazy[rightSon] = lazy[nodeID];
+				lazy[nodeID] == 0;
+			}
+			if (segLeft <= nodeMid) {
+				update(nodeLeft, nodeMid, segLeft, segRight, val, leftSon);
+			}
+			if (segRight > nodeMid) {
+				update(nodeMid + 1, nodeRight, segLeft, segRight, val, rightSon);
+			}
+			data[nodeID] = data[leftSon] + data[rightSon];
+			return;
+		}
+		int qury(int nodeLeft, int nodeRight, int segLeft, int segRight, int nodeID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				return data[nodeID];
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = nodeID * 2, rightSon = nodeID * 2 + 1;
+			if (lazy[nodeID] != 0) {
+				data[leftSon] = lazy[nodeID] * (nodeMid - nodeLeft + 1);
+				data[rightSon] = lazy[nodeID] * (nodeRight - nodeMid);
+				lazy[leftSon] = lazy[rightSon] = lazy[nodeID];
+				lazy[nodeID] == 0;
+			}
+			int res = 0;
+			if (segLeft <= nodeMid) {
+				res += qury(nodeLeft, nodeMid, segLeft, segRight, leftSon);
+			}
+			if (segRight > nodeMid) {
+				res += qury(nodeMid + 1, nodeRight, segLeft, segRight, rightSon);
+			}
+			return res;
+		}
+	};
+	class countSmallerSub {
+	public:
+		countSmallerSub(int n) {
+			data.resize(4 * n);
+			lazy.resize(4 * n);
+			numsLen = n;
+			return;
+		}
+		void updateTick(int nodeLeft, int nodeRight, int segLeft, int segRight, int rootID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				data[rootID] += nodeRight - nodeLeft + 1;
+				lazy[rootID] = 1;
+				return;
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = rootID * 2, rightSon = rootID * 2 + 1;
+			if (lazy[rootID] != 0) {
+				data[leftSon] += nodeMid - nodeLeft + 1;
+				data[rightSon] += nodeRight - nodeMid;
+				lazy[leftSon] = lazy[rightSon] = lazy[rootID];
+				lazy[rootID] = 0;
+			}
+			if (segLeft <= nodeMid) {
+				updateTick(nodeLeft, nodeMid, segLeft, segRight, leftSon);
+			}
+			if (segRight > nodeMid) {
+				updateTick(nodeMid + 1, nodeRight, segLeft, segRight, rightSon);
+			}
+			data[rootID] = data[leftSon] + data[rightSon];
+			return;
+		}
+		int qury(int nodeLeft, int nodeRight, int segLeft, int segRight, int rootID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				return data[rootID];
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = rootID * 2, rightSon = rootID * 2 + 1;
+			if (lazy[rootID] != 0) {
+				data[leftSon] += nodeMid - nodeLeft + 1;
+				data[rightSon] += nodeRight - nodeMid;
+				lazy[leftSon] = lazy[rightSon] = lazy[rootID];
+				lazy[rootID] = 0;
+			}
+			int res = 0;
+			if (segLeft <= nodeMid) {
+				res += qury(nodeLeft, nodeMid, segLeft, segRight, leftSon);
+			}
+			if (segRight > nodeMid) {
+				res += qury(nodeMid + 1, nodeRight, segLeft, segRight, rightSon);
+			}
+			return res;
+		}
+	private:
+		int numsLen;
+		vector<int> data, lazy;
+	};
+	vector<int> countSmaller(vector<int>& nums) {//计算右侧小于当前元素的个数
+		map<int, int> numMap;
+		int id = 1;
+		vector<int> numsCopy(nums);
+		sort(numsCopy.begin(), numsCopy.end());
+		for (int& num : numsCopy) {
+			if (numMap.count(num) < 1) {
+				numMap[num] = id++;
+			}
+		}
+		countSmallerSub segTree(--id);
+		int numsLen = nums.size();
+		vector<int> res(numsLen);
+		for (int i = numsLen - 1; i > -1; i--) {
+			int tmp = numMap[nums[i]];
+			segTree.updateTick(1, id, tmp, tmp, 1);
+			if (tmp > 1) {
+				res[i] = segTree.qury(1, id, 1, tmp - 1, 1);
+			}
+			else {
+				res[i] = 0;
+			}
+		}
+		return res;
+	}
+	class countRangeSumSub {
+	public:
+		countRangeSumSub(int n) {
+			data.resize(4 * n);
+			lazy.resize(4 * n);
+			numsLen = n;
+			return;
+		}
+		void update(int nodeLeft, int nodeRight, int segLeft, int segRight, int nodeID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				data[nodeID] += nodeRight - nodeLeft + 1;
+				lazy[nodeID] = 1;
+				return;
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = nodeID * 2, rightSon = nodeID * 2 + 1;
+			if (lazy[nodeID] != 0) {
+				data[leftSon] += nodeMid - nodeLeft + 1;
+				data[rightSon] += nodeRight - nodeMid;
+				lazy[leftSon] = lazy[rightSon] = lazy[nodeID];
+				lazy[nodeID] = 0;
+			}
+			if (segLeft <= nodeMid) {
+				update(nodeLeft, nodeMid, segLeft, segRight, leftSon);
+			}
+			if (segRight > nodeMid) {
+				update(nodeMid + 1, nodeRight, segLeft, segRight, rightSon);
+			}
+			data[nodeID] = data[leftSon] + data[rightSon];
+			return;
+		}
+		int qury(int nodeLeft, int nodeRight, int segLeft, int segRight, int nodeID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				return data[nodeID];
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = nodeID * 2, rightSon = nodeID * 2 + 1;
+			if (lazy[nodeID] != 0) {
+				data[leftSon] += nodeMid - nodeLeft + 1;
+				data[rightSon] += nodeRight - nodeMid;
+				lazy[leftSon] = lazy[rightSon] = lazy[nodeID];
+				lazy[nodeID] = 0;
+			}
+			int res = 0;
+			if (segLeft <= nodeMid) {
+				res += qury(nodeLeft, nodeMid, segLeft, segRight, leftSon);
+			}
+			if (segRight > nodeMid) {
+				res += qury(nodeMid + 1, nodeRight, segLeft, segRight, rightSon);
+			}
+			return res;
+		}
+	private:
+		vector<int> data, lazy;
+		int numsLen;
+	};
+	int countRangeSum(vector<int>& nums, int lower, int upper) {//区间和的个数
+		long long sum = 0;
+		vector<long long> prefix = { 0 };
+		for (int& num : nums) {
+			sum += num;
+			prefix.push_back(sum);
+		}
+		set<long long> numSet;
+		for (long long& num : prefix) {
+			numSet.insert(num);
+			numSet.insert(num - lower);
+			numSet.insert(num - upper);
+		}
+		int id = 1;
+		unordered_map<long long, int> numMap;
+		for (auto& num : numSet) {
+			numMap[num] = id++;
+		}
+		countRangeSumSub segTree(--id);
+		int res = 0;
+		for (auto& num : prefix) {
+			res += segTree.qury(1, id, numMap[num - upper], numMap[num - lower], 1);
+			segTree.update(1, id, numMap[num], numMap[num], 1);
+		}
+		return res;
+	}
+	class reversePairsSub {
+	public:
+		reversePairsSub(int n) {
+			data.resize(4 * n);
+			lazy.resize(4 * n);
+			numsLen = n;
+			return;
+		}
+		void update(int nodeLeft, int nodeRight, int segLeft, int segRight, int nodeID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				data[nodeID] += nodeRight - nodeLeft + 1;
+				lazy[nodeID] = 1;
+				return;
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = nodeID * 2, rightSon = nodeID * 2 + 1;
+			if (lazy[nodeID] != 0) {
+				data[leftSon] += nodeMid - nodeLeft + 1;
+				data[rightSon] += nodeRight - nodeMid;
+				lazy[leftSon] = lazy[rightSon] = lazy[nodeID];
+				lazy[nodeID] = 0;
+			}
+			if (segLeft <= nodeMid) {
+				update(nodeLeft, nodeMid, segLeft, segRight, leftSon);
+			}
+			if (segRight > nodeMid) {
+				update(nodeMid + 1, nodeRight, segLeft, segRight, rightSon);
+			}
+			data[nodeID] = data[leftSon] + data[rightSon];
+			return;
+		}
+		int qury(int nodeLeft, int nodeRight, int segLeft, int segRight, int nodeID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				return data[nodeID];
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = nodeID * 2, rightSon = nodeID * 2 + 1;
+			if (lazy[nodeID] != 0) {
+				data[leftSon] += nodeMid - nodeLeft + 1;
+				data[rightSon] += nodeRight - nodeMid;
+				lazy[leftSon] = lazy[rightSon] = lazy[nodeID];
+				lazy[nodeID] = 0;
+			}
+			int res = 0;
+			if (segLeft <= nodeMid) {
+				res += qury(nodeLeft, nodeMid, segLeft, segRight, leftSon);
+			}
+			if (segRight > nodeMid) {
+				res += qury(nodeMid + 1, nodeRight, segLeft, segRight, rightSon);
+			}
+			return res;
+		}
+	private:
+		vector<int> data, lazy;
+		int numsLen;
+	};
+	int reversePairs(vector<int>& nums) {//翻转对
+		vector<long long> numsCopy;
+		for (int& num : nums) {
+			numsCopy.push_back(num);
+			numsCopy.push_back(1l + 2l * num);
+		}
+		sort(numsCopy.begin(), numsCopy.end());
+		unordered_map<long long, int> numsMap;
+		int id = 1;
+		for (long long& num : numsCopy) {
+			if (numsMap.count(num) < 1) {
+				numsMap[num] = id++;
+			}
+		}
+		reversePairsSub segTree(--id);
+		int res = 0;
+		for (int& num : nums) {
+			res += segTree.qury(1, id, numsMap[2l * num + 1l], id, 1);
+			segTree.update(1, id, numsMap[num], numsMap[num], 1);
+		}
+		return res;
+	}
+	class fallingSquaresSub {//线段树时间常数大一些
+	public:
+		fallingSquaresSub(int n) {
+			data.resize(4 * n);
+			lazy.resize(4 * n);
+			numsLen = n;
+			return;
+		}
+		void update(int nodeLeft, int nodeRight, int segLeft, int segRight, int val, int nodeID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				data[nodeID] = (nodeRight - nodeLeft + 1) * val;
+				lazy[nodeID] = val;
+				return;
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = nodeID * 2, rightSon = nodeID * 2 + 1;
+			if (lazy[nodeID] != 0) {
+				data[leftSon] = (nodeMid - nodeLeft + 1) * val;
+				data[rightSon] = (nodeRight - nodeMid) * val;
+				lazy[leftSon] = lazy[rightSon] = lazy[nodeID];
+				lazy[nodeID] = 0;
+			}
+			if (segLeft <= nodeMid) {
+				update(nodeLeft, nodeMid, segLeft, segRight, val, leftSon);
+			}
+			if (segRight > nodeMid) {
+				update(nodeMid + 1, nodeRight, segLeft, segRight, val, rightSon);
+			}
+			data[nodeID] = data[leftSon] + data[rightSon];
+			return;
+		}
+		long long qury(int nodeLeft, int nodeRight, int segLeft, int segRight, int nodeID) {
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {
+				return data[nodeID];
+			}
+			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+			int leftSon = nodeID * 2, rightSon = nodeID * 2 + 1;
+			if (lazy[nodeID] != 0) {
+				data[leftSon] = (nodeMid - nodeLeft + 1) * lazy[nodeID];
+				data[rightSon] = (nodeRight - nodeMid) * lazy[nodeID];
+				lazy[leftSon] = lazy[rightSon] = lazy[nodeID];
+				lazy[nodeID] = 0;
+			}
+			long long res = 0;
+			if (segLeft <= nodeMid) {
+				res += qury(nodeLeft, nodeMid, segLeft, segRight, leftSon);
+			}
+			if (segRight > nodeMid) {
+				res += qury(nodeMid + 1, nodeRight, segLeft, segRight, rightSon);
+			}
+			return res;
+		}
+	private:
+		vector<long long> data, lazy;
+		int numsLen;
+	};
+	vector<int> fallingSquares(vector<vector<int>>& positions) {//掉落的方块
+		vector<int> pos;
+		for (vector<int>& square : positions) {
+			pos.push_back(square[0]);
+			pos.push_back(square[0] + square[1] - 1);
+		}
+		sort(pos.begin(), pos.end());
+		unordered_map<int, int> posMap;
+		int id = 1;
+		for (int& num : pos) {
+			if (posMap.count(num) < 1) {
+				posMap[num] = id++;
+			}
+		}
+		fallingSquaresSub segTree(--id);
+		vector<int> res;
+		long long tmp = 0;
+		for (vector<int>& square : positions) {
+			long long segMax = 0;
+			for (int i = 0; i < square[1]; i++) {
+				if (posMap.count(square[0] + i) > 0) {
+					segMax = max(segMax, segTree.qury(1, id, posMap[square[0] + i], posMap[square[0] + i], 1));
+				}
+			}
+			segTree.update(1, id, posMap[square[0]], posMap[square[0] + square[1] - 1], segMax + square[1], 1);
+			tmp = max(tmp, segMax + square[1]);
+			res.push_back((int)tmp);
+		}
+		return res;
+	}
+	class RangeModule {//Range 模块
+	public://可以实现树的动态扩展，非固定节点数量
+		RangeModule() {
+			segment.clear();
+			return;
+		}
+		void addRange(int left, int right) {
+			auto a = segment.lower_bound(left);
+			auto b = segment.lower_bound(right);
+			if (a == segment.end()) {
+				segment[right] = left;
+			}
+			else {
+				int start = a->second;
+				auto p = a;
+				while (p != b) {
+					a++;
+					segment.erase(p);
+					p = a;
+				}
+				if (b == segment.end() || b->second > right) {
+					segment[right] = min(start, left);
+				}
+				else {
+					b->second = min(start, left);
+				}
+			}
+			return;
+		}
+		bool queryRange(int left, int right) {
+			auto p = segment.lower_bound(right);
+			if (p == segment.end() || p->second > left) {
+				return false;
+			}
+			return true;
+		}
+		void removeRange(int left, int right) {
+			auto a = segment.lower_bound(left);
+			auto b = segment.lower_bound(right);
+			if (a == segment.end() || right <= segment.begin()->second) {
+				return;
+			}
+			else {
+				int x = a->second;
+				auto p = a;
+				while (p != b) {
+					a++;
+					segment.erase(p);
+					p = a;
+				}
+				if (b != segment.end()) {
+					int y = b->first;
+					if (b->second < right) {
+						segment.erase(b);
+						if (right < y) {
+							segment[y] = right;
+						}
+					}
+				}
+				if (x < left) {
+					segment[left] = x;
+				}
+			}
+			return;
+		}
+	private:
+		map<int, int> segment;//右-左
+	};
+	class MyCalendarThree {//我的日程安排表 III
+		//需要动态增加节点的线段树
+	public:
+		MyCalendarThree() {
+			rootNode = new segTreeNode(0, 1e9);
+			return;
+		}
+		int book(int start, int end) {
+			return insert(start, end, rootNode);
+		}
+	private:
+		struct segTreeNode {
+			int nodeLeft = -1, nodeRight = -1;
+			int val = 0;
+			int lazy = 0;
+			segTreeNode* leftSon = nullptr;
+			segTreeNode* rightSon = nullptr;
+			segTreeNode(int start, int end) {
+				nodeLeft = start, nodeRight = end;
+				return;
+			}
+		};
+		segTreeNode* rootNode;
+		int insert(int segLeft, int segRight, segTreeNode* root) {
+			if (segLeft <= root->nodeLeft && root->nodeRight <= segRight) {//节点范围是插入范围的子集
+				//欠债阶段，这种情况是完全确定的，可以确定债权
+				root->val++;
+				root->lazy++;
+			}
+			else if (root->nodeLeft < segRight && segLeft < root->nodeRight) {//待插入区间与节点范围有重叠
+				int nodeMid = root->nodeLeft + (root->nodeRight - root->nodeLeft) / 2;
+				if (root->leftSon == nullptr) {
+					root->leftSon = new segTreeNode(root->nodeLeft, nodeMid);
+				}
+				if (root->rightSon == nullptr) {
+					root->rightSon = new segTreeNode(nodeMid, root->nodeRight);
+				}
+				//还债阶段，因为债务是在完全包含的情况下欠的，所以可以下放
+				root->leftSon->val += root->lazy;
+				root->rightSon->val += root->lazy;
+				root->leftSon->lazy += root->lazy;
+				root->rightSon->lazy += root->lazy;
+				root->lazy = 0;
+				int leftVal = insert(segLeft, segRight, root->leftSon);
+				int rightVal = insert(segLeft, segRight, root->rightSon);
+				root->val = max(leftVal, rightVal);
+			}
+			return root->val;
+		}
+	};
+	//class rectangleAreaSub {//紧贴坐标轴的，实际应该使用单轴扫掠
+	//public:
+	//	rectangleAreaSub(int n) {
+	//		data.resize(4 * n);
+	//		lazy.resize(4 * n);
+	//		return;
+	//	}
+	//	void update(int nodeLeft, int nodeRight, int segLeft, int segRight, int val, int id) {
+	//		if (segLeft <= nodeLeft && nodeRight <= segRight) {
+	//			lazy[id] = max(lazy[id], val);
+	//			data[id] = max(data[id], lazy[id]);
+	//			return;
+	//		}
+	//		int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+	//		int leftSon = id * 2, rightSon = id * 2 + 1;
+	//		if (lazy[id] != 0) {
+	//			lazy[leftSon] = max(lazy[leftSon], lazy[id]);
+	//			lazy[rightSon] = max(lazy[rightSon], lazy[id]);
+	//			data[leftSon] = max(data[leftSon], lazy[leftSon]);
+	//			data[rightSon] = max(data[rightSon], lazy[rightSon]);
+	//			lazy[id] = 0;
+	//		}
+	//		if (segLeft <= nodeMid) {
+	//			update(nodeLeft, nodeMid, segLeft, segRight, val, leftSon);
+	//		}
+	//		if (segRight > nodeMid) {
+	//			update(nodeMid + 1, nodeRight, segLeft, segRight, val, rightSon);
+	//		}
+	//		data[id] = max(data[leftSon], data[rightSon]);
+	//		return;
+	//	}
+	//	int qury(int nodeLeft, int nodeRight, int segLeft, int segRight, int id) {
+	//		if (segLeft <= nodeLeft && nodeRight <= segRight) {
+	//			data[id] = max(data[id], lazy[id]);
+	//			return data[id];
+	//		}
+	//		int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
+	//		int leftSon = id * 2, rightSon = id * 2 + 1;
+	//		if (lazy[id] != 0) {
+	//			lazy[leftSon] = max(lazy[leftSon], lazy[id]);
+	//			lazy[rightSon] = max(lazy[rightSon], lazy[id]);
+	//			data[leftSon] = max(data[leftSon], lazy[leftSon]);
+	//			data[rightSon] = max(data[rightSon], lazy[rightSon]);
+	//			lazy[id] = 0;
+	//		}
+	//		int res = 0;
+	//		if (segLeft <= nodeMid) {
+	//			res = max(qury(nodeLeft, nodeMid, segLeft, segRight, leftSon), res);
+	//		}
+	//		if (segRight > nodeMid) {
+	//			res = max(qury(nodeMid + 1, nodeRight, segLeft, segRight, rightSon), res);
+	//		}
+	//		return res;
+	//	}
+	//private:
+	//	vector<int> data, lazy;
+	//};
+	//int rectangleArea(vector<vector<int>>& rectangles) {//矩形面积 II
+	//	vector<int> pos, resPos;
+	//	for (vector<int>& rect : rectangles) {
+	//		pos.push_back(rect[0]);
+	//		pos.push_back(rect[0] - 1);
+	//		pos.push_back(rect[2] - 1);
+	//		pos.push_back(rect[2]);
+	//		resPos.push_back(rect[0]);
+	//		resPos.push_back(rect[2]);
+	//	}
+	//	sort(pos.begin(), pos.end());
+	//	sort(resPos.begin(), resPos.end());
+	//	unordered_map<int, int> posMap;
+	//	int id = 1;
+	//	for (int& pt : pos) {
+	//		if (posMap.count(pt) < 1) {
+	//			posMap[pt] = id++;
+	//		}
+	//	}
+	//	rectangleAreaSub segTree(--id);
+	//	long long res = 0;
+	//	for (vector<int>& rect : rectangles) {
+	//		segTree.update(1, id, posMap[rect[0]], posMap[rect[2] - 1], rect[3], 1);
+	//	}
+	//	int mod = 1e9 + 7, lastPoint = resPos[0];
+	//	for (int& currentPoint : resPos) {
+	//		if (currentPoint == lastPoint) {
+	//			continue;
+	//		}
+	//		res = (res + 1l * (currentPoint - lastPoint) * segTree.qury(1, id, posMap[lastPoint], posMap[currentPoint - 1], 1)) % mod;
+	//		lastPoint = currentPoint;
+	//	}
+	//	return (int)(res % mod);
+	//}
 	
 };
 
@@ -15638,13 +16344,15 @@ int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "dcab";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 4, 6, 15, 35 };
+	vector<int> inpt1 = { 2, 4, 3, 5, 1 };
 	vector<int> inpt2 = { 2,4,1,1,3 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
-		{1, 1, 0},
-		{1, 1, 0},
-		{0, 0, 1}
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
 	};
 	vector<vector<int>> board = {
 		{1,0,0,0,1,0,0,0,0,0,1},
@@ -15659,10 +16367,11 @@ int main(int argc, char* argv[]) {
 		{0,0,0,0,0,1,0,0,0,1,0},
 		{1,0,0,0,0,0,0,0,0,0,1}
 	};
-	vector<vector<int>> equations = { {0, 3}, {1, 2} };
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
 	vector<double> val = { 2.0, 3.0 };
 	vector<string> qur = { " /","/ " };
 	mySolution;
+	
 	return 0;
 }
 #endif
