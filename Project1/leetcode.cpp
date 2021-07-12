@@ -11414,7 +11414,7 @@ public:
 				rolExist[rol][i] = true;
 				colExist[col][i] = true;
 				blockExist[rol / 3][col / 3][i] = true;
-				board[rol][col] = i + 1 + '0';//直接改期盼，不用回溯，因为已经保存在三个bool数组中
+				board[rol][col] = i + 1 + '0';//直接改棋盘，不用回溯，因为已经保存在三个bool数组中
 				solveSudokuSub(board, rolExist, colExist, blockExist, pos, cur + 1, valid);
 				rolExist[rol][i] = false;
 				colExist[col][i] = false;
@@ -15614,7 +15614,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 //cookBook-线段树
-#if true
+#if false
 
 class Solution {
 public:
@@ -16372,6 +16372,16 @@ int main(int argc, char* argv[]) {
 	vector<string> qur = { " /","/ " };
 	mySolution;
 	
+	return 0;
+}
+#endif
+
+// 图解算法数据结构
+#if true
+class Solution {
+public:
+};
+int main(int argc, char* argv[]) {
 	return 0;
 }
 #endif
