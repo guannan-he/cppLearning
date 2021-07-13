@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <map>
+#include <math.h>
 #include <stack>
 #include <list>
 #include <iostream>
@@ -14,7 +15,7 @@
 #include <sstream>
 using namespace std;
 
-//Á´±í
+//é“¾è¡¨
 #if 0
  //Definition for singly-linked list.
 struct ListNode {
@@ -31,17 +32,17 @@ public:
 		}
 		ListNode* fast, * slow, * tmp;
 		fast = slow = head;
-		while (fast && fast->next) {//ÕÒµ½Ç°°ë²¿·ÖÎ²°Í
+		while (fast && fast->next) {//æ‰¾åˆ°å‰åŠéƒ¨åˆ†å°¾å·´
 			if (fast = fast->next->next) {
 				slow = slow->next;
 			}
 			else {
 				//fast = fast->next->next;
 				break;
-			}//slow±ä³ÉÇ°°ë²¿·ÖÎ²°Í
+			}//slowå˜æˆå‰åŠéƒ¨åˆ†å°¾å·´
 		}
 		fast = slow->next;
-		while (fast && fast->next) {//·´×ªºó°ë²¿·ÖÁ´±í
+		while (fast && fast->next) {//åè½¬ååŠéƒ¨åˆ†é“¾è¡¨
 			tmp = fast->next;
 			fast->next = tmp->next;
 			tmp->next = slow->next;
@@ -116,7 +117,7 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//Êı×éºÍ×Ö·û´®
+//æ•°ç»„å’Œå­—ç¬¦ä¸²
 #if 0
 class Solution {
 public:
@@ -233,7 +234,7 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//¶ÓÁĞ
+//é˜Ÿåˆ—
 #if 0
 
 struct node {
@@ -323,41 +324,41 @@ class Solution {
 public:
 	int numIslands(vector<vector<char>>& grid) {
 		int colSize = grid.size();
-		if (!colSize) {//ÎŞÔªËØÔò·µ»Ø
+		if (!colSize) {//æ— å…ƒç´ åˆ™è¿”å›
 			return 0;
 		}
 		int rolSize = grid[0].size();
 		int total = colSize * rolSize;
 		char** visited = visitedGen(colSize, rolSize);
 		char** gridCopy = gridCopyFunc(grid, colSize, rolSize);
-		queue<vector<int>> q;//¶ÓÁĞ±£´æÏÂ±êÏòÁ¿
-		int cur = 0;//ÏÂ±ê¼ÆÊı
-		int c, r;//ÏÂ±ê
-		int cnt = 0;//Â½µØ¼ÆÊı
+		queue<vector<int>> q;//é˜Ÿåˆ—ä¿å­˜ä¸‹æ ‡å‘é‡
+		int cur = 0;//ä¸‹æ ‡è®¡æ•°
+		int c, r;//ä¸‹æ ‡
+		int cnt = 0;//é™†åœ°è®¡æ•°
 		int queueSize;
 		vector<int> pos;
 		pos.push_back(c); pos.push_back(r);
 		while (cur < total) {
-			//Î´·ÃÎÊ¹ıµÄÑ¹Èë¶ÓÁĞ
+			//æœªè®¿é—®è¿‡çš„å‹å…¥é˜Ÿåˆ—
 			c = cur / rolSize;
 			r = cur % rolSize;
 			cur++;
-			//»ñÈ¡ÏÂ±ê
+			//è·å–ä¸‹æ ‡
 			if (visited[c][r] == '1') {
-				continue;//·ÃÎÊ¹ıÌø¹ı
+				continue;//è®¿é—®è¿‡è·³è¿‡
 			}
-			visited[c][r] = '1';//¸ù½Úµã±ê¼ÇÎª·ÃÎÊ¹ı
+			visited[c][r] = '1';//æ ¹èŠ‚ç‚¹æ ‡è®°ä¸ºè®¿é—®è¿‡
 			if (gridCopy[c][r] == '0') {
-				continue;//Ìø¹ıÂ½µØ
+				continue;//è·³è¿‡é™†åœ°
 			}
-			pos[0] = c; pos[1] = r;//±£´æÂ½µØÏÂ±ê
-			q.push(pos);//Ñ¹Èë¸ù½Úµã
+			pos[0] = c; pos[1] = r;//ä¿å­˜é™†åœ°ä¸‹æ ‡
+			q.push(pos);//å‹å…¥æ ¹èŠ‚ç‚¹
 			while (!q.empty()) {
 				queueSize = q.size();
 				while (queueSize) {
-					pos = q.front();//¶ÁÈ¡Í·½Úµã
+					pos = q.front();//è¯»å–å¤´èŠ‚ç‚¹
 					c = pos[0]; r = pos[1];
-					if (c > 0 && visited[c - 1][r] == '0') {//ÉÏ·½½Úµã
+					if (c > 0 && visited[c - 1][r] == '0') {//ä¸Šæ–¹èŠ‚ç‚¹
 						visited[c - 1][r] = '1';
 						if (gridCopy[c - 1][r] == '1') {
 							pos[0] = c - 1;
@@ -365,7 +366,7 @@ public:
 							q.push(pos);
 						}
 					}
-					if (r < rolSize - 1 && visited[c][r + 1] == '0') {//ÓÒ·½½Úµã
+					if (r < rolSize - 1 && visited[c][r + 1] == '0') {//å³æ–¹èŠ‚ç‚¹
 						visited[c][r + 1] = '1';
 						if (gridCopy[c][r + 1] == '1') {
 							pos[0] = c;
@@ -373,7 +374,7 @@ public:
 							q.push(pos);
 						}
 					}
-					if (c < colSize - 1 && visited[c + 1][r] == '0') {//ÏÂ·½½Úµã
+					if (c < colSize - 1 && visited[c + 1][r] == '0') {//ä¸‹æ–¹èŠ‚ç‚¹
 						visited[c + 1][r] = '1';
 						if (gridCopy[c + 1][r] == '1') {
 							pos[0] = c + 1;
@@ -381,7 +382,7 @@ public:
 							q.push(pos);
 						}
 					}
-					if (r > 0 && visited[c][r - 1] == '0') {//×ó·½½Úµã
+					if (r > 0 && visited[c][r - 1] == '0') {//å·¦æ–¹èŠ‚ç‚¹
 						visited[c][r - 1] = '1';
 						if (gridCopy[c][r - 1] == '1') {
 							pos[0] = c;
@@ -390,7 +391,7 @@ public:
 						}
 					}
 
-					q.pop();//µ¯³öÍ·½Úµã
+					q.pop();//å¼¹å‡ºå¤´èŠ‚ç‚¹
 					queueSize--;
 				}
 			}
@@ -400,19 +401,19 @@ public:
 		visitedDelete(gridCopy, colSize);
 		return cnt;
 	}
-	char** visitedGen(int colSize, int rolSize) {//Éú³É·ÃÎÊ±ê¼Ç¾ØÕó
+	char** visitedGen(int colSize, int rolSize) {//ç”Ÿæˆè®¿é—®æ ‡è®°çŸ©é˜µ
 		char** visited = new char* [colSize];
 		for (int i = 0; i < colSize; i++) {
 			visited[i] = new char[rolSize];
 		}
 		for (int i = 0; i < colSize; i++) {
 			for (int j = 0; j < rolSize; j++) {
-				visited[i][j] = '0';//±ê¼ÇÎªÎª·ÃÎÊ
+				visited[i][j] = '0';//æ ‡è®°ä¸ºä¸ºè®¿é—®
 			}
 		}
 		return visited;
 	}
-	void visitedDelete(char** visited, int colSize) {//É¾³ı±ê¼Ç¾ØÕó
+	void visitedDelete(char** visited, int colSize) {//åˆ é™¤æ ‡è®°çŸ©é˜µ
 		for (int i = 0; i < colSize; i++) {
 			delete[] visited[i];
 		}
@@ -440,19 +441,19 @@ public:
 		string tmp = "0000";
 		unordered_set<string> vist;
 		vist.insert(deadends.begin(), deadends.end());
-		q.push(current);//Ñ¹Èë¸ù½Úµã
+		q.push(current);//å‹å…¥æ ¹èŠ‚ç‚¹
 		vist.emplace(current);
-		while (!q.empty()) {//¶ÓÁĞÀï»¹ÓĞÔªËØ
+		while (!q.empty()) {//é˜Ÿåˆ—é‡Œè¿˜æœ‰å…ƒç´ 
 			int queueLen = q.size();
-			while (queueLen) {//³ö¶ÓÁĞÈë¶ÓÁĞ
+			while (queueLen) {//å‡ºé˜Ÿåˆ—å…¥é˜Ÿåˆ—
 				current = q.front();
 				if (vist.count(current)) {
-					return -1;//²»¸Ã³öÏÖµÄ³öÏÖÁË
+					return -1;//ä¸è¯¥å‡ºç°çš„å‡ºç°äº†
 				}
 				if (current == target) {
-					return totalCnt;//ÕÒµ½Ä¿±ê
+					return totalCnt;//æ‰¾åˆ°ç›®æ ‡
 				}
-				//ÒªĞŞ¸Ä£¬·ÖÎªÁ½¸ö·½Ïò£¬ÏÖÔÚ»áÊıÁ¿¼¸ºÎÔö³¤
+				//è¦ä¿®æ”¹ï¼Œåˆ†ä¸ºä¸¤ä¸ªæ–¹å‘ï¼Œç°åœ¨ä¼šæ•°é‡å‡ ä½•å¢é•¿
 				for (cur = 0; cur < 4; cur++) {
 					tmp = current;
 					tmpNum = current[cur] - '0';
@@ -500,7 +501,7 @@ public:
 		int tmp;
 		while (!q.empty()) {
 			qLen = q.size();
-			while (qLen) {//³ö¶ÓÁĞÈë¶ÓÁĞ
+			while (qLen) {//å‡ºé˜Ÿåˆ—å…¥é˜Ÿåˆ—
 				current = q.front();
 				if (current == 0) {
 					return res;
@@ -585,22 +586,22 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//Õ»
+//æ ˆ
 #if 0
 class Solution {
 public:
 	vector<vector<int>> updateMatrix(vector<vector<int>>& matrix) {
 		int colSize = matrix.size();
-		if (!colSize) {//ÎŞÔªËØÔò·µ»Ø
+		if (!colSize) {//æ— å…ƒç´ åˆ™è¿”å›
 			return matrix;
 		}
 		int rolSize = matrix[0].size();
 
-		//¿ÉÊÍ·Å±äÁ¿
-		char** visited = visitedGen(colSize, rolSize);//·ÃÎÊ±ê¼Ç
-		queue<pair<int, int>>* q = new queue<pair<int, int>>;//ÏÂ±ê¶ÓÁĞ
+		//å¯é‡Šæ”¾å˜é‡
+		char** visited = visitedGen(colSize, rolSize);//è®¿é—®æ ‡è®°
+		queue<pair<int, int>>* q = new queue<pair<int, int>>;//ä¸‹æ ‡é˜Ÿåˆ—
 
-		//½«ËùÓĞÁãÄÉÈëµ½µ±ÎÊ¹ıÊı×éÖĞ
+		//å°†æ‰€æœ‰é›¶çº³å…¥åˆ°å½“é—®è¿‡æ•°ç»„ä¸­
 		int c, r;
 		for (c = 0; c < colSize; c++) {
 			for (r = 0; r < rolSize; r++) {
@@ -629,24 +630,24 @@ public:
 			q->pop();
 		}
 
-		//ºó´¦Àí£¬ÊÍ·Å
+		//åå¤„ç†ï¼Œé‡Šæ”¾
 		visitedDelete(visited, colSize);
 		delete q;
 		return matrix;
 	}
-	char** visitedGen(int colSize, int rolSize) {//Éú³É·ÃÎÊ±ê¼Ç¾ØÕó
+	char** visitedGen(int colSize, int rolSize) {//ç”Ÿæˆè®¿é—®æ ‡è®°çŸ©é˜µ
 		char** visited = new char* [colSize];
 		for (int i = 0; i < colSize; i++) {
 			visited[i] = new char[rolSize];
 		}
 		for (int i = 0; i < colSize; i++) {
 			for (int j = 0; j < rolSize; j++) {
-				visited[i][j] = '0';//±ê¼ÇÎªÎª·ÃÎÊ
+				visited[i][j] = '0';//æ ‡è®°ä¸ºä¸ºè®¿é—®
 			}
 		}
 		return visited;
 	}
-	void visitedDelete(char** visited, int colSize) {//É¾³ı±ê¼Ç¾ØÕó
+	void visitedDelete(char** visited, int colSize) {//åˆ é™¤æ ‡è®°çŸ©é˜µ
 		for (int i = 0; i < colSize; i++) {
 			delete[] visited[i];
 		}
@@ -687,7 +688,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¶ş²æÊ÷
+//äºŒå‰æ ‘
 #if 0
 
 
@@ -833,7 +834,7 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//¶ş²æËÑË÷Ê÷
+//äºŒå‰æœç´¢æ ‘
 #if 0
 
 class KthLargest {
@@ -861,7 +862,7 @@ private:
 	};
 	int target = 0;
 	treeNode* root = nullptr;
-	treeNode* addToTree(treeNode* root, int val) {//µİ¹é¶ş²æËÑË÷Ê÷ÏòÌí¼Ó
+	treeNode* addToTree(treeNode* root, int val) {//é€’å½’äºŒå‰æœç´¢æ ‘å‘æ·»åŠ 
 		if (root == nullptr) {
 			treeNode* ans = new treeNode;
 			ans->val = val;
@@ -878,7 +879,7 @@ private:
 		}
 		return root;
 	}
-	int getThLarge() {//·µ»ØµÚ¼¸´óµÄÔªËØ
+	int getThLarge() {//è¿”å›ç¬¬å‡ å¤§çš„å…ƒç´ 
 		treeNode* cur = root;
 		int k = target;
 		int lCnt, rCnt, curCnt;
@@ -922,7 +923,7 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//Ç°×ºÊ÷Trie
+//å‰ç¼€æ ‘Trie
 #if false
 
 class Trie {
@@ -1038,7 +1039,7 @@ private:
 		node* next[26] = { nullptr };
 	};
 	node* rootNode;
-	void pushIntoTrie(vector<string>& dictionary) {//Ìí¼Óµ½Ç°×ºÊ÷
+	void pushIntoTrie(vector<string>& dictionary) {//æ·»åŠ åˆ°å‰ç¼€æ ‘
 		string tmpStr;
 		int dictLen = dictionary.size();
 		int i, j, tmpStrLen;
@@ -1217,7 +1218,7 @@ public:
 			else {
 				return 0;
 			}
-		}//ĞŞ¼ôÖ÷¸É£¬Ö±µ½µÚÒ»¸ö·Ö²í
+		}//ä¿®å‰ªä¸»å¹²ï¼Œç›´åˆ°ç¬¬ä¸€ä¸ªåˆ†å²”
 		curL = cur->left;
 		curR = cur->right;
 		unsigned int ans = 1;
@@ -1256,7 +1257,7 @@ private:
 		}
 		int r1 = 0, r2 = 0, r3 = 0;
 		int tmp = ans;
-		//Òì»òÓÒ²àÌí¼Ó1
+		//å¼‚æˆ–å³ä¾§æ·»åŠ 1
 		if (curL->left && curR->right) {//01
 			ans = ans << 1;
 			ans++;
@@ -1271,7 +1272,7 @@ private:
 			r2 = ans;
 			ans = tmp;
 		}
-		//·ñÔòÌí¼Ó0
+		//å¦åˆ™æ·»åŠ 0
 		if (!((curL->left && curR->right) || (curL->right && curR->left))) {//00
 			if (curL->left && curR->left) {
 				ans = ans << 1;
@@ -1362,7 +1363,7 @@ private:
 	}
 	void dfs(vector<vector<char>>& board, node* root, int c, int r) {
 		char currentChar = board[c][r];
-		if (currentChar == '-' || root->next[currentChar - 'a'] == nullptr) {//·ÃÎÊ¹ı»òÕß²»´æÔÚ×Ó½Úµã
+		if (currentChar == '-' || root->next[currentChar - 'a'] == nullptr) {//è®¿é—®è¿‡æˆ–è€…ä¸å­˜åœ¨å­èŠ‚ç‚¹
 			return;
 		}
 		root = root->next[currentChar - 'a'];
@@ -1370,7 +1371,7 @@ private:
 			ans.push_back(root->word);
 			root->isWord = false;
 		}
-		board[c][r] = '-';//Í¬Ò»¸öµ¥´ÊÄÚ²»ÄÜÖØ¸´Ê¹ÓÃ
+		board[c][r] = '-';//åŒä¸€ä¸ªå•è¯å†…ä¸èƒ½é‡å¤ä½¿ç”¨
 		if (c > 0) {
 			dfs(board, root, c - 1, r);
 		}
@@ -1498,7 +1499,7 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//hash ¹şÏ£±í
+//hash å“ˆå¸Œè¡¨
 #if false
 
 class MyHashSet {
@@ -1669,7 +1670,7 @@ private:
 	}
 };
 
-//class Solution { //ÖØ¸´Êı
+//class Solution { //é‡å¤æ•°
 //public:
 //    bool containsDuplicate(vector<int>& nums) {
 //        unordered_set<int> hashSet;
@@ -1683,7 +1684,7 @@ private:
 //    }
 //};
 
-//class Solution { //µ¥Ò»Êı
+//class Solution { //å•ä¸€æ•°
 //public:
 //    int singleNumber(vector<int>& nums) {
 //        unordered_set<int> hashSet;
@@ -1698,7 +1699,7 @@ private:
 //    }
 //};
 
-//class Solution { //¿ìÀÖÊı
+//class Solution { //å¿«ä¹æ•°
 //public:
 //    bool isHappy(int n) {
 //        string tmp;
@@ -1723,7 +1724,7 @@ private:
 //    }
 //};
 
-//class Solution { //Á½ÊıÖ®ºÍ
+//class Solution { //ä¸¤æ•°ä¹‹å’Œ
 //public:
 //    vector<int> twoSum(vector<int>& nums, int target) {
 //        unordered_map<int, int> numsMap;
@@ -1740,7 +1741,7 @@ private:
 //    }
 //};
 
-//class Solution {  //ÅĞ¶Ï×Ö·û´®½á¹¹(abb, cdd)
+//class Solution {  //åˆ¤æ–­å­—ç¬¦ä¸²ç»“æ„(abb, cdd)
 //public:
 //    bool isIsomorphic(string s, string t) {
 //        unordered_map<char, int> str1Map, str2Map;
@@ -1765,7 +1766,7 @@ private:
 //    }
 //};
 
-//class Solution { //×îĞ¡Ë÷ÒıºÍ
+//class Solution { //æœ€å°ç´¢å¼•å’Œ
 //public:
 //    vector<string> findRestaurant(vector<string>& list1, vector<string>& list2) {
 //        vector<string> res;
@@ -1774,10 +1775,10 @@ private:
 //        int total = 32767;
 //        int tmp = 0;
 //        unordered_map<string, int> list1Map, resultMap;
-//        for (int i = 0; i < lsit1Len; i++) {  //Ñ¹ÈëhashÍ¼
+//        for (int i = 0; i < lsit1Len; i++) {  //å‹å…¥hashå›¾
 //            list1Map.emplace(make_pair(list1[i], i));
 //        }
-//        for (int i = 0; i < lsit2Len; i++) {  //Çó×îĞ¡Ë÷ÒıºÍ,²¢°Ñ·ûºÏÒªÇóµÄÑ¹ÈëhashÍ¼
+//        for (int i = 0; i < lsit2Len; i++) {  //æ±‚æœ€å°ç´¢å¼•å’Œ,å¹¶æŠŠç¬¦åˆè¦æ±‚çš„å‹å…¥hashå›¾
 //            if (list1Map.count(list2[i]) > 0) {
 //                tmp = list1Map[list2[i]] + i;
 //                total = (tmp < total) ? tmp : total;
@@ -1848,7 +1849,7 @@ private:
 //    }
 //};
 
-//class Solution { //²»ÖØ¸´×Ö·û×Ö´®
+//class Solution { //ä¸é‡å¤å­—ç¬¦å­—ä¸²
 //public:
 //    int lengthOfLongestSubstring(string s) {
 //        int sLen = s.size();
@@ -1856,7 +1857,7 @@ private:
 //        int setSize;
 //        int maxLen = 0;
 //        unordered_set<char> charSet;
-//        int cur = 0; //×Ö·û´®¿ªÊ¼µØ·½
+//        int cur = 0; //å­—ç¬¦ä¸²å¼€å§‹åœ°æ–¹
 //        for (int i = 0; i < sLen; i++) {
 //            currentChar = s[i];
 //            if (charSet.count(currentChar) < 1) {
@@ -1881,7 +1882,7 @@ private:
 //    }
 //};
 
-class Solution {//Ç°k¸ö¸ßÆµ´Ê
+class Solution {//å‰kä¸ªé«˜é¢‘è¯
 public:
 	vector<int> topKFrequent(vector<int>& nums, int k) {
 		unordered_map<int, int> numsMap;
@@ -1918,10 +1919,10 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//Í¼½âÊı¾İ½á¹¹
+//å›¾è§£æ•°æ®ç»“æ„
 #if false
 
-//×Ö·û´®Ìæ»»
+//å­—ç¬¦ä¸²æ›¿æ¢
 
 //class Solution {
 //public:
@@ -1944,9 +1945,9 @@ int main(int argc, char* argv[]) {
 //    }
 //};
 
-//ÓĞÏŞ×´Ì¬×Ô¶¯»ú
+//æœ‰é™çŠ¶æ€è‡ªåŠ¨æœº
 
-//class Solution {//ÅĞ¶ÏÊı×ÖÊÇ·ñºÏ·¨£¬ È·¶¨ÓĞÏŞ×´Ì¬×Ô¶¯»ú
+//class Solution {//åˆ¤æ–­æ•°å­—æ˜¯å¦åˆæ³•ï¼Œ ç¡®å®šæœ‰é™çŠ¶æ€è‡ªåŠ¨æœº
 //public:
 //    bool isNumber(string s) {
 //        int len = s.length();
@@ -2167,11 +2168,11 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//³õ¼¶Ëã·¨
+//åˆçº§ç®—æ³•
 #if false
 class Solution {
 public:
-	int removeDuplicates(vector<int>& nums) {//È¥³ıÖØ¸´
+	int removeDuplicates(vector<int>& nums) {//å»é™¤é‡å¤
 		int numsLen = nums.size();
 		if (numsLen < 2) {
 			return numsLen;
@@ -2186,7 +2187,7 @@ public:
 		}
 		return slowCur + 1;
 	}
-	int maxProfit(vector<int>& prices) {//¹ÉÆ±½»Ò×
+	int maxProfit(vector<int>& prices) {//è‚¡ç¥¨äº¤æ˜“
 		size_t priceLen = prices.size();
 		int res = 0;
 		for (size_t cur = 0; cur < priceLen - 1; cur++) {
@@ -2196,7 +2197,7 @@ public:
 		}
 		return res;
 	}
-	void rotate(vector<int>& nums, int k) {//Ğı×ªÊı×é
+	void rotate(vector<int>& nums, int k) {//æ—‹è½¬æ•°ç»„
 		size_t numsLen = nums.size();
 		k = k % numsLen;
 		vector <int> tmp1(nums.end() - k, nums.end());
@@ -2364,7 +2365,7 @@ public:
 				(*next)[pos] = cnt;
 			}
 			else {
-				cnt = (*next)[cnt];//»Øµ½-1
+				cnt = (*next)[cnt];//å›åˆ°-1
 			}
 		}
 		return next;
@@ -2436,12 +2437,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//³õ¼¶Ëã·¨-¶¯Ì¬¹æ»®
+//åˆçº§ç®—æ³•-åŠ¨æ€è§„åˆ’
 #if fasle
 
 class Solution {
 public:
-	int climbStairs(int n) {//ÅÀÂ¥Ìİ
+	int climbStairs(int n) {//çˆ¬æ¥¼æ¢¯
 		if (n < 4) {
 			return n;
 		}
@@ -2455,7 +2456,7 @@ public:
 		}
 		return current;
 	}
-	int maxSubArray(vector<int>& nums) {//·µ»Ø×î´ó×ÓÊı×éÖ®ºÍ
+	int maxSubArray(vector<int>& nums) {//è¿”å›æœ€å¤§å­æ•°ç»„ä¹‹å’Œ
 		int numsLen = nums.size();
 		if (numsLen == 0) {
 			return 0;
@@ -2466,12 +2467,12 @@ public:
 		int pre = nums[0];
 		int maxVal = pre;
 		for (size_t i = 1; i < numsLen; i++) {
-			pre = max(pre + nums[i], nums[i]);//Ç°ÃæÔªËØ¶ÔÊıÁĞÆğµ½¸º×÷ÓÃ
+			pre = max(pre + nums[i], nums[i]);//å‰é¢å…ƒç´ å¯¹æ•°åˆ—èµ·åˆ°è´Ÿä½œç”¨
 			maxVal = pre > maxVal ? pre : maxVal;
 		}
 		return maxVal;
 	}
-	int rob(vector<int>& nums) { //´ò¼Ò½ÙÉá
+	int rob(vector<int>& nums) { //æ‰“å®¶åŠ«èˆ
 		size_t numsLen = nums.size();
 		switch (numsLen) {
 		case 0:
@@ -2483,7 +2484,7 @@ public:
 		default:
 			break;
 		}
-		//Íµ»ò²»Íµ
+		//å·æˆ–ä¸å·
 		int n_1 = nums[1];
 		int n_2 = nums[0];
 		int tmp = 0;
@@ -2504,7 +2505,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//³õ¼¶Ëã·¨-Éè¼ÆÎÊÌâ
+//åˆçº§ç®—æ³•-è®¾è®¡é—®é¢˜
 #if false
 
 class Solution {
@@ -2553,7 +2554,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//³õ¼¶Ëã·¨-ÆäËû
+//åˆçº§ç®—æ³•-å…¶ä»–
 #if false
 
 class Solution {
@@ -2583,8 +2584,8 @@ public:
 		}
 		return true;
 	}
-	//×ªÂŞÂíÊı×Ö
-	//ÓĞÏŞ×´Ì¬»ú½â·¨
+	//è½¬ç½—é©¬æ•°å­—
+	//æœ‰é™çŠ¶æ€æœºè§£æ³•
 	//FSM
 	enum type { TYPE_I, TYPE_V, TYPE_X, TYPE_L, TYPE_C, TYPE_D, TYPE_M };
 	enum state {
@@ -2687,12 +2688,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//Êı×éÀàËã·¨
+//æ•°ç»„ç±»ç®—æ³•
 #if false
 
 class Solution {
 public:
-	int removeDuplicates(vector<int>& nums) {//È¥³ıÖØ¸´Ïî2
+	int removeDuplicates(vector<int>& nums) {//å»é™¤é‡å¤é¡¹2
 		size_t numsLen = nums.size(), slowCur = 0, fastCur = 1;
 		if (numsLen < 2) {
 			return numsLen;
@@ -2710,7 +2711,7 @@ public:
 		}
 		return slowCur + 1;
 	}
-	void quickSort(vector<int>& inptArray, size_t left, size_t right) {//µİ¹é¿ìËÙÅÅÁĞ
+	void quickSort(vector<int>& inptArray, size_t left, size_t right) {//é€’å½’å¿«é€Ÿæ’åˆ—
 		if (left < right) {
 			size_t mid = partition(inptArray, left, right);
 			if (mid > 1) {
@@ -2724,15 +2725,15 @@ public:
 		int pivot = inptArray[left];
 		size_t i = left + 1, j = right;
 		while (i < j) {
-			if (inptArray[i] <= pivot) {//ÕÒ×óÃæµÚÒ»¸ö´óÓÚÃªµãµÄ×ø±ê
+			if (inptArray[i] <= pivot) {//æ‰¾å·¦é¢ç¬¬ä¸€ä¸ªå¤§äºé”šç‚¹çš„åæ ‡
 				i++;
 				continue;
 			}
-			if (inptArray[j] >= pivot) {//ÕÒÓÒÃæµÚÒ»¸öĞ¡ÓÚÃªµãµÄ×ø±ê
+			if (inptArray[j] >= pivot) {//æ‰¾å³é¢ç¬¬ä¸€ä¸ªå°äºé”šç‚¹çš„åæ ‡
 				j--;
 				continue;
 			}
-			//½»»»
+			//äº¤æ¢
 			int tmp = inptArray[i];
 			inptArray[i] = inptArray[j];
 			inptArray[j] = tmp;
@@ -2742,7 +2743,7 @@ public:
 		inptArray[j] = pivot;
 		return j;
 	}
-	int maxArea(vector<int>& height) {//×î´óÈİÁ¿
+	int maxArea(vector<int>& height) {//æœ€å¤§å®¹é‡
 		size_t heightLen = height.size(), frontCur = 0, rearCur = heightLen - 1;
 		int res = 0, tmpArea;
 		while (frontCur < rearCur) {
@@ -2771,12 +2772,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//²éÕÒ±íÀàËã·¨
+//æŸ¥æ‰¾è¡¨ç±»ç®—æ³•
 #if false
 
 class Solution {
 public:
-	string frequencySort(string s) {//¸ù¾İ×Ö·û³öÏÖÆµÂÊÅÅĞò
+	string frequencySort(string s) {//æ ¹æ®å­—ç¬¦å‡ºç°é¢‘ç‡æ’åº
 		string res;
 		int sLen = s.size();
 		unordered_map<char, int> freqCnt;
@@ -2811,7 +2812,7 @@ public:
 		vector<int> tmp(3);
 		sort(nums.begin(), nums.end());
 		for (size_t i = 0; i < numsLen; i++) {
-			if (i > 0 && nums[i] == nums[i - 1]) {//ÅÅĞò¹ıºó£¬ËùÒÔÄÜÈ·±£Ã¶¾Ù²»Í¬
+			if (i > 0 && nums[i] == nums[i - 1]) {//æ’åºè¿‡åï¼Œæ‰€ä»¥èƒ½ç¡®ä¿æšä¸¾ä¸åŒ
 				continue;
 			}
 			size_t k = numsLen - 1;
@@ -2845,21 +2846,21 @@ public:
 			if (i > 0 && nums[i] == nums[i - 1]) {
 				continue;
 			}
-			//ÊÊµ±µÄ¼ôÖ¦²Ù×÷Ê¹µÃÔËĞĞÊÂ¼ş´Ó~120ms½µµ½~16ms
-			if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] > target) {//¼ôÖ¦
+			//é€‚å½“çš„å‰ªææ“ä½œä½¿å¾—è¿è¡Œäº‹ä»¶ä»~120msé™åˆ°~16ms
+			if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] > target) {//å‰ªæ
 				break;
 			}
-			if (nums[i] + nums[numsLen - 1] + nums[numsLen - 2] + nums[numsLen - 3] < target) {//¼ôÖ¦
+			if (nums[i] + nums[numsLen - 1] + nums[numsLen - 2] + nums[numsLen - 3] < target) {//å‰ªæ
 				continue;
 			}
 			for (size_t j = i + 1; j < numsLen - 2; j++) {
 				if (j > i + 1 && nums[j] == nums[j - 1]) {
 					continue;
 				}
-				if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] > target) {//¼ôÖ¦
+				if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] > target) {//å‰ªæ
 					break;
 				}
-				if (nums[i] + nums[j] + nums[numsLen - 1] + nums[numsLen - 2] < target) {//¼ôÖ¦
+				if (nums[i] + nums[j] + nums[numsLen - 1] + nums[numsLen - 2] < target) {//å‰ªæ
 					continue;
 				}
 				size_t l = numsLen - 1;
@@ -2914,7 +2915,7 @@ public:
 		}
 		return res;
 	}
-	int maxPoints(vector<vector<int>>& points) {//×î¶àµãÔÚÏßÉÏ
+	int maxPoints(vector<vector<int>>& points) {//æœ€å¤šç‚¹åœ¨çº¿ä¸Š
 		size_t pointLen = points.size();
 		int res = 0;
 		if (pointLen < 3) {
@@ -2933,7 +2934,7 @@ public:
 		}
 		return res;
 	}
-	inline string* getID(vector<int>& p1, vector<int>& p2) {//ÇóÏßID
+	inline string* getID(vector<int>& p1, vector<int>& p2) {//æ±‚çº¿ID
 		double_t k = 0, b;
 		string* res = new string;
 		int x1 = p1[0], x2 = p2[0], y1 = p1[1], y2 = p2[1], dy = y2 - y1, dx = x2 - x1;
@@ -2955,7 +2956,7 @@ public:
 		*res = to_string(dy) + '/' + to_string(dx) + '@' + to_string(b);
 		return res;
 	}
-	inline int gcd(int a, int b) {//Õ·×ªÏà³ıÇó×î´ó¹«Ô¼Êı
+	inline int gcd(int a, int b) {//è¾—è½¬ç›¸é™¤æ±‚æœ€å¤§å…¬çº¦æ•°
 		if (b == 0) {
 			return a;
 		}
@@ -2997,12 +2998,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¶ş·Ö·¨
+//äºŒåˆ†æ³•
 #if false
 
 class Solution {
 public:
-	//int search(vector<int>& nums, int target) {//¶ş·Ö²éÕÒ
+	//int search(vector<int>& nums, int target) {//äºŒåˆ†æŸ¥æ‰¾
 	//	int frontCur = 0, rearCur = nums.size() - 1, currentCur = (frontCur + rearCur) / 2;
 	//	while (frontCur <= rearCur) {
 	//		currentCur = (frontCur + rearCur) / 2;
@@ -3021,7 +3022,7 @@ public:
 	//	}
 	//	return -1;
 	//}
-	int mySqrt(int x) {//¶ş·Ö²éÆ½·½¸ù
+	int mySqrt(int x) {//äºŒåˆ†æŸ¥å¹³æ–¹æ ¹
 		int left = 0, right = x < 46339 ? x : 46339, current = 0;
 		while (left <= right) {
 			current = left + (right - left) / 2;
@@ -3080,7 +3081,7 @@ public:
 		}
 		return -1;
 	}
-	vector<int> searchRange(vector<int>& nums, int target) {//ÓÒµãÄÑ£¬×¢Òâ½áÊøÌõ¼ş
+	vector<int> searchRange(vector<int>& nums, int target) {//å³ç‚¹éš¾ï¼Œæ³¨æ„ç»“æŸæ¡ä»¶
 		int left = 0, right = nums.size() - 1, mid;
 		vector<int> res(2, -1);
 		if (right == -1) {
@@ -3127,11 +3128,11 @@ public:
 	vector<int> findClosestElements(vector<int>& arr, int k, int x) {
 		//https://leetcode-cn.com/problems/find-k-closest-elements/solution/658-zhao-dao-k-ge-zui-jie-jin-de-yuan-su-cer-fen-s/
 		size_t left = 0, right = arr.size() - k, mid;
-		//midÊÇÊı×éÆğµã
+		//midæ˜¯æ•°ç»„èµ·ç‚¹
 		while (left < right) {
 			mid = left + (right - left) / 2;
 			if (x - arr[mid] > arr[mid + k] - x) {
-				//ÔöĞòÊı×é£¬Á½±ß½ç²îÏà²î²»´ó
+				//å¢åºæ•°ç»„ï¼Œä¸¤è¾¹ç•Œå·®ç›¸å·®ä¸å¤§
 				left = mid + 1;
 			}
 			else {
@@ -3140,7 +3141,7 @@ public:
 		}
 		return vector<int>(arr.begin() + left, arr.begin() + left + k);
 	}
-	int findPeakElement(vector<int>& nums) {//Çó¼«´óÖµ
+	int findPeakElement(vector<int>& nums) {//æ±‚æå¤§å€¼
 		size_t numsLen = nums.size();
 		if (numsLen == 1 || nums[0] > nums[1]) {
 			return 0;
@@ -3163,10 +3164,10 @@ public:
 		}
 		return mid;
 	}
-	int getKthLarg(vector<int>& nums1, vector<int>& nums2, int k) {//Ë«Êı×éÇóµÚ¼¸´ó
+	int getKthLarg(vector<int>& nums1, vector<int>& nums2, int k) {//åŒæ•°ç»„æ±‚ç¬¬å‡ å¤§
 		int cur1 = 0, cur2 = 0, nums1Len = nums1.size(), nums2Len = nums2.size();
 		while (true) {
-			//ÍË³ö»úÖÆ
+			//é€€å‡ºæœºåˆ¶
 			if (cur1 == nums1Len) {
 				return nums2[cur2 + k - 1];
 			}
@@ -3176,11 +3177,11 @@ public:
 			if (k == 1) {
 				return min(nums1[cur1], nums2[cur2]);
 			}
-			//·ÀÖ¹·ÃÎÊÔ½½ç
+			//é˜²æ­¢è®¿é—®è¶Šç•Œ
 			int cur1Tmp = min(cur1 + k / 2 - 1, nums1Len - 1);
 			int cur2Tmp = min(cur2 + k / 2 - 1, nums2Len - 1);
 			int nums1Tmp = nums1[cur1Tmp], nums2Tmp = nums2[cur2Tmp];
-			//¿Û³ıÕæÊµÆ«ÒÆ
+			//æ‰£é™¤çœŸå®åç§»
 			if (nums1Tmp <= nums2Tmp) {
 				k -= cur1Tmp - cur1 + 1;
 				cur1 = cur1Tmp + 1;
@@ -3192,7 +3193,7 @@ public:
 		}
 		return 0;
 	}
-	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {//Ë«Êı×éÇóÖĞÖµ
+	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {//åŒæ•°ç»„æ±‚ä¸­å€¼
 		size_t totalLen = nums1.size() + nums2.size();
 		if (totalLen % 2 == 1) {
 			return getKthLarg(nums1, nums2, (totalLen + 1) / 2);
@@ -3202,7 +3203,7 @@ public:
 		}
 
 	}
-	double myPow(double x, int n) {//¶ş·Ö·¨Ãİº¯Êı
+	double myPow(double x, int n) {//äºŒåˆ†æ³•å¹‚å‡½æ•°
 		if (n == 0) {
 			return 1.0;
 		}
@@ -3283,7 +3284,7 @@ public:
 		}
 		return letters[left];
 	}
-	//int smallestDistancePair(vector<int>& nums, int k) {//ÕÒ³öµÚ k Ğ¡µÄ¾àÀë¶Ô£¬ ±©Á¦Ëã·¨³¬Ê±
+	//int smallestDistancePair(vector<int>& nums, int k) {//æ‰¾å‡ºç¬¬ k å°çš„è·ç¦»å¯¹ï¼Œ æš´åŠ›ç®—æ³•è¶…æ—¶
 	//	sort(nums.begin(), nums.end());
 	//	size_t numsLen = nums.size();
 	//	priority_queue<int, vector<int>, greater<int>> distQue;
@@ -3316,8 +3317,8 @@ public:
 		return left;
 	}
 	int getCount(vector<int>& nums, int val) {
-		//Í³¼Æ²îĞ¡ÓÚkµÄ¶ÔÊı,Ë«Ö¸ÕëË¼Ïë
-		//nums[j] - nums[i] < val, ÄÇÃ´i, jÖ®¼äËùÓĞ²î¶¼Ğ¡ÓÚval
+		//ç»Ÿè®¡å·®å°äºkçš„å¯¹æ•°,åŒæŒ‡é’ˆæ€æƒ³
+		//nums[j] - nums[i] < val, é‚£ä¹ˆi, jä¹‹é—´æ‰€æœ‰å·®éƒ½å°äºval
 		if (kthMap->count(val) > 0) {
 			return (*kthMap)[val];
 		}
@@ -3343,7 +3344,7 @@ public:
 		while (left < right) {
 			mid = left + (right - left) / 2;
 			if (check(nums, mid, m)) {
-				//ÄÜ·Ö¸î£¬½øÒ»²½Ñ¹Ëõ×î´óÖµÏŞÖÆ
+				//èƒ½åˆ†å‰²ï¼Œè¿›ä¸€æ­¥å‹ç¼©æœ€å¤§å€¼é™åˆ¶
 				right = mid;
 			}
 			else {
@@ -3353,12 +3354,12 @@ public:
 		return left;
 	}
 	bool check(vector<int>& nums, int val, int m) {
-		//¼ì²éÄÜ²»ÄÜÒÔvalÎª×î´óÖµ£¬½«Êı×é·Ö¸î³Ém¶Î
+		//æ£€æŸ¥èƒ½ä¸èƒ½ä»¥valä¸ºæœ€å¤§å€¼ï¼Œå°†æ•°ç»„åˆ†å‰²æˆmæ®µ
 		long sum = 0;
 		int cnt = 1;
 		size_t numsLen = nums.size();
 		for (size_t i = 0; i < numsLen; i++) {
-			//´æÔÚĞÔ
+			//å­˜åœ¨æ€§
 			if (sum + nums[i] > val) {
 				cnt++;
 				sum = nums[i];
@@ -3382,12 +3383,12 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//µİ¹é
+//é€’å½’
 #if false
 
 class Solution {
 public:
-	//µİ¹éÑî»ÔÈı½Ç£¬Ê¹ÓÃmap½µµÍÖØ¸´¼ÆËã
+	//é€’å½’æ¨è¾‰ä¸‰è§’ï¼Œä½¿ç”¨mapé™ä½é‡å¤è®¡ç®—
 	unordered_map<int, unordered_map<int, int>> dpRes;
 	vector<vector<int>> generate(int numRows) {
 		vector<vector<int>> res;
@@ -3413,7 +3414,7 @@ public:
 		dpRes[i][i + 1 - j] = tmp;
 		return tmp;
 	}
-	//µİ¹éÉú³ÉÑî»ÔÈı½ÇÌØ¶¨ĞĞ£¬ Ö±½Ó·µ»ØÏòÁ¿
+	//é€’å½’ç”Ÿæˆæ¨è¾‰ä¸‰è§’ç‰¹å®šè¡Œï¼Œ ç›´æ¥è¿”å›å‘é‡
 	vector<int> getRow(int rowIndex) {
 		if (rowIndex == 0) {
 			return vector<int>(1, 1);
@@ -3425,7 +3426,7 @@ public:
 		res.push_back(1);
 		return res;
 	}
-	//ì³²¨ÄÇÆõÊıÁĞ£¬´ø¼ÇÒäµİ¹é
+	//æ–æ³¢é‚£å¥‘æ•°åˆ—ï¼Œå¸¦è®°å¿†é€’å½’
 	unordered_map<int, int> fibMap;
 	int fib(int N) {
 		if (fibMap.count(N) > 0) {
@@ -3439,7 +3440,7 @@ public:
 		fibMap[N] = res;
 		return res;
 	}
-	//Î²µİ¹é£¬xor
+	//å°¾é€’å½’ï¼Œxor
 	int kthGrammar(int N, int K) {
 		if (N == 1) {
 			return 0;
@@ -3450,7 +3451,7 @@ public:
 		}
 		return kthGrammar(N - 1, K);
 	}
-	//Éú³ÉËùÓĞËÑË÷¶ş²æÊ÷
+	//ç”Ÿæˆæ‰€æœ‰æœç´¢äºŒå‰æ ‘
 
 
 	struct TreeNode {
@@ -3494,7 +3495,7 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-//ÖĞ¼¶Ëã·¨
+//ä¸­çº§ç®—æ³•
 #if false
 
 struct TreeNode {
@@ -3506,7 +3507,7 @@ struct TreeNode {
 
 class Solution {
 public:
-	//ÈıÊıÖ®ºÍ
+	//ä¸‰æ•°ä¹‹å’Œ
 	vector<vector<int>> threeSum(vector<int>& nums) {
 		vector<vector<int>> res;
 		sort(nums.begin(), nums.end());
@@ -3533,7 +3534,7 @@ public:
 		}
 		return res;
 	}
-	//³¤¶ÈÎª 3 µÄµİÔö×ÓĞòÁĞ
+	//é•¿åº¦ä¸º 3 çš„é€’å¢å­åºåˆ—
 	bool increasingTriplet(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		if (numsLen < 3) {
@@ -3553,7 +3554,7 @@ public:
 		}
 		return false;
 	}
-	//ÖĞĞòºÍÇ°Ğò¹¹Ôì¶ş²æÊ÷
+	//ä¸­åºå’Œå‰åºæ„é€ äºŒå‰æ ‘
 	/*TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
 		size_t nodeCnt = preorder.size();
 		if (nodeCnt == 0) {
@@ -3577,7 +3578,7 @@ public:
 		res->right = buildTree(preright, inright);
 		return res;
 	}*/
-	//ÖĞĞòºÍÇ°Ğò¹¹Ôì¶ş²æÊ÷--ÓÅ»¯
+	//ä¸­åºå’Œå‰åºæ„é€ äºŒå‰æ ‘--ä¼˜åŒ–
 	TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
 		size_t nodeCnt = preorder.size();
 		return buildSubTree(preorder, 0, nodeCnt - 1, inorder, 0, nodeCnt - 1);
@@ -3600,7 +3601,7 @@ public:
 		res->right = buildSubTree(preorder, preLeft + i + 1, preRight, inorder, inLeft + i + 1, inRight);
 		return res;
 	}
-	//µç»°ºÅÂë×ÖÄ¸×éºÏ
+	//ç”µè¯å·ç å­—æ¯ç»„åˆ
 	vector<string> letterCombinations(string digits) {
 		vector<string> res;
 		int digitLen = digits.size();
@@ -3635,7 +3636,7 @@ public:
 		}
 		return res;
 	}
-	//ÓĞĞ§À¨ºÅ×éºÏ
+	//æœ‰æ•ˆæ‹¬å·ç»„åˆ
 	vector<string> generateParenthesis(int n) {
 		vector<string> res;
 		if (n < 1) {
@@ -3662,7 +3663,7 @@ public:
 		}
 		return res;
 	}
-	//Ã»ÓĞÖØ¸´ Êı×ÖµÄĞòÁĞ
+	//æ²¡æœ‰é‡å¤ æ•°å­—çš„åºåˆ—
 	vector<vector<int>> permute(vector<int>& nums) {
 		vector<vector<int>> res;
 		size_t numsLen = nums.size();
@@ -3685,7 +3686,7 @@ public:
 		}
 		return res;
 	}
-	//¸ø¶¨Ò»×é²»º¬ÖØ¸´ÔªËØµÄÕûÊıÊı×é nums£¬·µ»Ø¸ÃÊı×éËùÓĞ¿ÉÄÜµÄ×Ó¼¯£¨Ãİ¼¯£©
+	//ç»™å®šä¸€ç»„ä¸å«é‡å¤å…ƒç´ çš„æ•´æ•°æ•°ç»„ numsï¼Œè¿”å›è¯¥æ•°ç»„æ‰€æœ‰å¯èƒ½çš„å­é›†ï¼ˆå¹‚é›†ï¼‰
 	vector<vector<int>> subsets(vector<int>& nums) {
 		vector<vector<int>> res = { {} };
 		size_t numsLen = nums.size();
@@ -3708,7 +3709,7 @@ public:
 		}
 		return res;
 	}
-	//µ¥´ÊËÑË÷ Õâ¸ö·½·¨Ğ§ÂÊÌ«µÍ£¬ËäÈ»¿ÉĞĞ
+	//å•è¯æœç´¢ è¿™ä¸ªæ–¹æ³•æ•ˆç‡å¤ªä½ï¼Œè™½ç„¶å¯è¡Œ
 	vector<vector<bool>>* vist;
 	bool exist(vector<vector<char>>& board, string word) {
 		size_t colLen = board.size();
@@ -3731,7 +3732,7 @@ public:
 		delete vist;
 		return false;
 	}
-	// Ô­ÏÈ°æ±¾£¬ Î´¼ôÖ¦£¬³¬Ê±
+	// åŸå…ˆç‰ˆæœ¬ï¼Œ æœªå‰ªæï¼Œè¶…æ—¶
 	/*bool exploreGrid(vector<vector<char>>& board, string word, int n, int col, int rol) {
 		size_t colLen = board.size(), rolLen = board[0].size();
 		int wordLen = word.size();
@@ -3752,7 +3753,7 @@ public:
 		(*vist)[col][rol] = false;
 		return upper || lower || left || right;
 	}*/
-	// ĞÂ°æ±¾£¬ÕÒµ½ºóÁ¢¼´·µ»Ø£¬¼ôÖ¦£¬ÇÒÖ»ÓĞÆ¥Åä³É¹¦µÄ»á±»±ê¼Ç
+	// æ–°ç‰ˆæœ¬ï¼Œæ‰¾åˆ°åç«‹å³è¿”å›ï¼Œå‰ªæï¼Œä¸”åªæœ‰åŒ¹é…æˆåŠŸçš„ä¼šè¢«æ ‡è®°
 	bool exploreGrid(vector<vector<char>>& board, string& word, int n, int col, int rol) {
 		size_t colLen = board.size(), rolLen = board[0].size();
 		int wordLen = word.size();
@@ -3778,7 +3779,7 @@ public:
 		(*vist)[col][rol] = false;
 		return false;
 	}
-	//ÈıÖÖÑÕÉ«·ÖÀà
+	//ä¸‰ç§é¢œè‰²åˆ†ç±»
 	void sortColors(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		if (numsLen < 2) {
@@ -3806,7 +3807,7 @@ public:
 		nums[j] = tmp;
 		return;
 	}
-	//ÔÚÎ´ÅÅĞòµÄÊı×éÖĞÕÒµ½µÚ k ¸ö×î´óµÄÔªËØ
+	//åœ¨æœªæ’åºçš„æ•°ç»„ä¸­æ‰¾åˆ°ç¬¬ k ä¸ªæœ€å¤§çš„å…ƒç´ 
 	int findKthLargest(vector<int>& nums, int k) {
 		size_t numsLen = nums.size();
 		quickSort(nums, 0, numsLen - 1);
@@ -3829,7 +3830,7 @@ public:
 		quickSort(nums, cur + 1, rear);
 		return;
 	}
-	//ËÑË÷¶şÎ¬¾ØÕó II
+	//æœç´¢äºŒç»´çŸ©é˜µ II
 	bool searchMatrix(vector<vector<int>>& matrix, int target) {
 		size_t colSize = matrix.size();
 		if (colSize == 0) {
@@ -3853,7 +3854,7 @@ public:
 		}
 		return false;
 	}
-	//ÌøÔ¾ÓÎÏ·--Ì°ĞÄ
+	//è·³è·ƒæ¸¸æˆ--è´ªå¿ƒ
 	bool canJump(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		if (numsLen < 2) {
@@ -3872,9 +3873,9 @@ public:
 		}
 		return false;
 	}
-	//²»Í¬Â·¾¶--µİ¹é¶¯Ì¬¹æ»®
-	//»úÆ÷ÈËÃ¿´ÎÖ»ÄÜÏòÏÂ»òÕßÏòÓÒÒÆ¶¯Ò»²½¡£»úÆ÷ÈËÊÔÍ¼´ïµ½Íø¸ñµÄÓÒÏÂ½Ç
-	//ÎÊ×Ü¹²ÓĞ¶àÉÙÌõ²»Í¬µÄÂ·¾¶
+	//ä¸åŒè·¯å¾„--é€’å½’åŠ¨æ€è§„åˆ’
+	//æœºå™¨äººæ¯æ¬¡åªèƒ½å‘ä¸‹æˆ–è€…å‘å³ç§»åŠ¨ä¸€æ­¥ã€‚æœºå™¨äººè¯•å›¾è¾¾åˆ°ç½‘æ ¼çš„å³ä¸‹è§’
+	//é—®æ€»å…±æœ‰å¤šå°‘æ¡ä¸åŒçš„è·¯å¾„
 	/*unordered_map<int, unordered_map<int, int>> pathVal;
 	int uniquePaths(int m, int n) {
 		if (m == 1 || n == 1) {
@@ -3903,9 +3904,9 @@ public:
 		}
 		return val1 + val2;
 	}*/
-	//²»Í¬Â·¾¶--µü´ú¶¯Ì¬¹æ»®
-	//»úÆ÷ÈËÃ¿´ÎÖ»ÄÜÏòÏÂ»òÕßÏòÓÒÒÆ¶¯Ò»²½¡£»úÆ÷ÈËÊÔÍ¼´ïµ½Íø¸ñµÄÓÒÏÂ½Ç
-	//ÎÊ×Ü¹²ÓĞ¶àÉÙÌõ²»Í¬µÄÂ·¾¶
+	//ä¸åŒè·¯å¾„--è¿­ä»£åŠ¨æ€è§„åˆ’
+	//æœºå™¨äººæ¯æ¬¡åªèƒ½å‘ä¸‹æˆ–è€…å‘å³ç§»åŠ¨ä¸€æ­¥ã€‚æœºå™¨äººè¯•å›¾è¾¾åˆ°ç½‘æ ¼çš„å³ä¸‹è§’
+	//é—®æ€»å…±æœ‰å¤šå°‘æ¡ä¸åŒçš„è·¯å¾„
 	int uniquePaths(int m, int n) {
 		vector<vector<int>> dp = vector<vector<int>>(m, vector<int>(n, 0));
 		for (size_t i = 0; i < m; i++) {
@@ -3920,7 +3921,7 @@ public:
 		}
 		return dp[m - 1][n - 1];
 	}
-	//ÁãÇ®¶Ò»»
+	//é›¶é’±å…‘æ¢
 	int coinChange(vector<int>& coins, int amount) {
 		vector<int> dp(amount + 1, amount + 1);
 		dp[0] = 0;
@@ -3933,7 +3934,7 @@ public:
 		}
 		return dp[amount] > amount ? -1 : dp[amount];
 	}
-	//×î³¤ÉÏÉı×ÓĞòÁĞ
+	//æœ€é•¿ä¸Šå‡å­åºåˆ—
 	int lengthOfLIS(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		if (numsLen < 2) {
@@ -3952,7 +3953,7 @@ public:
 		}
 		return res;
 	}
-	//½×³ËºóµÄÁã
+	//é˜¶ä¹˜åçš„é›¶
 	int trailingZeroes(int n) {
 		int res = 0;
 		int tmp = 5;
@@ -3962,7 +3963,7 @@ public:
 		}
 		return res;
 	}
-	//Excel±íÁĞĞòºÅ
+	//Excelè¡¨åˆ—åºå·
 	int titleToNumber(string s) {
 		int sLen = s.size();
 		int res = 0;
@@ -3972,7 +3973,7 @@ public:
 		}
 		return res;
 	}
-	//¿ìËÙÃİ
+	//å¿«é€Ÿå¹‚
 	double myPow(double x, int n) {
 		bool isNeg = n < 0 ? true : false;
 		if (n == 0x7fffffff) {
@@ -3994,7 +3995,7 @@ public:
 		}
 		return res;
 	}
-	//¶ş·Ö·¨³ı·¨£¬ÒªÇó²»Ê¹ÓÃ³Ë·¨¡¢³ı·¨ºÍ mod ÔËËã·û
+	//äºŒåˆ†æ³•é™¤æ³•ï¼Œè¦æ±‚ä¸ä½¿ç”¨ä¹˜æ³•ã€é™¤æ³•å’Œ mod è¿ç®—ç¬¦
 	int divide(int dividend, int divisor) {
 		long long res = 0;
 		if (divisor == 0) {
@@ -4032,7 +4033,7 @@ public:
 		}
 		return res;
 	}
-	//·ÖÊıµ½Ğ¡Êı
+	//åˆ†æ•°åˆ°å°æ•°
 	string fractionToDecimal(int numerator, int denominator) {
 		if (denominator == 0) {
 			return "";
@@ -4068,8 +4069,8 @@ public:
 	}
 	int getSum(int a, int b) {
 		while (b) {
-			auto carry = ((unsigned int)(a & b)) << 1;//½øÎ»
-			a ^= b;//²»½øÎ»µÄ½á¹û
+			auto carry = ((unsigned int)(a & b)) << 1;//è¿›ä½
+			a ^= b;//ä¸è¿›ä½çš„ç»“æœ
 			b = carry;
 		}
 		return a;
@@ -4102,9 +4103,9 @@ public:
 		}
 		return op.top();
 	}
-	//¶àÊıÔªËØ:Boyer¨CMoore majority vote algorithm
-	//Èç¹ûºòÑ¡ÈË²»ÊÇmaj Ôò maj,»áºÍÆäËû·ÇºòÑ¡ÈËÒ»Æğ·´¶Ô »á·´¶ÔºòÑ¡ÈË,ËùÒÔºòÑ¡ÈËÒ»¶¨»áÏÂÌ¨(maj==0Ê±·¢Éú»»½ìÑ¡¾Ù)
-	//Èç¹ûºòÑ¡ÈËÊÇmaj, Ôòmaj »áÖ§³Ö×Ô¼º£¬ÆäËûºòÑ¡ÈË»á·´¶Ô£¬Í¬ÑùÒòÎªmaj Æ±Êı³¬¹ıÒ»°ë£¬ËùÒÔmaj Ò»¶¨»á³É¹¦µ±Ñ¡
+	//å¤šæ•°å…ƒç´ :Boyerâ€“Moore majority vote algorithm
+	//å¦‚æœå€™é€‰äººä¸æ˜¯maj åˆ™ maj,ä¼šå’Œå…¶ä»–éå€™é€‰äººä¸€èµ·åå¯¹ ä¼šåå¯¹å€™é€‰äºº,æ‰€ä»¥å€™é€‰äººä¸€å®šä¼šä¸‹å°(maj==0æ—¶å‘ç”Ÿæ¢å±Šé€‰ä¸¾)
+	//å¦‚æœå€™é€‰äººæ˜¯maj, åˆ™maj ä¼šæ”¯æŒè‡ªå·±ï¼Œå…¶ä»–å€™é€‰äººä¼šåå¯¹ï¼ŒåŒæ ·å› ä¸ºmaj ç¥¨æ•°è¶…è¿‡ä¸€åŠï¼Œæ‰€ä»¥maj ä¸€å®šä¼šæˆåŠŸå½“é€‰
 	int majorityElement(vector<int>& nums) {
 		int cand = -1, cnt = 0;
 		for (int num : nums) {
@@ -4118,7 +4119,7 @@ public:
 		}
 		return cand;
 	}
-	//ÈÎÎñµ÷¶ÈÆ÷
+	//ä»»åŠ¡è°ƒåº¦å™¨
 	int leastInterval(vector<char>& tasks, int n) {
 		unordered_map<char, int> freq;
 		for (char ch : tasks) {
@@ -4138,7 +4139,7 @@ public:
 	}
 };
 class Codec {
-	//¶ş²æÊ÷µÄĞòÁĞ»¯Óë·´ĞòÁĞ»¯
+	//äºŒå‰æ ‘çš„åºåˆ—åŒ–ä¸ååºåˆ—åŒ–
 public:
 
 	string serialize(TreeNode* root) {
@@ -4266,12 +4267,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨--×Ö·û´®Êı×é
+//é«˜çº§ç®—æ³•--å­—ç¬¦ä¸²æ•°ç»„
 #if false
 
 class Solution {
 public:
-	//³ı×ÔÉíÒÔÍâÊı×éµÄ³Ë»ı
+	//é™¤è‡ªèº«ä»¥å¤–æ•°ç»„çš„ä¹˜ç§¯
 	vector<int> productExceptSelf(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		vector<int> res(numsLen);
@@ -4286,7 +4287,7 @@ public:
 		}
 		return res;
 	}
-	//ÂİĞı¾ØÕó
+	//èºæ—‹çŸ©é˜µ
 	vector<int> spiralOrder(vector<vector<int>>& matrix) {
 		size_t colSize = matrix.size();
 		if (colSize == 0) {
@@ -4315,13 +4316,13 @@ public:
 		for (size_t i = nth; i < rol - nth; i++) {
 			res.emplace_back(matrix[nth][i]);
 		}
-		if (nth + 1 == col - nth) {//Ö»ÓĞÒ»ĞĞ£¬¼ôÖ¦
+		if (nth + 1 == col - nth) {//åªæœ‰ä¸€è¡Œï¼Œå‰ªæ
 			return res;
 		}
 		for (size_t i = nth + 1; i < col - nth; i++) {
 			res.emplace_back(matrix[i][rol - nth - 1]);
 		}
-		if (nth + 1 == rol - nth) {//Ö»ÓĞÒ»ÁĞ£¬¼ôÖ¦
+		if (nth + 1 == rol - nth) {//åªæœ‰ä¸€åˆ—ï¼Œå‰ªæ
 			return res;
 		}
 		for (size_t i = nth + 2; i < rol - nth; i++) {
@@ -4332,7 +4333,7 @@ public:
 		}
 		return res;
 	}
-	//ÉúÃüÓÎÏ·
+	//ç”Ÿå‘½æ¸¸æˆ
 	void gameOfLife(vector<vector<int>>& board) {
 		size_t colSize = board.size();
 		if (colSize == 0) {
@@ -4343,10 +4344,10 @@ public:
 		for (size_t i = 0; i < colSize; i++) {
 			for (size_t j = 0; j < rolSize; j++) {
 				int convRes = conv(boardCopy, i, j, colSize, rolSize);
-				if (convRes > 3 || convRes < 2) {//ËÀÍö
+				if (convRes > 3 || convRes < 2) {//æ­»äº¡
 					board[i][j] = 0;
 				}
-				else if (convRes == 3) {//¸´»î
+				else if (convRes == 3) {//å¤æ´»
 					board[i][j] = 1;
 				}
 			}
@@ -4362,7 +4363,7 @@ public:
 		{1, -1},
 		{1, 0},
 		{1, 1} };
-	int conv(vector<vector<int>>& boardCopy, size_t col, size_t rol, size_t colSize, size_t rolSize) {//¾í»ı
+	int conv(vector<vector<int>>& boardCopy, size_t col, size_t rol, size_t colSize, size_t rolSize) {//å·ç§¯
 		int res = 0;
 		for (vector<int>& dir : directions) {
 			int colCur = col + dir[0], rolCur = rol + dir[1];
@@ -4373,8 +4374,8 @@ public:
 		}
 		return res;
 	}
-	//È±Ê§µÄµÚÒ»¸öÕıÊı
-	//×Ô¶¨Òå¹şÏ£±í
+	//ç¼ºå¤±çš„ç¬¬ä¸€ä¸ªæ­£æ•°
+	//è‡ªå®šä¹‰å“ˆå¸Œè¡¨
 	int firstMissingPositive(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		for (size_t i = 0; i < numsLen; i++) {
@@ -4433,13 +4434,13 @@ public:
 		myQuickSort(nums, cur + 1, right);
 		return;
 	}
-	//»ù±¾¼ÆËãÆ÷
-	//ÕâÖÖÀ¬»øËã·¨»¹ÕæÊÇµÚÒ»´ÎÓöµ½£¨Ã»´í£¬ÊÇÎÒĞ´µÄ£¡£©
+	//åŸºæœ¬è®¡ç®—å™¨
+	//è¿™ç§åƒåœ¾ç®—æ³•è¿˜çœŸæ˜¯ç¬¬ä¸€æ¬¡é‡åˆ°ï¼ˆæ²¡é”™ï¼Œæ˜¯æˆ‘å†™çš„ï¼ï¼‰
 	int calculate(string s) {
 		int sLen = s.size();
 		stack<int> opNum;
 		stack<char> oper;
-		for (int i = 0; i < sLen; i++) {//ÌáÈ¡²Ù×÷ÊıºÍ²Ù×÷·û
+		for (int i = 0; i < sLen; i++) {//æå–æ“ä½œæ•°å’Œæ“ä½œç¬¦
 			if (s[i] == ' ') {
 				continue;
 			}
@@ -4460,7 +4461,7 @@ public:
 		stack<int> opNumPN;
 		stack<char> operPN;
 		int tmp;
-		//ÄæĞòÕ»
+		//é€†åºæ ˆ
 		while (!oper.empty()) {
 			operPN.push(oper.top());
 			oper.pop();
@@ -4469,7 +4470,7 @@ public:
 			opNumPN.push(opNum.top());
 			opNum.pop();
 		}
-		while (!operPN.empty()) {//´¦Àí³Ë³ı·¨
+		while (!operPN.empty()) {//å¤„ç†ä¹˜é™¤æ³•
 			char op = operPN.top();
 			operPN.pop();
 			tmp = opNumPN.top();
@@ -4492,7 +4493,7 @@ public:
 		if (!opNumPN.empty()) {
 			opNum.push(opNumPN.top());
 		}
-		//ÄæĞòÕ»
+		//é€†åºæ ˆ
 		while (!oper.empty()) {
 			operPN.push(oper.top());
 			oper.pop();
@@ -4517,8 +4518,8 @@ public:
 		}
 		return res;
 	}
-	//»¬¶¯´°¿Ú×î´óÖµ
-	//¶¯Ì¬¹æ»®
+	//æ»‘åŠ¨çª—å£æœ€å¤§å€¼
+	//åŠ¨æ€è§„åˆ’
 	vector<int> maxSlidingWindow(vector<int>& nums, int k) {
 		size_t numsLen = nums.size();
 		vector<int> res(numsLen - k + 1), left(numsLen), right(numsLen);
@@ -4530,23 +4531,23 @@ public:
 			else {
 				tmpL = nums[i] > tmpL ? nums[i] : tmpL;
 			}
-			left[i] = tmpL;//×ó²à»¬¶¯´°¿Ú
+			left[i] = tmpL;//å·¦ä¾§æ»‘åŠ¨çª—å£
 			if (i % k == numsLen % k || i == 0) {
 				tmpR = nums[numsLen - 1 - i];
 			}
 			else {
 				tmpR = nums[numsLen - 1 - i] > tmpR ? nums[numsLen - 1 - i] : tmpR;
 			}
-			right[numsLen - 1 - i] = tmpR;//ÓÒ²à»¬¶¯´°¿Ú
+			right[numsLen - 1 - i] = tmpR;//å³ä¾§æ»‘åŠ¨çª—å£
 		}
 		for (size_t i = 0; i < numsLen - k + 1; i++) {
-			res[i] = max(right[i], left[i + k - 1]);//µ½µ±Ç°´°¿Ú½áÎ²£¬ÏÂÒ»¸ö´°¿Ú¿ªÊ¼µ½ÏÂÒ»¸ö´°¿Ú³¤¶È
+			res[i] = max(right[i], left[i + k - 1]);//åˆ°å½“å‰çª—å£ç»“å°¾ï¼Œä¸‹ä¸€ä¸ªçª—å£å¼€å§‹åˆ°ä¸‹ä¸€ä¸ªçª—å£é•¿åº¦
 		}
 		return res;
 	}
-	//×îĞ¡¸²¸Ç×Ó´®
+	//æœ€å°è¦†ç›–å­ä¸²
 	unordered_map<char, int> tMap, cntMap;
-	bool check(void) {//¼ì²éÊÇ·ñ°üº¬
+	bool check(void) {//æ£€æŸ¥æ˜¯å¦åŒ…å«
 		for (const auto& p : tMap) {
 			if (cntMap[p.first] < p.second) {
 				return false;
@@ -4561,15 +4562,15 @@ public:
 		}
 		int lCur = 0, rCur = 0, ansL = -1, ansR = -1, len = sLen + 1;
 		while (rCur < sLen) {
-			if (tMap.count(s[rCur]) > 0) {//ÊÇµ¥´ÊÖĞµÄ×ÖÄ¸
+			if (tMap.count(s[rCur]) > 0) {//æ˜¯å•è¯ä¸­çš„å­—æ¯
 				cntMap[s[rCur]]++;
 			}
-			while (check()) {//×ó²àËõ¶Ì×Ö·û´®
+			while (check()) {//å·¦ä¾§ç¼©çŸ­å­—ç¬¦ä¸²
 				if (rCur - lCur + 1 < len) {
 					len = rCur - lCur + 1;
 					ansL = lCur;
 				}
-				if (tMap.count(s[lCur]) > 0 && cntMap[s[lCur]] != 0) {//Èç¹ûÊÇµ¥´ÊÖĞµÄ»°¾ÍÅÅ³ı
+				if (tMap.count(s[lCur]) > 0 && cntMap[s[lCur]] != 0) {//å¦‚æœæ˜¯å•è¯ä¸­çš„è¯å°±æ’é™¤
 					cntMap[s[lCur]]--;
 				}
 				lCur++;
@@ -4607,7 +4608,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨--Á´±í
+//é«˜çº§ç®—æ³•--é“¾è¡¨
 #if false
 
 class Solution {
@@ -4619,10 +4620,10 @@ class Solution {
 		ListNode(int x, ListNode* next) : val(x), next(next) {}
 	};
 public:
-	////ºÏ²¢K¸öÅÅĞòÁ´±í ±©Á¦Ëã·¨~800ms
-	////ĞÂ½¨½Úµã°æ±¾£¬Ğ§ÂÊµÍ£¨¹¹Ôìº¯Êıµ÷ÓÃ¹ı¶à£©
+	////åˆå¹¶Kä¸ªæ’åºé“¾è¡¨ æš´åŠ›ç®—æ³•~800ms
+	////æ–°å»ºèŠ‚ç‚¹ç‰ˆæœ¬ï¼Œæ•ˆç‡ä½ï¼ˆæ„é€ å‡½æ•°è°ƒç”¨è¿‡å¤šï¼‰
 	//bool check(vector<ListNode*>& lists) {
-	//	for (const ListNode* listHead : lists) {//»»³ÉĞòÁĞ·ÃÎÊ£¬ÄÜ¿ì10%
+	//	for (const ListNode* listHead : lists) {//æ¢æˆåºåˆ—è®¿é—®ï¼Œèƒ½å¿«10%
 	//		if (listHead != nullptr) {
 	//			return true;
 	//		}
@@ -4648,7 +4649,7 @@ public:
 	//		lists[pos] = lists[pos]->next;
 	//		current->next = new ListNode(minVal);
 	//		current = current->next;
-	//		//Á¬½Ó½Úµã°æ±¾£¬ÄÚ´æÕ¼ÓÃÏÂ½µ
+	//		//è¿æ¥èŠ‚ç‚¹ç‰ˆæœ¬ï¼Œå†…å­˜å ç”¨ä¸‹é™
 	//		/*current->next = lists[pos];
 	//		lists[pos] = lists[pos]->next;
 	//		current = current->next;*/
@@ -4657,8 +4658,8 @@ public:
 	//}
 
 
-	//·ÖÖÎ·¨~80ms
-	//ºÏ²¢Á½¸öÁ´±í
+	//åˆ†æ²»æ³•~80ms
+	//åˆå¹¶ä¸¤ä¸ªé“¾è¡¨
 	ListNode* mergeTwoLists(ListNode* a, ListNode* b) {
 		if (a == nullptr || b == nullptr) {
 			return a == nullptr ? b : a;
@@ -4693,8 +4694,8 @@ public:
 		return merge(lists, 0, lists.size() - 1);
 	}
 
-	//ÅÅĞòÁ´±í--¿ìËÙÅÅĞò
-	//³¬³öÊ±¼äÏŞÖÆ
+	//æ’åºé“¾è¡¨--å¿«é€Ÿæ’åº
+	//è¶…å‡ºæ—¶é—´é™åˆ¶
 	void listQuickSort(vector<ListNode*>& lists, int left, int right) {
 		if (left >= right) {
 			return;
@@ -4735,7 +4736,7 @@ public:
 		}
 		return lists[0];
 	}*/
-	//·ÖÖÎ
+	//åˆ†æ²»
 	ListNode* sortList(ListNode* head) {
 		vector<ListNode*> lists;
 		while (head != nullptr) {
@@ -4755,7 +4756,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨--Ê÷ºÍÍ¼
+//é«˜çº§ç®—æ³•--æ ‘å’Œå›¾
 #if false
 
 class Solution {
@@ -4775,7 +4776,7 @@ class Solution {
 		TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
 	};
 public:
-	//µ¥´Ê½ÓÁú
+	//å•è¯æ¥é¾™
 	unordered_map<string, int> wordID;
 	vector<vector<int>> edge;
 	int nodeCnt = 0;
@@ -4792,46 +4793,46 @@ public:
 		int id1 = wordID[word];
 		for (char& ch : word) {
 			char tmp = ch;
-			//Ìæ»»×´Ì¬£¬ĞÂ½¨ĞéÄâ½Úµã£¬ĞéÄâ½ÚµãÖ®¼äÏàÁ¬£¬µ¥´ÊÖ®¼ä²»Ö±½ÓÏàÁ¬
+			//æ›¿æ¢çŠ¶æ€ï¼Œæ–°å»ºè™šæ‹ŸèŠ‚ç‚¹ï¼Œè™šæ‹ŸèŠ‚ç‚¹ä¹‹é—´ç›¸è¿ï¼Œå•è¯ä¹‹é—´ä¸ç›´æ¥ç›¸è¿
 			ch = '*';
 			addWord(word);
 			int id2 = wordID[word];
 			edge[id1].emplace_back(id2);
 			edge[id2].emplace_back(id1);
-			//½áÊøÌæ»»×´Ì¬
+			//ç»“æŸæ›¿æ¢çŠ¶æ€
 			ch = tmp;
 		}
 		return;
 	}
-	//Ë«ÏòËÑË÷Æ½¾ùÊ±¼ä½µµÍ25%
+	//åŒå‘æœç´¢å¹³å‡æ—¶é—´é™ä½25%
 	int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
 		for (string& word : wordList) {
 			addEdge(word);
 		}
 		addEdge(beginWord);
-		if (wordID.count(endWord) < 1) {//list ÖĞÃ»ÓĞendword
+		if (wordID.count(endWord) < 1) {//list ä¸­æ²¡æœ‰endword
 			return 0;
 		}
-		//Ç°ÏòËÑË÷
+		//å‰å‘æœç´¢
 		int beginID = wordID[beginWord];
 		vector<int> disBegin(nodeCnt, INT_MAX);
-		disBegin[beginID] = 0;//¼ÇÂ¼±ßÊıÁ¿
+		disBegin[beginID] = 0;//è®°å½•è¾¹æ•°é‡
 		queue<int> queBegin;
 		queBegin.push(beginID);
-		//·´ÏòËÑË÷
+		//åå‘æœç´¢
 		int endID = wordID[endWord];
 		vector<int> disEnd(nodeCnt, INT_MAX);
 		disEnd[endID] = 0;
 		queue<int> queEnd;
 		queEnd.push(endID);
-		//¿ªÊ¼ËÑË÷
+		//å¼€å§‹æœç´¢
 		while (!queBegin.empty() && !queEnd.empty()) {
-			//Ç°ÏòËÑË÷
+			//å‰å‘æœç´¢
 			int queBeginLen = queBegin.size();
 			for (int i = 0; i < queBeginLen; i++) {
 				int curBegin = queBegin.front();
 				queBegin.pop();
-				if (disEnd[curBegin] != INT_MAX) {//ºóÏòËÑË÷µ½ÁË¸Ãµã
+				if (disEnd[curBegin] != INT_MAX) {//åå‘æœç´¢åˆ°äº†è¯¥ç‚¹
 					return (disBegin[curBegin] + disEnd[curBegin]) / 2 + 1;
 				}
 				for (int& it : edge[curBegin]) {
@@ -4841,12 +4842,12 @@ public:
 					}
 				}
 			}
-			//·´ÏòËÑË÷
+			//åå‘æœç´¢
 			int queEndLen = queEnd.size();
 			for (int i = 0; i < queEndLen; i++) {
 				int curEnd = queEnd.front();
 				queEnd.pop();
-				if (disBegin[curEnd] != INT_MAX) {//Ç°ÏòËÑË÷µ½ÁË¸Ãµã
+				if (disBegin[curEnd] != INT_MAX) {//å‰å‘æœç´¢åˆ°äº†è¯¥ç‚¹
 					return (disBegin[curEnd] + disEnd[curEnd]) / 2 + 1;
 				}
 				for (int& it : edge[curEnd]) {
@@ -4859,8 +4860,8 @@ public:
 		}
 		return 0;
 	}
-	//±»Î§ÈÆµÄÇøÓò
-	//ÄÚ´æÕ¼ÓÃ¿ÉÒÔÓÅ»¯£º²»ÓÃvist¾ØÕó£¬½«boardĞŞ¸ÄÎªÆäËûÖµ
+	//è¢«å›´ç»•çš„åŒºåŸŸ
+	//å†…å­˜å ç”¨å¯ä»¥ä¼˜åŒ–ï¼šä¸ç”¨vistçŸ©é˜µï¼Œå°†boardä¿®æ”¹ä¸ºå…¶ä»–å€¼
 	/*vector<vector<int>> direction = {
 		{-1, 0},
 		{0, 1},
@@ -4873,14 +4874,14 @@ public:
 		}
 		int rolSize = board[0].size();
 		vector<vector<bool>> vist(colSize, vector<bool>(rolSize, false));
-		//±ê¼Ç¿¿±ßÇø¿é
+		//æ ‡è®°é è¾¹åŒºå—
 		for (int i = 0; i < colSize; i++) {
 			for (int j = 0; j < rolSize; j++) {
-				//²»ÊÇ±ßÔµÌø¹ı
+				//ä¸æ˜¯è¾¹ç¼˜è·³è¿‡
 				if (i != 0 && j != 0 && i != colSize - 1 && j != rolSize - 1) {
 					continue;
 				}
-				//Î´·ÃÎÊ¹ıµÄ°×¿é£¬BFS
+				//æœªè®¿é—®è¿‡çš„ç™½å—ï¼ŒBFS
 				if (board[i][j] == 'O' && vist[i][j] == false) {
 					vist[i][j] = true;
 					queue<pair<int, int>> que;
@@ -4909,7 +4910,7 @@ public:
 				}
 			}
 		}
-		//¸ù¾İvist ±ê¼Ç
+		//æ ¹æ®vist æ ‡è®°
 		for (int i = 0; i < colSize; i++) {
 			for (int j = 0; j < rolSize; j++) {
 				if (vist[i][j] == false && board[i][j] == 'O') {
@@ -4919,7 +4920,7 @@ public:
 		}
 		return;
 	}
-	//¶ş²æÊ÷ÖĞµÄ×î´óÂ·¾¶ºÍ
+	//äºŒå‰æ ‘ä¸­çš„æœ€å¤§è·¯å¾„å’Œ
 	int maxPathVal = INT_MIN;
 	int maxPathSum(TreeNode* root) {
 		maxGain(root);
@@ -4937,8 +4938,8 @@ public:
 		}
 		return root->val + max(rightGain, leftGain);
 	}
-	//ÅóÓÑÈ¦
-	//BFSĞ§ÂÊÉÔµÍ£¬128ms£¬Ê±¼ä¸´ÔÓ¶È0(n^2)£¬¿Õ¼ä¸´ÔÓ¶È0(n)
+	//æœ‹å‹åœˆ
+	//BFSæ•ˆç‡ç¨ä½ï¼Œ128msï¼Œæ—¶é—´å¤æ‚åº¦0(n^2)ï¼Œç©ºé—´å¤æ‚åº¦0(n)
 	int findCircleNum(vector<vector<int>>& M) {
 		int mSize = M.size();
 		if (mSize < 2) {
@@ -4970,14 +4971,14 @@ public:
 
 		return res;
 	}
-	//¿Î³Ì±í
-	//ÍØÆËÅÅĞò£¬ÅĞ¶ÏÊÇ·ñ´æÔÚ»·£ºÅÅĞòºó½áµãÊıÁ¿´óÓÚÔ´½ÚµãÊıÁ¿
+	//è¯¾ç¨‹è¡¨
+	//æ‹“æ‰‘æ’åºï¼Œåˆ¤æ–­æ˜¯å¦å­˜åœ¨ç¯ï¼šæ’åºåç»“ç‚¹æ•°é‡å¤§äºæºèŠ‚ç‚¹æ•°é‡
 	bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
 		vector<int> inDegree(numCourses, false);
 		vector<vector<int>> edges(numCourses);
 		for (vector<int>& req : prerequisites) {
-			//0:×Ó½Úµã
-			//1:¸¸½Úµã
+			//0:å­èŠ‚ç‚¹
+			//1:çˆ¶èŠ‚ç‚¹
 			edges[req[1]].push_back(req[0]);
 			inDegree[req[0]]++;
 		}
@@ -4990,7 +4991,7 @@ public:
 		int vistCnt = 0;
 		while (!q.empty()) {
 			int u = q.front();
-			vistCnt++;//Ä£Äâ³ö¶ÓÁĞ
+			vistCnt++;//æ¨¡æ‹Ÿå‡ºé˜Ÿåˆ—
 			q.pop();
 			for (int i : edges[u]) {
 				inDegree[i]--;
@@ -5001,14 +5002,14 @@ public:
 		}
 		return vistCnt == numCourses;
 	}
-	//¿Î³Ì±í II
-	//¿¿Èë¶È¾ö¶¨Ë³Ğò
+	//è¯¾ç¨‹è¡¨ II
+	//é å…¥åº¦å†³å®šé¡ºåº
 	vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
 		vector<int> inDegree(numCourses, false);
 		vector<vector<int>> edges(numCourses);
 		for (vector<int>& req : prerequisites) {
-			//0:×Ó½Úµã
-			//1:¸¸½Úµã
+			//0:å­èŠ‚ç‚¹
+			//1:çˆ¶èŠ‚ç‚¹
 			edges[req[1]].push_back(req[0]);
 			inDegree[req[0]]++;
 		}
@@ -5034,10 +5035,10 @@ public:
 		}
 		return vistCnt == numCourses ? res : vector<int>{};
 	}
-	//¾ØÕóÖĞµÄ×î³¤µİÔöÂ·¾¶
-	//DFS£¬»ØËİ
-	//³¬³öÊ±¼äÏŞÖÆ
-	//¼ÓÉÏmemo¼ÇÒä¾ØÕó£¬Íê³É
+	//çŸ©é˜µä¸­çš„æœ€é•¿é€’å¢è·¯å¾„
+	//DFSï¼Œå›æº¯
+	//è¶…å‡ºæ—¶é—´é™åˆ¶
+	//åŠ ä¸Šmemoè®°å¿†çŸ©é˜µï¼Œå®Œæˆ
 	vector<vector<int>> direction = {
 		{-1, 0},
 		{0, 1},
@@ -5084,9 +5085,9 @@ public:
 		vist[colCur][rolCur] = false;
 		return res + 1;
 	}
-	//¼ÆËãÓÒ²àĞ¡ÓÚµ±Ç°ÔªËØµÄ¸öÊı
-	//¼ÆËã½Úµã³ö¶È
-	//Ê±¼ä¸´ÔÓ¶È0(n^2)£¬³¬Ê±
+	//è®¡ç®—å³ä¾§å°äºå½“å‰å…ƒç´ çš„ä¸ªæ•°
+	//è®¡ç®—èŠ‚ç‚¹å‡ºåº¦
+	//æ—¶é—´å¤æ‚åº¦0(n^2)ï¼Œè¶…æ—¶
 	/*vector<int> countSmaller(vector<int>& nums) {
 		size_t numslen = nums.size();
 		vector<int> res(numslen, 0);
@@ -5100,15 +5101,15 @@ public:
 		}
 		return res;
 	}*/
-	//ÀëÉ¢»¯Ê÷×´Êı×é
-	//³¬Ê±¶øÇÒ´ğ°¸¿´²»¶®
+	//ç¦»æ•£åŒ–æ ‘çŠ¶æ•°ç»„
+	//è¶…æ—¶è€Œä¸”ç­”æ¡ˆçœ‹ä¸æ‡‚
 	//vector<int> countSmaller(vector<int>& nums) {
 	//	size_t numslen = nums.size();
 	//	vector<int> res(numslen, 0);
 	//	unordered_map<int, int> numCnt;
 	//	for (int i = numslen - 1; i > -1; i--) {
 	//		numCnt[nums[i]]++;
-	//		for (auto& it : numCnt) {//Ö÷ÒªÊÇÕâÀï·ÑÊ±¼ä
+	//		for (auto& it : numCnt) {//ä¸»è¦æ˜¯è¿™é‡Œè´¹æ—¶é—´
 	//			if (it.first < nums[i]) {
 	//				res[i] += it.second;
 	//			}
@@ -5117,25 +5118,25 @@ public:
 	//	return res;
 	//}
 
-	//³­µÄ´ğ°¸
-	//Ê÷×´Êı×é¼ÆËãÇ³×íºÍ£¬Çø¼äºÍ
-	//Ô­Êı×éÎªnums£¬
-	//½«numsÀëÉ¢»¯£¬´Ë´¦ÊÇÅÅĞò+È¥ÖØ£¬×ª»¯ÎªÊı×éa
+	//æŠ„çš„ç­”æ¡ˆ
+	//æ ‘çŠ¶æ•°ç»„è®¡ç®—æµ…é†‰å’Œï¼ŒåŒºé—´å’Œ
+	//åŸæ•°ç»„ä¸ºnumsï¼Œ
+	//å°†numsç¦»æ•£åŒ–ï¼Œæ­¤å¤„æ˜¯æ’åº+å»é‡ï¼Œè½¬åŒ–ä¸ºæ•°ç»„a
 	vector<int> a;
-	//½«nums¶ÔÓ¦aµÄÔªËØupdateµ½Ê÷×´Êı×éc
+	//å°†numså¯¹åº”açš„å…ƒç´ updateåˆ°æ ‘çŠ¶æ•°ç»„c
 	vector<int> c;
 
-	//resizeÊ÷×´Êı×é´óĞ¡
+	//resizeæ ‘çŠ¶æ•°ç»„å¤§å°
 	void init(int len) {
 		c.resize(len);
 	}
 
-	//lowbitÎª¶ş½øÖÆÖĞ×îµÍÎ»µÄ1µÄÖµ
+	//lowbitä¸ºäºŒè¿›åˆ¶ä¸­æœ€ä½ä½çš„1çš„å€¼
 	int lowbit(int x) {
 		return x & (-x);
 	}
 
-	//µ¥µã¸üĞÂ£¬´Ó×Ó½Úµã¸üĞÂµ½ËùÓĞ¸¸½Úµã(×æ¸¸½ÚµãµÈÒ»Ö±ÍùÉÏµ½ÉÏÏŞc.size())
+	//å•ç‚¹æ›´æ–°ï¼Œä»å­èŠ‚ç‚¹æ›´æ–°åˆ°æ‰€æœ‰çˆ¶èŠ‚ç‚¹(ç¥–çˆ¶èŠ‚ç‚¹ç­‰ä¸€ç›´å¾€ä¸Šåˆ°ä¸Šé™c.size())
 	void update(int pos) {
 		while (pos < c.size()) {
 			c[pos] += 1;
@@ -5143,10 +5144,10 @@ public:
 		}
 	}
 
-	//²éÑ¯£¬Êµ¼ÊÊÇÇóºÍ[0,...,pos]£¬¼´Çó1~posµÄÔªËØÊıÁ¿
-	//Èçc[8]£¬ÔÚupdateÊ±£¬a[1],a[2],a[3],...,a[8]¶¼»áÊ¹c[8]Ôö¼ÓÒ»¸övalue£¨¸ÃÌâÖĞÎÒÃÇÉèÖÃÎª1£©
-	//res += c[8]£¬È»ºó8¼õÈ¥lowbitÎª0¡£
-	//Ò²¿ÉÒÔÄÃc[6]¾ÙÀı£¬c[6] =a[5]+a[6]£¬lowbitºó£¬c[4] = a[1]+a[2]+a[3]+a[4]
+	//æŸ¥è¯¢ï¼Œå®é™…æ˜¯æ±‚å’Œ[0,...,pos]ï¼Œå³æ±‚1~posçš„å…ƒç´ æ•°é‡
+	//å¦‚c[8]ï¼Œåœ¨updateæ—¶ï¼Œa[1],a[2],a[3],...,a[8]éƒ½ä¼šä½¿c[8]å¢åŠ ä¸€ä¸ªvalueï¼ˆè¯¥é¢˜ä¸­æˆ‘ä»¬è®¾ç½®ä¸º1ï¼‰
+	//res += c[8]ï¼Œç„¶å8å‡å»lowbitä¸º0ã€‚
+	//ä¹Ÿå¯ä»¥æ‹¿c[6]ä¸¾ä¾‹ï¼Œc[6] =a[5]+a[6]ï¼Œlowbitåï¼Œc[4] = a[1]+a[2]+a[3]+a[4]
 	int query(int pos) {
 		int res = 0;
 		while (pos) {
@@ -5156,40 +5157,40 @@ public:
 		return res;
 	}
 
-	//ÀëÉ¢»¯´¦Àí
+	//ç¦»æ•£åŒ–å¤„ç†
 	void Discretization(vector<int>& nums) {
-		//¿½±´Êı×é [5,4,5,3,2,1,1,1,1,1]
+		//æ‹·è´æ•°ç»„ [5,4,5,3,2,1,1,1,1,1]
 		a.assign(nums.begin(), nums.end());
-		//ÅÅĞò[1,1,1,1,1,2,3,4,5,5]
+		//æ’åº[1,1,1,1,1,2,3,4,5,5]
 		sort(a.begin(), a.end());
-		//È¥ÖØ[1,2,3,4,5]
+		//å»é‡[1,2,3,4,5]
 		a.erase(unique(a.begin(), a.end()), a.end());
 	}
 
 	int getId(int x) {
-		//lower_bound·µ»ØµÚÒ»¸ö²»Ğ¡ÓÚxµÄµü´úÆ÷
-		//[1,2,3,4,5]ÖĞ1£¬¼õÈ¥begin()ÔÙ¼Ó1£¬µÃµ½id£¨1-5£©
+		//lower_boundè¿”å›ç¬¬ä¸€ä¸ªä¸å°äºxçš„è¿­ä»£å™¨
+		//[1,2,3,4,5]ä¸­1ï¼Œå‡å»begin()å†åŠ 1ï¼Œå¾—åˆ°idï¼ˆ1-5ï¼‰
 		return lower_bound(a.begin(), a.end(), x) - a.begin() + 1;
 	}
 	vector<int> countSmaller(vector<int>& nums) {
 		vector<int> res;
 		int n = nums.size();
-		//Ìâ½âÊÇ+5£¬ÆäÊµ+1¾Í¹»ÁË£¬Ê÷×´Êı×éÖĞÎÒÃÇ²»Ê¹ÓÃ0ÏÂ±ê£¬ËùÒÔĞèÀ©Õ¹1Î»¿Õ¼ä
-		//µ±È»Ö±½ÓÓÃn½á¹ûÒ²ÊÇ¶ÔµÄ¡£ÕâÀïÔÙÍÆÇÃÍÆÇÃ
+		//é¢˜è§£æ˜¯+5ï¼Œå…¶å®+1å°±å¤Ÿäº†ï¼Œæ ‘çŠ¶æ•°ç»„ä¸­æˆ‘ä»¬ä¸ä½¿ç”¨0ä¸‹æ ‡ï¼Œæ‰€ä»¥éœ€æ‰©å±•1ä½ç©ºé—´
+		//å½“ç„¶ç›´æ¥ç”¨nç»“æœä¹Ÿæ˜¯å¯¹çš„ã€‚è¿™é‡Œå†æ¨æ•²æ¨æ•²
 		init(n + 1);
 
-		//½«nums×ª»¯Îªa
+		//å°†numsè½¬åŒ–ä¸ºa
 		Discretization(nums);
 
 		for (int i = n - 1; i >= 0; --i) {
-			//µ¹Ğò´¦Àí
+			//å€’åºå¤„ç†
 			int id = getId(nums[i]);
-			//²éÑ¯ÑÏ¸ñĞ¡ÓÚidµÄÔªËØÊıÁ¿£¬ËùÒÔÊ¹ÓÃid-1
+			//æŸ¥è¯¢ä¸¥æ ¼å°äºidçš„å…ƒç´ æ•°é‡ï¼Œæ‰€ä»¥ä½¿ç”¨id-1
 			res.push_back(query(id - 1));
-			//¸üĞÂid£¬ÆäÊµ¸üĞÂÒ²¿ÉÒÔÌáÇ°£¬ÒòÎª²éÑ¯ÊÇid-1£¬ËùÒÔ¸üĞÂ²Ù×÷²»Ó°Ïìµ±Ç°½á¹û
+			//æ›´æ–°idï¼Œå…¶å®æ›´æ–°ä¹Ÿå¯ä»¥æå‰ï¼Œå› ä¸ºæŸ¥è¯¢æ˜¯id-1ï¼Œæ‰€ä»¥æ›´æ–°æ“ä½œä¸å½±å“å½“å‰ç»“æœ
 			update(id);
 		}
-		//µ¹Ğò´¦ÀíÔÙµ¹Ğò»ØÀ´¡£Èç¹û²»ÊÇÓÃpush_back£¬Ö±½ÓÓÃÏÂ±ê¿ÉÒÔ²»ÓÃÔÚÕâÀïÔÙµ¹Ğò
+		//å€’åºå¤„ç†å†å€’åºå›æ¥ã€‚å¦‚æœä¸æ˜¯ç”¨push_backï¼Œç›´æ¥ç”¨ä¸‹æ ‡å¯ä»¥ä¸ç”¨åœ¨è¿™é‡Œå†å€’åº
 		reverse(res.begin(), res.end());
 		return res;
 	}
@@ -5229,13 +5230,13 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨-»ØËİ
+//é«˜çº§ç®—æ³•-å›æº¯
 #if false
 
 class Solution {
 public:
-	//·Ö¸î»ØÎÄ´®
-	//×îºÄÊ±µØ·½ÊÇÅĞ¶Ï»ØÎÄ
+	//åˆ†å‰²å›æ–‡ä¸²
+	//æœ€è€—æ—¶åœ°æ–¹æ˜¯åˆ¤æ–­å›æ–‡
 	vector<vector<string>> res;
 	vector<string> path;
 	vector<vector<string>> partition(string s) {
@@ -5267,8 +5268,8 @@ public:
 		}
 		return true;
 	}
-	//É¾³ıÎŞĞ§µÄÀ¨ºÅ
-	//È¥ÖØ¿¿Ìø¹ıÏàµÈ×Ö·û
+	//åˆ é™¤æ— æ•ˆçš„æ‹¬å·
+	//å»é‡é è·³è¿‡ç›¸ç­‰å­—ç¬¦
 	vector<string> removeInvalidParentheses(string s) {
 		int left = 0, right = 0;
 		vector<string> res;
@@ -5291,7 +5292,7 @@ public:
 		return res;
 	}
 	void dfs(string s, int start, int l, int r, vector<string>& res) {
-		if (l == 0 && r == 0) {//²»ĞèÒªÉ¾³ıµÄÀ¨ºÅÎªÁã
+		if (l == 0 && r == 0) {//ä¸éœ€è¦åˆ é™¤çš„æ‹¬å·ä¸ºé›¶
 			if (isValid(s)) {
 				res.push_back(s);
 			}
@@ -5299,7 +5300,7 @@ public:
 		}
 		size_t sLen = s.size();
 		for (size_t i = start; i < sLen; i++) {
-			if (i != start && s[i] == s[i - 1]) {//È¥ÖØ
+			if (i != start && s[i] == s[i - 1]) {//å»é‡
 				continue;
 			}
 			if (s[i] == '(' && l > 0) {
@@ -5311,7 +5312,7 @@ public:
 		}
 		return;
 	}
-	bool isValid(string& s) {//ÅĞ¶Ï×Ö·û´®ÊÇ·ñÓĞĞ§
+	bool isValid(string& s) {//åˆ¤æ–­å­—ç¬¦ä¸²æ˜¯å¦æœ‰æ•ˆ
 		int cnt = 0;
 		for (char& c : s) {
 			if (c == '(') {
@@ -5326,18 +5327,18 @@ public:
 		}
 		return cnt == 0;
 	}
-	//Í¨Åä·ûÆ¥Åä
-	//¶¯Ì¬¹æ»®
+	//é€šé…ç¬¦åŒ¹é…
+	//åŠ¨æ€è§„åˆ’
 	//bool isMatch(string s, string p) {
 	//	size_t sLen = s.size(), pLen = p.size();
 	//	vector<vector<bool>> dp(sLen + 1, vector<bool>(pLen + 1, false));
-	//	dp[0][0] = true;//dp[i][j] ±íÊ¾×Ö·û´® s µÄÇ° i ¸ö×Ö·ûºÍÄ£Ê½ p µÄÇ° j ¸ö×Ö·ûÊÇ·ñÄÜÆ¥Åä
+	//	dp[0][0] = true;//dp[i][j] è¡¨ç¤ºå­—ç¬¦ä¸² s çš„å‰ i ä¸ªå­—ç¬¦å’Œæ¨¡å¼ p çš„å‰ j ä¸ªå­—ç¬¦æ˜¯å¦èƒ½åŒ¹é…
 	//	for (size_t i = 1; i <= pLen; i++) {
 	//		if (p[i - 1] == '*') {
 	//			dp[0][i] = true;
 	//		}
 	//		else {
-	//			break;//ÕÒµ½µÚÒ»¸ö²»ÊÇ*µÄp[i]
+	//			break;//æ‰¾åˆ°ç¬¬ä¸€ä¸ªä¸æ˜¯*çš„p[i]
 	//		}
 	//	}
 	//	for (size_t i = 1; i <= sLen; i++) {
@@ -5352,14 +5353,14 @@ public:
 	//	}
 	//	return dp[sLen][pLen];
 	//}
-	//ÕıÔò±í´ïÊ½Æ¥Åä
+	//æ­£åˆ™è¡¨è¾¾å¼åŒ¹é…
 	bool isMatch(string s, string p) {
 		size_t sLen = s.size(), pLen = p.size();
 		vector<vector<bool>> dp(sLen + 1, vector<bool>(pLen + 1, false));
 		dp[0][0] = true;
 		for (size_t i = 1; i <= pLen; i++)
 		{
-			if (i >= 2 && p[i - 1] == '*' && dp[0][i - 2]) // ¼ÇµÃ¼Ó i >= 2µÄÅĞ¶Ï 
+			if (i >= 2 && p[i - 1] == '*' && dp[0][i - 2]) // è®°å¾—åŠ  i >= 2çš„åˆ¤æ–­ 
 				dp[0][i] = true;
 		}
 		for (size_t i = 1; i < sLen + 1; i++) {
@@ -5370,7 +5371,7 @@ public:
 					else
 						dp[i][j] = dp[i][j - 2] || dp[i][j - 1] || dp[i - 1][j];
 				}
-				else if (p[j - 1] == '.' || s[i - 1] == p[j - 1]) {//È«×Ö·ûÆ¥Åä
+				else if (p[j - 1] == '.' || s[i - 1] == p[j - 1]) {//å…¨å­—ç¬¦åŒ¹é…
 					dp[i][j] = dp[i - 1][j - 1];
 				}
 			}
@@ -5388,14 +5389,14 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨-ËÑË÷ºÍÅÅĞò
+//é«˜çº§ç®—æ³•-æœç´¢å’Œæ’åº
 #if false
 
 class Solution {
 public:
-	//°Ú¶¯ÅÅĞò II
-	//ÆäÊµ¾ÍÊÇÕÒÖĞÎ»Êı
-	//³­´úÂëÕæÏã
+	//æ‘†åŠ¨æ’åº II
+	//å…¶å®å°±æ˜¯æ‰¾ä¸­ä½æ•°
+	//æŠ„ä»£ç çœŸé¦™
 	void wiggleSort(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		auto midPtr = nums.begin() + numsLen / 2;
@@ -5431,9 +5432,9 @@ public:
 		}
 		return;
 	}
-	//ÓĞĞò¾ØÕóÖĞµÚKĞ¡µÄÔªËØ
-	//¾ØÕóĞĞÁĞµİÔö
-	//ÓÃ¶ş·Ö²éÕÒ
+	//æœ‰åºçŸ©é˜µä¸­ç¬¬Kå°çš„å…ƒç´ 
+	//çŸ©é˜µè¡Œåˆ—é€’å¢
+	//ç”¨äºŒåˆ†æŸ¥æ‰¾
 	int kthSmallest(vector<vector<int>>& matrix, int k) {
 		int matrixDegree = matrix.size();
 		int lwr = matrix[0][0], upr = matrix[matrixDegree - 1][matrixDegree - 1];
@@ -5478,12 +5479,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨-¶¯Ì¬¹æ»®
+//é«˜çº§ç®—æ³•-åŠ¨æ€è§„åˆ’
 #if false
 
 class Solution {
 public:
-	//³Ë»ı×î´ó×ÓÊı×é
+	//ä¹˜ç§¯æœ€å¤§å­æ•°ç»„
 	int maxProduct(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		int maxVal = nums[0], minVal = nums[0], res = nums[0];
@@ -5495,7 +5496,7 @@ public:
 		}
 		return res;
 	}
-	//×î¼ÑÂòÂô¹ÉÆ±Ê±»úº¬Àä¶³ÆÚ
+	//æœ€ä½³ä¹°å–è‚¡ç¥¨æ—¶æœºå«å†·å†»æœŸ
 	int maxProfit(vector<int>& nums) {
 		size_t numsLen = nums.size();
 		if (numsLen < 1) {
@@ -5503,13 +5504,13 @@ public:
 		}
 		//vector<vector<int>> dp(3, vector<int>(numsLen));
 		int dp0 = -nums[0], dp1 = 0, dp2 = 0;
-		//dp[0][0] = -nums[0];//ÂòÈë¸ºÊÕÒæ,³ÖÓĞ×´Ì¬
-		//dp[1][0] = 0;//ÀäÈ´ÆÚÀÛ¼ÆÊÕÒæ£¬·Ç³ÖÓĞ
-		//dp[2][0] = 0;//·ÇÀäÈ´ÆÚÀÛ¼ÆÊÕÒæ£¬·Ç³ÖÓĞ
+		//dp[0][0] = -nums[0];//ä¹°å…¥è´Ÿæ”¶ç›Š,æŒæœ‰çŠ¶æ€
+		//dp[1][0] = 0;//å†·å´æœŸç´¯è®¡æ”¶ç›Šï¼ŒéæŒæœ‰
+		//dp[2][0] = 0;//éå†·å´æœŸç´¯è®¡æ”¶ç›Šï¼ŒéæŒæœ‰
 		for (size_t i = 1; i < numsLen; i++) {
-			//dp[0][i] = max(dp[0][i - 1], dp[2][i - 1] - nums[i]);//½ñÌì½áÊøÊ±³ÖÓĞ£¬¿ÉÄÜÊÇ×òÌì³ÖÓĞ»òÕß½ñÌìÂòÈëµÄ
-			//dp[1][i] = dp[0][i - 1] + nums[i];//½ñÌì½áÊøÊ±ÔÚÀä¾²ÆÚ£¬¿Ï¶¨ÊÇ½ñÌìÂôÁË
-			//dp[2][i] = max(dp[1][i - 1], dp[2][i - 1]);//½ñÌì½áÊøÊ±Ã»³ÖÓĞÇÒ²»ÔÚÀä¾²ÆÚ£¬×òÌì¿ÉÄÜÊÇÀä¾²ÆÚ»òÕß²»ÊÇÀä¾²ÆÚ
+			//dp[0][i] = max(dp[0][i - 1], dp[2][i - 1] - nums[i]);//ä»Šå¤©ç»“æŸæ—¶æŒæœ‰ï¼Œå¯èƒ½æ˜¯æ˜¨å¤©æŒæœ‰æˆ–è€…ä»Šå¤©ä¹°å…¥çš„
+			//dp[1][i] = dp[0][i - 1] + nums[i];//ä»Šå¤©ç»“æŸæ—¶åœ¨å†·é™æœŸï¼Œè‚¯å®šæ˜¯ä»Šå¤©å–äº†
+			//dp[2][i] = max(dp[1][i - 1], dp[2][i - 1]);//ä»Šå¤©ç»“æŸæ—¶æ²¡æŒæœ‰ä¸”ä¸åœ¨å†·é™æœŸï¼Œæ˜¨å¤©å¯èƒ½æ˜¯å†·é™æœŸæˆ–è€…ä¸æ˜¯å†·é™æœŸ
 			int dp0n = max(dp0, dp2 - nums[i]);
 			int dp1n = dp0 + nums[i];
 			int dp2n = max(dp1, dp2);
@@ -5518,8 +5519,8 @@ public:
 		//return max(dp[1][numsLen - 1], dp[2][numsLen - 1]);
 		return max(dp1, dp2);
 	}
-	//ÍêÈ«Æ½·½Êı
-	//¶¯Ì¬¹æ»®£¬×ªÒÆ·½³Ì£ºdp[i] = min(dp[i - k^2]) + 1, ÆäÖĞi >= k^2
+	//å®Œå…¨å¹³æ–¹æ•°
+	//åŠ¨æ€è§„åˆ’ï¼Œè½¬ç§»æ–¹ç¨‹ï¼šdp[i] = min(dp[i - k^2]) + 1, å…¶ä¸­i >= k^2
 	int numSquares(int n) {
 		vector<int> dp(n + 1);
 		dp[0] = 0;
@@ -5534,9 +5535,9 @@ public:
 		}
 		return dp[n];
 	}
-	//µ¥´Ê²ğ·Ö
-	//ÄÜ²ğ·ÖµÄµ¥´Ê×ÜÊÇµÈÓÚÇ°Ò»¸öÒÑ²ğ·ÖµÄ¼ÓÉÏÒ»¸öÔÚ´ÊµäÖĞµÄµ¥´Ê
-	//Èç¹û¸Ä³É´ÓºóÍùÇ°ÍÆ¿ÉÄÜ»á¸ü¿ìÒ»Ğ©
+	//å•è¯æ‹†åˆ†
+	//èƒ½æ‹†åˆ†çš„å•è¯æ€»æ˜¯ç­‰äºå‰ä¸€ä¸ªå·²æ‹†åˆ†çš„åŠ ä¸Šä¸€ä¸ªåœ¨è¯å…¸ä¸­çš„å•è¯
+	//å¦‚æœæ”¹æˆä»åå¾€å‰æ¨å¯èƒ½ä¼šæ›´å¿«ä¸€äº›
 	/*bool wordBreak(string s, vector<string>& wordDict) {
 		size_t sLen = s.size();
 		unordered_set<string> dictSet;
@@ -5559,8 +5560,8 @@ public:
 		}
 		return dp[sLen];
 	}*/
-	//µ¥´Ê²ğ·Ö II
-	//µİ¹éÃ»¼ôÖ¦
+	//å•è¯æ‹†åˆ† II
+	//é€’å½’æ²¡å‰ªæ
 	/*unordered_set<string>* dictSet;
 	size_t sLen;
 	vector<string> res;
@@ -5590,29 +5591,29 @@ public:
 		}
 		return;
 	}*/
-	//ÓÅ»¯µİ¹é
+	//ä¼˜åŒ–é€’å½’
 	vector<string> wordBreak(string s, vector<string>& wordDict) {
 		unordered_set<string> dict(wordDict.begin(), wordDict.end());
 		vector<string> res;
 		return backtrack(s, 0, dict);
 	}
-	unordered_map<int, vector<string>> memo;//¼ÇÒä»¯
+	unordered_map<int, vector<string>> memo;//è®°å¿†åŒ–
 	vector<string> backtrack(string& s, int start, unordered_set<string>& dict) {
 		if (start == s.size()) {
 			return { "" };
 		}
 
-		if (memo.count(start)) {//Õâ¸öÎ»ÖÃÒÔºóµÄËùÓĞµ¥´ÊÅÅÁĞ×éºÏ
+		if (memo.count(start)) {//è¿™ä¸ªä½ç½®ä»¥åçš„æ‰€æœ‰å•è¯æ’åˆ—ç»„åˆ
 			return memo[start];
 		}
 
 		vector<string> res;
 		for (size_t i = start; i < s.size(); i++) {
-			auto prefix = s.substr(start, i - start + 1);//Ç°×ºµ¥´Ê
+			auto prefix = s.substr(start, i - start + 1);//å‰ç¼€å•è¯
 			if (dict.count(prefix)) {
-				auto suffixes = backtrack(s, i + 1, dict);//ºó×ºµ¥´Ê±íÅÅÁĞ×éºÏ
+				auto suffixes = backtrack(s, i + 1, dict);//åç¼€å•è¯è¡¨æ’åˆ—ç»„åˆ
 				for (const auto& suffix : suffixes) {
-					auto str = prefix;//ĞÂ½¨Ò»¸öÅÅÁĞ
+					auto str = prefix;//æ–°å»ºä¸€ä¸ªæ’åˆ—
 					if (!suffix.empty()) {
 						str += ' ' + suffix;
 					}
@@ -5621,11 +5622,11 @@ public:
 			}
 		}
 
-		memo[start] = res;//´¢´æºó×ºÅÅÁĞ×éºÏ²¢·µ»Ø
+		memo[start] = res;//å‚¨å­˜åç¼€æ’åˆ—ç»„åˆå¹¶è¿”å›
 		return memo[start];
 	}
-	//´ÁÆøÇò
-	//¹Ø¼üµãÔÚÓÚ×îºóÒ»¸ö´ÁÆÆµÄÆøÇò£¬¿ªÇø¼äÖĞÈÎÒâÒ»¸ö´ÁÆÆµÄÆøÇò
+	//æˆ³æ°”çƒ
+	//å…³é”®ç‚¹åœ¨äºæœ€åä¸€ä¸ªæˆ³ç ´çš„æ°”çƒï¼Œå¼€åŒºé—´ä¸­ä»»æ„ä¸€ä¸ªæˆ³ç ´çš„æ°”çƒ
 	int maxCoins(vector<int>& nums) {
 		if (nums.size() == 0) {
 			return 0;
@@ -5634,14 +5635,14 @@ public:
 		numsCopy.insert(numsCopy.end(), nums.begin(), nums.end());
 		numsCopy.push_back(1);
 		size_t numsLen = numsCopy.size();
-		vector<vector<int>> dp(numsLen, vector<int>(numsLen, 0));//Í·Î²¸÷Ò»¸ö1
+		vector<vector<int>> dp(numsLen, vector<int>(numsLen, 0));//å¤´å°¾å„ä¸€ä¸ª1
 		size_t lenUb = numsLen + 1;
-		for (size_t len = 3; len < lenUb; len++) {//Çø¼ä³¤¶ÈÑ­»·
+		for (size_t len = 3; len < lenUb; len++) {//åŒºé—´é•¿åº¦å¾ªç¯
 			size_t curUb = numsLen - len + 1;
-			for (size_t cur = 0; cur < curUb; cur++) {//ÆğÊ¼Î»ÖÃÑ­»·
+			for (size_t cur = 0; cur < curUb; cur++) {//èµ·å§‹ä½ç½®å¾ªç¯
 				size_t posUb = cur + len - 1;
 				int maxVal = -1;
-				for (size_t j = cur + 1; j < posUb; j++) {//Çø¼äÄÚÑ­»·
+				for (size_t j = cur + 1; j < posUb; j++) {//åŒºé—´å†…å¾ªç¯
 					int left = dp[cur][j];
 					int right = dp[j][posUb];
 					int sum = left + right + numsCopy[cur] * numsCopy[j] * numsCopy[posUb];
@@ -5676,13 +5677,13 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨-Éè¼ÆÎÊÌâ
+//é«˜çº§ç®—æ³•-è®¾è®¡é—®é¢˜
 #if false
 
-class LRUCache {//LRU»º´æ»úÖÆ
+class LRUCache {//LRUç¼“å­˜æœºåˆ¶
 public:
-	//¶ÁÈ¡Ğ´Èë¶¼ËãÒ»´Î·ÃÎÊ
-	LRUCache(int capacity) {//ÉèÖÃ»º´æÈİÁ¿
+	//è¯»å–å†™å…¥éƒ½ç®—ä¸€æ¬¡è®¿é—®
+	LRUCache(int capacity) {//è®¾ç½®ç¼“å­˜å®¹é‡
 		capLim = capacity;
 		map = new unordered_map<int, node*>;
 		head = new node;
@@ -5702,31 +5703,31 @@ public:
 
 	void put(int key, int value) {
 		int cnt = map->size();
-		if (map->count(key) < 1) {//Ìí¼ÓÔªËØ
+		if (map->count(key) < 1) {//æ·»åŠ å…ƒç´ 
 			addFront(key, value);
 			if (cnt == capLim) {
 				deleteTail();
 			}
 			(*map)[key] = head->rear;
 		}
-		else {//¸üĞÂÔªËØ
+		else {//æ›´æ–°å…ƒç´ 
 			(*map)[key]->val = value;
 			moveToFront((*map)[key]);
 		}
 		return;
 	}
 private:
-	struct node {//Ë«ÏòÁ´±í£¬¸ßÆµ·ÃÎÊÔÚÇ°
+	struct node {//åŒå‘é“¾è¡¨ï¼Œé«˜é¢‘è®¿é—®åœ¨å‰
 		node* front = nullptr, * rear = nullptr;
 		int key = -1;
 		int val = -1;
 	};
 	int capLim = -1;
-	//Á½¸ö¼Ù½Úµã
+	//ä¸¤ä¸ªå‡èŠ‚ç‚¹
 	node* head = nullptr;
 	node* tail = nullptr;
-	unordered_map<int, node*>* map;//¼ÓËÙ»º´æ
-	void moveToFront(node* cur) {//·ÃÎÊ¹ı¾ÍÌáµ½×îÇ°
+	unordered_map<int, node*>* map;//åŠ é€Ÿç¼“å­˜
+	void moveToFront(node* cur) {//è®¿é—®è¿‡å°±æåˆ°æœ€å‰
 		if (cur == head->rear) {
 			return;
 		}
@@ -5738,15 +5739,15 @@ private:
 		head->rear = cur;
 		return;
 	}
-	void deleteTail() {//É¾³ı×îµÍÆµ·ÃÎÊÊı¾İ
+	void deleteTail() {//åˆ é™¤æœ€ä½é¢‘è®¿é—®æ•°æ®
 		node* tmp = tail->front;
 		tail->front = tmp->front;
 		tmp->front->rear = tail;
-		map->erase(tmp->key);//×¢ÒâÉ¾³ı½Úµã
+		map->erase(tmp->key);//æ³¨æ„åˆ é™¤èŠ‚ç‚¹
 		delete tmp;
 		return;
 	}
-	void addFront(int key, int val) {//Ìí¼ÓÒ»¸öĞÂÔªËØ
+	void addFront(int key, int val) {//æ·»åŠ ä¸€ä¸ªæ–°å…ƒç´ 
 		node* tmp = new node;
 		tmp->key = key;
 		tmp->val = val;
@@ -5758,7 +5759,7 @@ private:
 	}
 };
 
-class Trie {//ÊµÏÖ Trie (Ç°×ºÊ÷)
+class Trie {//å®ç° Trie (å‰ç¼€æ ‘)
 public:
 	/** Initialize your data structure here. */
 	Trie() {
@@ -5815,7 +5816,7 @@ private:
 	treeNode* root;
 };
 
-class MedianFinder {//Êı¾İÁ÷µÄÖĞÎ»Êı
+class MedianFinder {//æ•°æ®æµçš„ä¸­ä½æ•°
 public:
 	/** initialize your data structure here. */
 	MedianFinder() {
@@ -5826,7 +5827,7 @@ public:
 		lo.push(num);
 		hi.push(lo.top());
 		lo.pop();
-		if (lo.size() < hi.size()) {//Ö»ÓĞÒ»¸öÔªËØµÄÊ±ºò
+		if (lo.size() < hi.size()) {//åªæœ‰ä¸€ä¸ªå…ƒç´ çš„æ—¶å€™
 			lo.push(hi.top());
 			hi.pop();
 		}
@@ -5837,8 +5838,8 @@ public:
 		return lo.size() > hi.size() ? lo.top() : (lo.top() + hi.top()) * 0.5;
 	}
 private:
-	priority_queue<int> lo; //´ó¶¥ Ğ¡Êı
-	priority_queue<int, vector<int>, greater<int>> hi;//Ğ¡¶¥ ´óÊı
+	priority_queue<int> lo; //å¤§é¡¶ å°æ•°
+	priority_queue<int, vector<int>, greater<int>> hi;//å°é¡¶ å¤§æ•°
 };
 
 int main(int argc, char* argv[]) {
@@ -5854,7 +5855,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨-ÊıÑ§
+//é«˜çº§ç®—æ³•-æ•°å­¦
 #if false
 int Larger(int a, int b) {
 	string s1 = to_string(a);
@@ -5863,7 +5864,7 @@ int Larger(int a, int b) {
 }
 class Solution {
 public:
-	string largestNumber(vector<int>& nums) {//×î´óÊı
+	string largestNumber(vector<int>& nums) {//æœ€å¤§æ•°
 		size_t numsLen = nums.size();
 		string res;
 		if (numsLen == 0) {
@@ -5872,7 +5873,7 @@ public:
 		if (numsLen == 1) {
 			return to_string(nums[0]);
 		}
-		sort(nums.begin(), nums.end(), Larger);//½«º¯Êı×÷Îª²ÎÊı
+		sort(nums.begin(), nums.end(), Larger);//å°†å‡½æ•°ä½œä¸ºå‚æ•°
 		if (nums[0] == 0) {
 			return "0";
 		}
@@ -5891,7 +5892,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//¸ß¼¶Ëã·¨-ÆäËû
+//é«˜çº§ç®—æ³•-å…¶ä»–
 #if false
 int compare(vector<int>& a, vector<int>& b) {
 	return a[0] < b[0] || (a[0] == b[0] && a[1] > b[1]);
@@ -5916,7 +5917,7 @@ public:
 		}
 		return res;
 	}
-	int trapBrutal(vector<int>& height) {//´ÓµÍµ½¸ß¹àË®³¬Ê±
+	int trapBrutal(vector<int>& height) {//ä»ä½åˆ°é«˜çŒæ°´è¶…æ—¶
 		size_t heitCnt = height.size();
 		if (heitCnt < 3) {
 			return 0;
@@ -5945,7 +5946,7 @@ public:
 		}
 		return res;
 	}
-	int trapDualPointer(vector<int>& height) {//Ë«Ö¸Õë
+	int trapDualPointer(vector<int>& height) {//åŒæŒ‡é’ˆ
 		size_t heitCnt = height.size();
 		if (heitCnt < 3) {
 			return 0;
@@ -5969,7 +5970,7 @@ public:
 		}
 		return res;
 	}
-	int trap(vector<int>& height) {//¶¯Ì¬¹æ»®½ÓÓêË®
+	int trap(vector<int>& height) {//åŠ¨æ€è§„åˆ’æ¥é›¨æ°´
 		size_t heitCnt = height.size();
 		if (heitCnt < 3) {
 			return 0;
@@ -5994,12 +5995,12 @@ public:
 	}
 	vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {
 		vector<vector<int>> res;
-		multiset<pair<int, int>> all;//×Ô¶¯ÅÅĞò¿ÉÖØ¸´
+		multiset<pair<int, int>> all;//è‡ªåŠ¨æ’åºå¯é‡å¤
 		for (vector<int>& building : buildings) {
 			all.insert(make_pair(building[0], -building[2]));
 			all.insert(make_pair(building[1], building[2]));
 		}
-		multiset<int> height({ 0 });//±£³ÖÒ»¸öÄ¬ÈÏÖµ£¬·ÀÖ¹±©À×
+		multiset<int> height({ 0 });//ä¿æŒä¸€ä¸ªé»˜è®¤å€¼ï¼Œé˜²æ­¢æš´é›·
 		vector<int> last(2);
 		for (auto& it : all) {
 			if (it.second < 0) {
@@ -6064,14 +6065,14 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//Ä¿±êºÍ-²¹³ä
+//ç›®æ ‡å’Œ-è¡¥å……
 #if false
 
 class Solution {
 public:
-	int findTargetSumWays(vector<int>& nums, int S) {//Ä¿±êºÍ--¶¯Ì¬¹æ»®
+	int findTargetSumWays(vector<int>& nums, int S) {//ç›®æ ‡å’Œ--åŠ¨æ€è§„åˆ’
 		size_t numsLen = nums.size();
-		vector<vector<int>> dp(numsLen, vector<int>(2001));//dp[i][j]:Ç°i¸öÊıºÍÎªjµÄ·½°¸Êı
+		vector<vector<int>> dp(numsLen, vector<int>(2001));//dp[i][j]:å‰iä¸ªæ•°å’Œä¸ºjçš„æ–¹æ¡ˆæ•°
 		dp[0][1000 + nums[0]] = 1;
 		dp[0][1000 - nums[0]] += 1;
 		for (size_t i = 1; i < numsLen; i++) {
@@ -6093,16 +6094,16 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//ÃæÊÔÎÊÌâ
+//é¢è¯•é—®é¢˜
 #if false
 
 class Solution {
 public:
-	int superEggDrop(int K, int N) {//¼¦µ°µôÂä
+	int superEggDrop(int K, int N) {//é¸¡è›‹æ‰è½
 		if (N == 1) {
 			return 1;
 		}
-		vector<vector<int>> dp(N + 1, vector<int>(K + 1));//Å×i´Î£¬ j¸ö¼¦µ°ÄÜÈ·¶¨µÄ×î¸ßÂ¥²ã
+		vector<vector<int>> dp(N + 1, vector<int>(K + 1));//æŠ›iæ¬¡ï¼Œ jä¸ªé¸¡è›‹èƒ½ç¡®å®šçš„æœ€é«˜æ¥¼å±‚
 		for (size_t i = 1; i <= K; i++) {
 			dp[1][i] = 1;
 		}
@@ -6162,12 +6163,12 @@ public:
 		}
 		return ans;
 	}
-	int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {//¼ÓÓÍÕ¾-Ì°ĞÄ
+	int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {//åŠ æ²¹ç«™-è´ªå¿ƒ
 		size_t gasCnt = gas.size();
 		int minVal = INT_MAX;
 		int res = 0;
 		int spareGas = 0;
-		for (size_t i = 0; i < gasCnt; i++) {//Ê£ÓàÓÍÁ¿ÕÛÏßÍ¼ÔÚÆ½ÃæÉÏÏÂ×óÓÒÆ½ÒÆ
+		for (size_t i = 0; i < gasCnt; i++) {//å‰©ä½™æ²¹é‡æŠ˜çº¿å›¾åœ¨å¹³é¢ä¸Šä¸‹å·¦å³å¹³ç§»
 			spareGas += gas[i] - cost[i];
 			if (spareGas < minVal) {
 				res = i;
@@ -6188,12 +6189,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-Êı×é
+//cookBook-æ•°ç»„
 #if false 
 
 class Solution {
 public:
-	int threeSumClosest(vector<int>& nums, int target) {//×î½Ó½üµÄÈıÊıÖ®ºÍ
+	int threeSumClosest(vector<int>& nums, int target) {//æœ€æ¥è¿‘çš„ä¸‰æ•°ä¹‹å’Œ
 		size_t numsLen = nums.size();
 		sort(nums.begin(), nums.end());
 		int diff = INT_MAX;
@@ -6230,7 +6231,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> combinationSum(vector<int>& candidates, int target) {//×éºÏ×ÜºÍ--»ØËİ
+	vector<vector<int>> combinationSum(vector<int>& candidates, int target) {//ç»„åˆæ€»å’Œ--å›æº¯
 		sort(candidates.begin(), candidates.end());
 		size_t candLen = candidates.size();
 		vector<int> tmp;
@@ -6246,7 +6247,7 @@ public:
 			res.emplace_back(combine);
 			return;
 		}
-		dfs1(res, candidates, cur + 1, combine, target, candLen);//²»È¡µ±Ç°µÄ
+		dfs1(res, candidates, cur + 1, combine, target, candLen);//ä¸å–å½“å‰çš„
 		if (target - candidates[cur] >= 0) {
 			combine.emplace_back(candidates[cur]);
 			dfs1(res, candidates, cur, combine, target - candidates[cur], candLen);
@@ -6254,7 +6255,7 @@ public:
 		}
 		return;
 	}
-	//ÓëÉÏÒ»ÌâÒ»Ñù£¬ÓĞÖØ¸´ÔªËØ£¬ ½á¹û²»ÔÊĞíÖØ¸´
+	//ä¸ä¸Šä¸€é¢˜ä¸€æ ·ï¼Œæœ‰é‡å¤å…ƒç´ ï¼Œ ç»“æœä¸å…è®¸é‡å¤
 	vector<pair<int, int>> freq;
 	vector<vector<int>> res;
 	vector<int> tmp;
@@ -6281,7 +6282,7 @@ public:
 			return;
 		}
 		dfs2(pos + 1, freqLen, target);
-		int most = min(target / freq[pos].first, freq[pos].second) + 1;//ÖØ¸´ÊıÁ¿ÉÏÏŞ
+		int most = min(target / freq[pos].first, freq[pos].second) + 1;//é‡å¤æ•°é‡ä¸Šé™
 		for (size_t i = 1; i < most; i++) {
 			tmp.push_back(freq[pos].first);
 			dfs2(pos + 1, freqLen, target - i * freq[pos].first);
@@ -6291,7 +6292,7 @@ public:
 		}
 		return;
 	}
-	vector<vector<int>> generateMatrix(int n) {//ÂİĞı¾ØÕóÊä³ö
+	vector<vector<int>> generateMatrix(int n) {//èºæ—‹çŸ©é˜µè¾“å‡º
 		vector<vector<int>> res(n, vector<int>(n));
 		int start = 1;
 		for (size_t i = 0; i < n / 2; i++) {
@@ -6317,7 +6318,7 @@ public:
 		}
 		return begin;
 	}
-	int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {//²»Í¬Â·¾¶ II--¶¯Ì¬¹æ»®
+	int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {//ä¸åŒè·¯å¾„ II--åŠ¨æ€è§„åˆ’
 		size_t col = obstacleGrid.size(), rol = obstacleGrid[0].size();
 		for (size_t i = 0; i < col; i++) {
 			for (size_t j = 0; j < rol; j++) {
@@ -6350,7 +6351,7 @@ public:
 		}
 		return obstacleGrid[col - 1][rol - 1] == -1 ? 0 : obstacleGrid[col - 1][rol - 1];
 	}
-	int minPathSum(vector<vector<int>>& grid) {//×îĞ¡Â·¾¶ºÍ
+	int minPathSum(vector<vector<int>>& grid) {//æœ€å°è·¯å¾„å’Œ
 		size_t col = grid.size(), rol = grid[0].size();
 		for (size_t i = 1; i < col; i++) {
 			grid[i][0] += grid[i - 1][0];
@@ -6365,7 +6366,7 @@ public:
 		}
 		return grid[col - 1][rol - 1];
 	}
-	bool searchMatrix(vector<vector<int>>& matrix, int target) {//ËÑË÷¶şÎ¬¾ØÕó, ¶ş·Ö·¨
+	bool searchMatrix(vector<vector<int>>& matrix, int target) {//æœç´¢äºŒç»´çŸ©é˜µ, äºŒåˆ†æ³•
 		size_t col = matrix.size();
 		if (col == 0) {
 			return false;
@@ -6387,7 +6388,7 @@ public:
 		}
 		return false;
 	}
-	bool search(vector<int>& nums, int target) {//ËÑË÷Ğı×ªÅÅĞòÊı×é II--¶ş·Ö·¨
+	bool search(vector<int>& nums, int target) {//æœç´¢æ—‹è½¬æ’åºæ•°ç»„ II--äºŒåˆ†æ³•
 		int numsLen = nums.size();
 		int pivot = 0;
 		for (int i = 1; i < numsLen; i++) {
@@ -6427,18 +6428,18 @@ public:
 		}
 		return false;
 	}
-	vector<vector<int>> subsetsWithDup(vector<int>& nums) {//×Ó¼¯ II--Î»²Ù×÷
+	vector<vector<int>> subsetsWithDup(vector<int>& nums) {//å­é›† II--ä½æ“ä½œ
 		sort(nums.begin(), nums.end());
 		size_t numsLen = nums.size();
-		size_t curReg = 1 << numsLen;//±í
+		size_t curReg = 1 << numsLen;//è¡¨
 		vector<int> tmp;
 		vector<vector<int>> res;
 		for (size_t i = 0; i < curReg; i++) {
 			tmp.clear();
 			bool flag = true;
 			for (size_t j = 0; j < numsLen; j++) {
-				if (i & (1 << j)) {//È¡Ã¿Ò»Î»
-					if (j != 0 && nums[j] == nums[j - 1] && ((i & (1 << (j - 1))) == 0)) {//È·±£È¡µÄÊÇ100£¬110£¬111ÕâÖÖ
+				if (i & (1 << j)) {//å–æ¯ä¸€ä½
+					if (j != 0 && nums[j] == nums[j - 1] && ((i & (1 << (j - 1))) == 0)) {//ç¡®ä¿å–çš„æ˜¯100ï¼Œ110ï¼Œ111è¿™ç§
 						flag = false;
 						break;
 					}
@@ -6451,7 +6452,7 @@ public:
 		}
 		return res;
 	}
-	int minimumTotal(vector<vector<int>>& triangle) {//Èı½ÇĞÎ×îĞ¡Â·¾¶ºÍ--dp
+	int minimumTotal(vector<vector<int>>& triangle) {//ä¸‰è§’å½¢æœ€å°è·¯å¾„å’Œ--dp
 		size_t triStep = triangle.size();
 		for (size_t i = 1; i < triStep; i++) {
 			triangle[i][0] += triangle[i - 1][0];
@@ -6466,12 +6467,12 @@ public:
 		}
 		return res;
 	}
-	vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {//µ¥´Ê½ÓÁú II--BFS
+	vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {//å•è¯æ¥é¾™ II--BFS
 		int id = 0;
 		size_t sLen = wordList[0].size();
 		size_t wordCnt = wordList.size();
 		for (string& str : wordList) {
-			if (nodeMap.count(str) < 1) {//Èë¿â²¢·ÖÅäID
+			if (nodeMap.count(str) < 1) {//å…¥åº“å¹¶åˆ†é…ID
 				nodeMap[str] = id++;
 				idWord.push_back(str);
 			}
@@ -6483,7 +6484,7 @@ public:
 			nodeMap[beginWord] = id++;
 			idWord.push_back(beginWord);
 		}
-		//Ìí¼Ó±ß
+		//æ·»åŠ è¾¹
 		edges.resize(idWord.size());
 		for (size_t i = 0; i < id; i++) {
 			for (size_t j = i + 1; j < id; j++) {
@@ -6497,14 +6498,14 @@ public:
 		vector<vector<string>> res;
 		queue<vector<int>> q;
 		vector<int> cost(id, 1 << 10);
-		q.push(vector<int>{nodeMap[beginWord]});//¼·Ò»¸ö½øÈ¥£¬¿ªÊ¼ID
-		cost[nodeMap[beginWord]] = 0;//´¢´æbegin±ä»»µ½Î»ËùĞè´ÎÊı
+		q.push(vector<int>{nodeMap[beginWord]});//æŒ¤ä¸€ä¸ªè¿›å»ï¼Œå¼€å§‹ID
+		cost[nodeMap[beginWord]] = 0;//å‚¨å­˜beginå˜æ¢åˆ°ä½æ‰€éœ€æ¬¡æ•°
 		while (!q.empty()) {
 			vector<int> current = q.front();
 			q.pop();
 			int last = current.back();
-			if (last == endID) {//Ìøµ½ÁË¾ÍÃ»±ØÒªÍùÏÂÌøÁË
-				vector<string> tmp;//½á¹û
+			if (last == endID) {//è·³åˆ°äº†å°±æ²¡å¿…è¦å¾€ä¸‹è·³äº†
+				vector<string> tmp;//ç»“æœ
 				for (int index : current) {
 					tmp.push_back(idWord[index]);
 				}
@@ -6512,11 +6513,11 @@ public:
 			}
 			else {
 				size_t lastSize = edges[last].size();
-				for (size_t i = 0; i < lastSize; i++) {//Ö»ÓĞÕÒµ½ÁË¸ü½üµÄ¾àÀë£¬cost²Å»á¸üĞÂ
+				for (size_t i = 0; i < lastSize; i++) {//åªæœ‰æ‰¾åˆ°äº†æ›´è¿‘çš„è·ç¦»ï¼Œcostæ‰ä¼šæ›´æ–°
 					int to = edges[last][i];
 					if (cost[last] + 1 <= cost[to]) {
 						cost[to] = cost[last] + 1;
-						vector<int> tmp(current);//±£´æÕû¸ö¹ı³ÌID
+						vector<int> tmp(current);//ä¿å­˜æ•´ä¸ªè¿‡ç¨‹ID
 						tmp.push_back(to);
 						q.push(tmp);
 					}
@@ -6537,14 +6538,14 @@ public:
 	unordered_map<string, int> nodeMap;
 	vector<string> idWord;
 	vector<vector<int>> edges;
-	vector<vector<int>> combinationSum3(int k, int n) {//×éºÏ×ÜºÍ III
+	vector<vector<int>> combinationSum3(int k, int n) {//ç»„åˆæ€»å’Œ III
 		vector<vector<int>> res;
 		vector<int> tmp;
-		combinationSum3DFS(1, 9, k, n, res, tmp);//µ±Ç°Ã¶¾Ù£¬Ã¶¾ÙÉÏÏŞ£¬ÊıÁ¿£¬×ÜºÍ
+		combinationSum3DFS(1, 9, k, n, res, tmp);//å½“å‰æšä¸¾ï¼Œæšä¸¾ä¸Šé™ï¼Œæ•°é‡ï¼Œæ€»å’Œ
 		return res;
 	}
 	void combinationSum3DFS(int cur, int n, int k, int sum, vector<vector<int>>& res, vector<int>& tmp) {
-		if (tmp.size() + (n - cur + 1) < k || tmp.size() > k) {//ÊıÁ¿²»¹»»òÊıÁ¿¶àÁË
+		if (tmp.size() + (n - cur + 1) < k || tmp.size() > k) {//æ•°é‡ä¸å¤Ÿæˆ–æ•°é‡å¤šäº†
 			return;
 		}
 		if (tmp.size() == k && accumulate(tmp.begin(), tmp.end(), 0) == sum) {
@@ -6557,7 +6558,7 @@ public:
 		combinationSum3DFS(cur + 1, n, k, sum, res, tmp);
 		return;
 	}
-	vector<int> majorityElement(vector<int>& nums) {//ÇóÖÚÊı II--Í¶Æ±·¨
+	vector<int> majorityElement(vector<int>& nums) {//æ±‚ä¼—æ•° II--æŠ•ç¥¨æ³•
 		int num1 = -1, num2 = -1;
 		int num1Cnt = 0, num2Cnt = 0;
 		for (int& num : nums) {
@@ -6599,11 +6600,11 @@ public:
 		}
 		return res;
 	}
-	int thirdMax(vector<int>& nums) {//µÚÈı´óµÄÊı
+	int thirdMax(vector<int>& nums) {//ç¬¬ä¸‰å¤§çš„æ•°
 		int max3 = INT_MIN, max2 = INT_MIN, max1 = INT_MIN;
 		int tmp1 = nums[0], tmp2 = nums[0], tmp3 = nums[0];
 		for (int& num : nums) {
-			if (num != tmp1) {//µÃµ½3¸ö²»Í¬µÄÊı
+			if (num != tmp1) {//å¾—åˆ°3ä¸ªä¸åŒçš„æ•°
 				if (tmp1 != tmp2) {
 					tmp3 = num;
 				}
@@ -6632,7 +6633,7 @@ public:
 		}
 		return max3;
 	}
-	vector<int> findDisappearedNumbers(vector<int>& nums) {//ÕÒµ½ËùÓĞÊı×éÖĞÏûÊ§µÄÊı×Ö
+	vector<int> findDisappearedNumbers(vector<int>& nums) {//æ‰¾åˆ°æ‰€æœ‰æ•°ç»„ä¸­æ¶ˆå¤±çš„æ•°å­—
 		size_t numsLen = nums.size();
 		for (size_t i = 0; i < numsLen; i++) {
 			int cur = abs(nums[i]) - 1;
@@ -6646,7 +6647,7 @@ public:
 		}
 		return res;
 	}
-	bool circularArrayLoop(vector<int>& nums) {//»·ĞÎÊı×éÑ­»·
+	bool circularArrayLoop(vector<int>& nums) {//ç¯å½¢æ•°ç»„å¾ªç¯
 		const size_t numsLen = nums.size();
 		for (int i = 0; i < numsLen; i++) {
 			if (nums[i] == 0) {
@@ -6663,24 +6664,24 @@ public:
 		if (nums[i] == 0) {//
 			return false;
 		}
-		if (nums[i] == INT_MAX) {//ĞÎ³É±Õ»·
+		if (nums[i] == INT_MAX) {//å½¢æˆé—­ç¯
 			return true;
 		}
 		int ndir = nums[i] > 0 ? 1 : -1;
 		if (ndir == dir) {
 			int j = (numsLen + (nums[i] + i) % numsLen) % numsLen;
-			nums[i] = INT_MAX;//¿¼²ì¹ı³ÌÖĞ
+			nums[i] = INT_MAX;//è€ƒå¯Ÿè¿‡ç¨‹ä¸­
 			if (j != i && circularArrayLoopDFS(nums, j, numsLen, dir)) {
 				return true;
 			}
 			else {
-				nums[i] = 0;//È·¶¨²»·ûºÏÌõ¼ş²»ÄÜ³É»·
+				nums[i] = 0;//ç¡®å®šä¸ç¬¦åˆæ¡ä»¶ä¸èƒ½æˆç¯
 				return false;
 			}
 		}
 		return false;
 	}
-	int islandPerimeterBFS(vector<vector<int>>& grid) {//µºÓìµÄÖÜ³¤--BFS
+	int islandPerimeterBFS(vector<vector<int>>& grid) {//å²›å±¿çš„å‘¨é•¿--BFS
 		size_t col = grid.size();
 		if (col == 0) {
 			return 0;
@@ -6690,7 +6691,7 @@ public:
 		for (size_t i = 0; i < col; i++) {
 			for (size_t j = 0; j < rol; j++) {
 				if (grid[i][j] == 1) {
-					q.push(make_pair(i, j));//´ÓÒ»¸ö½Ç¿ªÊ¼
+					q.push(make_pair(i, j));//ä»ä¸€ä¸ªè§’å¼€å§‹
 					break;
 				}
 			}
@@ -6732,7 +6733,7 @@ public:
 		}
 		return res;
 	}
-	int islandPerimeter(vector<vector<int>>& grid) {//µºÓìµÄÖÜ³¤--±©Á¦·¨
+	int islandPerimeter(vector<vector<int>>& grid) {//å²›å±¿çš„å‘¨é•¿--æš´åŠ›æ³•
 		size_t col = grid.size();
 		if (col == 0) {
 			return 0;
@@ -6768,7 +6769,7 @@ public:
 		}
 		return res;
 	}
-	int findPairs(vector<int>& nums, int k) {//Êı×éÖĞµÄ k-diff Êı¶Ô
+	int findPairs(vector<int>& nums, int k) {//æ•°ç»„ä¸­çš„ k-diff æ•°å¯¹
 		unordered_map<int, int> numMap;
 		for (int& num : nums) {
 			numMap[num]++;
@@ -6790,7 +6791,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {//ÖØËÜ¾ØÕó
+	vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {//é‡å¡‘çŸ©é˜µ
 		size_t rol = nums.size();
 		if (rol == 0) {
 			return nums;
@@ -6806,12 +6807,12 @@ public:
 		}
 		return res;
 	}
-	int maximumProductBak(vector<int>& nums) {//Èı¸öÊıµÄ×î´ó³Ë»ı--±©Á¦ÅÅĞò
+	int maximumProductBak(vector<int>& nums) {//ä¸‰ä¸ªæ•°çš„æœ€å¤§ä¹˜ç§¯--æš´åŠ›æ’åº
 		sort(nums.begin(), nums.end());
 		size_t numsLen = nums.size();
 		return max(nums[0] * nums[1] * nums[numsLen - 1], nums[numsLen - 1] * nums[numsLen - 2] * nums[numsLen - 3]);
 	}
-	int maximumProduct(vector<int>& nums) {//Èı¸öÊıµÄ×î´ó³Ë»ı--Î¬»¤3¸ö×î´óÖµºÍÁ½¸ö×îĞ¡Öµ
+	int maximumProduct(vector<int>& nums) {//ä¸‰ä¸ªæ•°çš„æœ€å¤§ä¹˜ç§¯--ç»´æŠ¤3ä¸ªæœ€å¤§å€¼å’Œä¸¤ä¸ªæœ€å°å€¼
 		int max1 = INT_MIN, max2 = INT_MIN, max3 = INT_MIN;
 		int min1 = INT_MAX, min2 = INT_MAX;
 		for (int& num : nums) {
@@ -6837,7 +6838,7 @@ public:
 		}
 		return max(max1 * max2 * max3, max1 * min1 * min2);
 	}
-	vector<vector<int>> imageSmoother(vector<vector<int>>& M) {//Í¼Æ¬Æ½»¬Æ÷(¾í»ıºË)--¿ÉÒÔÓÅ»¯£¬·ÖÇø´¦Àí£¬²»´¦ÀíÁË
+	vector<vector<int>> imageSmoother(vector<vector<int>>& M) {//å›¾ç‰‡å¹³æ»‘å™¨(å·ç§¯æ ¸)--å¯ä»¥ä¼˜åŒ–ï¼Œåˆ†åŒºå¤„ç†ï¼Œä¸å¤„ç†äº†
 		size_t rol = M.size();
 		if (rol == 0) {
 			return M;
@@ -6892,7 +6893,7 @@ public:
 			rolCur = q.front().first;
 			colCur = q.front().second;
 			q.pop();
-			if (grid[rolCur][colCur] == 2) {//ÓĞ¿ÉÄÜÔÚÈë¶ÓÁĞ¹ı³ÌÖĞ±»ÆäËûÈË·ÃÎÊ
+			if (grid[rolCur][colCur] == 2) {//æœ‰å¯èƒ½åœ¨å…¥é˜Ÿåˆ—è¿‡ç¨‹ä¸­è¢«å…¶ä»–äººè®¿é—®
 				continue;
 			}
 			res++;
@@ -6910,7 +6911,7 @@ public:
 		}
 		return res;
 	}
-	int findShortestSubArray(vector<int>& nums) {//Êı×éµÄ¶È
+	int findShortestSubArray(vector<int>& nums) {//æ•°ç»„çš„åº¦
 		unordered_map<int, int> numMap;
 		for (int& num : nums) {
 			numMap[num]++;
@@ -6941,7 +6942,7 @@ public:
 		}
 		return res;
 	}
-	int numSubarrayProductLessThanKBAK(vector<int>& nums, int k) {//³Ë»ıĞ¡ÓÚKµÄ×ÓÊı×é--¶¯Ì¬¹æ»®n^2
+	int numSubarrayProductLessThanKBAK(vector<int>& nums, int k) {//ä¹˜ç§¯å°äºKçš„å­æ•°ç»„--åŠ¨æ€è§„åˆ’n^2
 		size_t numsLen = nums.size();
 		vector<vector<int>> dp(numsLen, vector<int>(numsLen, k));
 		for (size_t i = 0; i < numsLen; i++) {
@@ -6951,7 +6952,7 @@ public:
 		}
 		for (size_t i = 0; i < numsLen; i++) {
 			for (size_t j = i + 1; j < numsLen; j++) {
-				if (dp[i][j - 1] > k) {//¼ôÖ¦
+				if (dp[i][j - 1] > k) {//å‰ªæ
 					break;
 				}
 				dp[i][j] = dp[i][j - 1] * dp[j][j];
@@ -6965,7 +6966,7 @@ public:
 		}
 		return res;
 	}
-	int numSubarrayProductLessThanK(vector<int>& nums, int k) {//Ë«Ö¸Õë
+	int numSubarrayProductLessThanK(vector<int>& nums, int k) {//åŒæŒ‡é’ˆ
 		if (k < 2) {
 			return 0;
 		}
@@ -6977,28 +6978,28 @@ public:
 			while (tmp >= k) {
 				tmp /= nums[left++];
 			}
-			res += right - left + 1;//ÓÒµ½×óÏà³ËµÄ¶¼Ğ¡ÓÚ
+			res += right - left + 1;//å³åˆ°å·¦ç›¸ä¹˜çš„éƒ½å°äº
 		}
 		return res;
 	}
-	int maxProfitBAK(vector<int>& prices, int fee) {//ÂòÂô¹ÉÆ±µÄ×î¼ÑÊ±»úº¬ÊÖĞø·Ñ--¶¯Ì¬¹æ»®
+	int maxProfitBAK(vector<int>& prices, int fee) {//ä¹°å–è‚¡ç¥¨çš„æœ€ä½³æ—¶æœºå«æ‰‹ç»­è´¹--åŠ¨æ€è§„åˆ’
 		size_t pricesCnt = prices.size();
-		vector<vector<int>> dp(2, vector<int>(pricesCnt));//µ±ÌìÖ»ÓĞÁ½ÖÖ²Ù×÷£¬ÂòÈëºÍÂô³ö
-		//Ö»ÓĞ½»Ò×Ê±²Å»á¼ÆËã¼ÛÖµ±ä¶¯
-		dp[0][0] = 0;//Ã»ÓĞ¹ÉÆ±ÊÕÒæ
-		dp[1][0] = -prices[0];//³ÖÓĞ¹ÉÆ±ÊÕÒæ
+		vector<vector<int>> dp(2, vector<int>(pricesCnt));//å½“å¤©åªæœ‰ä¸¤ç§æ“ä½œï¼Œä¹°å…¥å’Œå–å‡º
+		//åªæœ‰äº¤æ˜“æ—¶æ‰ä¼šè®¡ç®—ä»·å€¼å˜åŠ¨
+		dp[0][0] = 0;//æ²¡æœ‰è‚¡ç¥¨æ”¶ç›Š
+		dp[1][0] = -prices[0];//æŒæœ‰è‚¡ç¥¨æ”¶ç›Š
 		for (size_t i = 1; i < pricesCnt; i++) {
 			dp[0][i] = max(dp[0][i - 1], dp[1][i - 1] + prices[i] - fee);
 			dp[1][i] = max(dp[0][i - 1] - prices[i], dp[1][i - 1]);
 		}
 		return dp[0][pricesCnt - 1];
 	}
-	int maxProfit(vector<int>& prices, int fee) {//ÂòÂô¹ÉÆ±µÄ×î¼ÑÊ±»úº¬ÊÖĞø·Ñ--¶¯Ì¬¹æ»®--¿Õ¼äÓÅ»¯
+	int maxProfit(vector<int>& prices, int fee) {//ä¹°å–è‚¡ç¥¨çš„æœ€ä½³æ—¶æœºå«æ‰‹ç»­è´¹--åŠ¨æ€è§„åˆ’--ç©ºé—´ä¼˜åŒ–
 		size_t pricesCnt = prices.size();
-		//µ±ÌìÖ»ÓĞÁ½ÖÖ²Ù×÷£¬ÂòÈëºÍÂô³ö
-		//Ö»ÓĞ½»Ò×Ê±²Å»á¼ÆËã¼ÛÖµ±ä¶¯
-		int noStock = 0;//Ã»ÓĞ¹ÉÆ±ÊÕÒæ
-		int haveStock = -prices[0];//³ÖÓĞ¹ÉÆ±ÊÕÒæ
+		//å½“å¤©åªæœ‰ä¸¤ç§æ“ä½œï¼Œä¹°å…¥å’Œå–å‡º
+		//åªæœ‰äº¤æ˜“æ—¶æ‰ä¼šè®¡ç®—ä»·å€¼å˜åŠ¨
+		int noStock = 0;//æ²¡æœ‰è‚¡ç¥¨æ”¶ç›Š
+		int haveStock = -prices[0];//æŒæœ‰è‚¡ç¥¨æ”¶ç›Š
 		for (size_t i = 1; i < pricesCnt; i++) {
 			int noStockBak = noStock;
 			int haveStockBak = haveStock;
@@ -7007,7 +7008,7 @@ public:
 		}
 		return noStock;
 	}
-	bool isOneBitCharacter(vector<int>& bits) {//1±ÈÌØÓë2±ÈÌØ×Ö·û,ÌøÎ»
+	bool isOneBitCharacter(vector<int>& bits) {//1æ¯”ç‰¹ä¸2æ¯”ç‰¹å­—ç¬¦,è·³ä½
 		size_t bitsCnt = bits.size();
 		size_t cur = 0;
 		while (cur < bitsCnt - 1) {
@@ -7018,7 +7019,7 @@ public:
 		}
 		return cur == bitsCnt - 1;
 	}
-	int minCostClimbingStairs(vector<int>& cost) {//Ê¹ÓÃ×îĞ¡»¨·ÑÅÀÂ¥Ìİ--¶¯Ì¬¹æ»®
+	int minCostClimbingStairs(vector<int>& cost) {//ä½¿ç”¨æœ€å°èŠ±è´¹çˆ¬æ¥¼æ¢¯--åŠ¨æ€è§„åˆ’
 		size_t costCnt = cost.size();
 		int dp_1 = 0;
 		int dp_2 = 0;
@@ -7030,18 +7031,18 @@ public:
 		}
 		return dp;
 	}
-	bool isToeplitzMatrix(vector<vector<int>>& matrix) {//ÍĞÆÕÀû´Ä¾ØÕó
+	bool isToeplitzMatrix(vector<vector<int>>& matrix) {//æ‰˜æ™®åˆ©èŒ¨çŸ©é˜µ
 		size_t rol = matrix.size();
 		size_t col = matrix[0].size();
 		size_t limL = min(rol, col);
 		size_t limU = max(rol, col);
 		for (size_t i = 0; i < rol; i++) {
-			if (!exploreThis(matrix, i, 0, rol, col)) {//ÑéÖ¤Êú×ÅµÄ
+			if (!exploreThis(matrix, i, 0, rol, col)) {//éªŒè¯ç«–ç€çš„
 				return false;
 			}
 		}
 		for (size_t i = 1; i < col; i++) {
-			if (!exploreThis(matrix, 0, i, rol, col)) {//ÑéÖ¤ºá×ÅµÄ
+			if (!exploreThis(matrix, 0, i, rol, col)) {//éªŒè¯æ¨ªç€çš„
 				return false;
 			}
 		}
@@ -7058,7 +7059,7 @@ public:
 		}
 		return true;
 	}
-	vector<vector<int>> flipAndInvertImage(vector<vector<int>>& A) {//·­×ªÍ¼Ïñ
+	vector<vector<int>> flipAndInvertImage(vector<vector<int>>& A) {//ç¿»è½¬å›¾åƒ
 		int rol = A.size();
 		int col = A[0].size();
 		for (int i = 0; i < rol; i++) {
@@ -7074,7 +7075,7 @@ public:
 		}
 		return A;
 	}
-	vector<int> fairCandySwap(vector<int>& A, vector<int>& B) {//¹«Æ½µÄÌÇ¹û½»»»
+	vector<int> fairCandySwap(vector<int>& A, vector<int>& B) {//å…¬å¹³çš„ç³–æœäº¤æ¢
 		unordered_set<int> ASet, BSet;
 		int ASum = 0, BSum = 0;
 		for (int& num : A) {
@@ -7096,9 +7097,9 @@ public:
 		}
 		return res;
 	}
-	int sumSubseqWidths(vector<int>& nums) {//×ÓĞòÁĞ¿í¶ÈÖ®ºÍ
-		sort(nums.begin(), nums.end());//ÅÅĞò²»¸Ä±ä½á¹û
-		//A[i]ÊÇ×ó²à2^i¸öÇø¼äµÄÓÒ±ß½ç£¬ÓÒ²à2^N-i-1¸ö×ó±ß½ç£¬ÓÒ±ß½ç¹±Ï×ÎªÕı£¬×ó±ß½ç¹±Ï×Îª¸º
+	int sumSubseqWidths(vector<int>& nums) {//å­åºåˆ—å®½åº¦ä¹‹å’Œ
+		sort(nums.begin(), nums.end());//æ’åºä¸æ”¹å˜ç»“æœ
+		//A[i]æ˜¯å·¦ä¾§2^iä¸ªåŒºé—´çš„å³è¾¹ç•Œï¼Œå³ä¾§2^N-i-1ä¸ªå·¦è¾¹ç•Œï¼Œå³è¾¹ç•Œè´¡çŒ®ä¸ºæ­£ï¼Œå·¦è¾¹ç•Œè´¡çŒ®ä¸ºè´Ÿ
 		size_t numsLen = nums.size();
 		size_t left = 0, right = 1;
 		int res = 0;
@@ -7112,20 +7113,20 @@ public:
 		}
 		return res;
 	}
-	bool isMonotonic(vector<int>& nums) {//µ¥µ÷ÊıÁĞ
+	bool isMonotonic(vector<int>& nums) {//å•è°ƒæ•°åˆ—
 		size_t numsLen = nums.size();
-		if (numsLen < 2) {//µ¥¸öÔªËØ
+		if (numsLen < 2) {//å•ä¸ªå…ƒç´ 
 			return true;
 		}
 		size_t i = 1;
-		while (i < numsLen&& nums[i] == nums[i - 1]) {//È¥³ı¿ªÍ·ÖØ¸´
+		while (i < numsLen&& nums[i] == nums[i - 1]) {//å»é™¤å¼€å¤´é‡å¤
 			i++;
 		}
-		if (i == numsLen) {//È«ÏàµÈ
+		if (i == numsLen) {//å…¨ç›¸ç­‰
 			return true;
 		}
 		bool grater = nums[i] > nums[i - 1];
-		while (i < numsLen) {//Ö÷ÒµÎñ
+		while (i < numsLen) {//ä¸»ä¸šåŠ¡
 			if (nums[i] == nums[i - 1]) {
 				i++;
 				continue;
@@ -7137,9 +7138,9 @@ public:
 		}
 		return true;
 	}
-	int sumSubarrayMins(vector<int>& nums) {//×ÓÊı×éµÄ×îĞ¡ÖµÖ®ºÍ
+	int sumSubarrayMins(vector<int>& nums) {//å­æ•°ç»„çš„æœ€å°å€¼ä¹‹å’Œ
 		int numsLen = nums.size();
-		vector<int> left(numsLen), right(numsLen);//×îĞ¡ÖµÇø¼äÏÂ±ê
+		vector<int> left(numsLen), right(numsLen);//æœ€å°å€¼åŒºé—´ä¸‹æ ‡
 		for (int i = 0; i < numsLen; i++) {
 			left[i] = right[i] = i;
 		}
@@ -7184,7 +7185,7 @@ public:
 		}
 		return g > 1;
 	}
-	inline int gcd(int a, int b) {//Çó×î´ó¹«Ô¼Êı
+	inline int gcd(int a, int b) {//æ±‚æœ€å¤§å…¬çº¦æ•°
 		int r;
 		while (b > 0) {
 			r = a % b;
@@ -7193,7 +7194,7 @@ public:
 		}
 		return a;
 	}
-	int maxSubarraySumCircularBAK(vector<int>& A) {//»·ĞÎ×ÓÊı×éµÄ×î´óºÍ--±©Á¦¶¯Ì¬¹æ»®--³¬Ê±
+	int maxSubarraySumCircularBAK(vector<int>& A) {//ç¯å½¢å­æ•°ç»„çš„æœ€å¤§å’Œ--æš´åŠ›åŠ¨æ€è§„åˆ’--è¶…æ—¶
 		vector<int> B(A);
 		vector<int> dp(A);
 		size_t numsLen = A.size();
@@ -7214,10 +7215,10 @@ public:
 		}
 		return res;
 	}
-	int maxSubarraySumCircular(vector<int>& A) {//»·ĞÎ×ÓÊı×éµÄ×î´óºÍ
+	int maxSubarraySumCircular(vector<int>& A) {//ç¯å½¢å­æ•°ç»„çš„æœ€å¤§å’Œ
 		int maxVal = A.front(), currentMax = A.front(), minVal = A.front(), currentMin = A.front(), sum = A.front();
 		size_t numsLen = A.size();
-		for (size_t i = 1; i < numsLen; i++) {//×î´óºÍ×îĞ¡×ÓÁĞºÍ
+		for (size_t i = 1; i < numsLen; i++) {//æœ€å¤§å’Œæœ€å°å­åˆ—å’Œ
 			currentMax = max(A[i], currentMax + A[i]);
 			maxVal = max(maxVal, currentMax);
 			currentMin = min(A[i], currentMin + A[i]);
@@ -7229,7 +7230,7 @@ public:
 		}
 		return max(maxVal, sum - minVal);
 	}
-	vector<int> sortArrayByParityII(vector<int>& nums) {//°´ÆæÅ¼ÅÅĞòÊı×é II
+	vector<int> sortArrayByParityII(vector<int>& nums) {//æŒ‰å¥‡å¶æ’åºæ•°ç»„ II
 		size_t numsLen = nums.size();
 		size_t eveCur = 0, oddCur = 1;
 		vector<int> res(nums);
@@ -7245,7 +7246,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> sortedSquares(vector<int>& nums) {//ÓĞĞòÊı×éµÄÆ½·½
+	vector<int> sortedSquares(vector<int>& nums) {//æœ‰åºæ•°ç»„çš„å¹³æ–¹
 		vector<int> res;
 		int aproixZeroCur = 0;
 		int numsLen = nums.size();
@@ -7283,7 +7284,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> sumEvenAfterQueries(vector<int>& A, vector<vector<int>>& queries) {//²éÑ¯ºóµÄÅ¼ÊıºÍ
+	vector<int> sumEvenAfterQueries(vector<int>& A, vector<vector<int>>& queries) {//æŸ¥è¯¢åçš„å¶æ•°å’Œ
 		int sum = 0;
 		for (int& num : A) {
 			if (num % 2 == 0) {
@@ -7294,21 +7295,21 @@ public:
 		for (vector<int>& qur : queries) {
 			int val = qur[0];
 			size_t index = qur[1];
-			if (A[index] % 2 != 0) {//Î´¸Ä±äÇ°ÎªÆæÊı
-				if (val % 2 != 0) {//¸ÄÍê±ä³ÉÅ¼Êı
+			if (A[index] % 2 != 0) {//æœªæ”¹å˜å‰ä¸ºå¥‡æ•°
+				if (val % 2 != 0) {//æ”¹å®Œå˜æˆå¶æ•°
 					A[index] += val;
 					sum += A[index];
 				}
-				else {//¸ÄÍê»¹ÊÇÆæÊı
+				else {//æ”¹å®Œè¿˜æ˜¯å¥‡æ•°
 					A[index] += val;
 				}
 			}
-			else {//Î´¸Ä±äÇ°ÊÇÅ¼Êı
-				if (val % 2 != 0) {//¸ÄÍê±äÆæÊıÁË
+			else {//æœªæ”¹å˜å‰æ˜¯å¶æ•°
+				if (val % 2 != 0) {//æ”¹å®Œå˜å¥‡æ•°äº†
 					sum -= A[index];
 					A[index] += val;
 				}
-				else {//¸ÄÍê»¹ÊÇÅ¼Êı
+				else {//æ”¹å®Œè¿˜æ˜¯å¶æ•°
 					sum += val;
 					A[index] += val;
 				}
@@ -7317,11 +7318,11 @@ public:
 		}
 		return res;
 	}
-	int numRookCaptures(vector<vector<char>>& board) {//¿ÉÒÔ±»Ò»²½²¶»ñµÄÆå×ÓÊı
+	int numRookCaptures(vector<vector<char>>& board) {//å¯ä»¥è¢«ä¸€æ­¥æ•è·çš„æ£‹å­æ•°
 		int res = 0;
 		int rol = 0, col = 0;
 		bool done = false;
-		for (int i = 0; i < 8; i++) {//ÕÒ³µ
+		for (int i = 0; i < 8; i++) {//æ‰¾è½¦
 			for (int j = 0; j < 8; j++) {
 				if (board[i][j] == 'R') {
 					done = true;
@@ -7380,7 +7381,7 @@ public:
 		}
 		return res;
 	}
-	int maxTurbulenceSize(vector<int>& nums) {//×î³¤ÍÄÁ÷×ÓÊı×é
+	int maxTurbulenceSize(vector<int>& nums) {//æœ€é•¿æ¹æµå­æ•°ç»„
 		size_t numsLen = nums.size();
 		vector<int> dp(numsLen);
 		dp[0] = 0;
@@ -7408,14 +7409,14 @@ public:
 		}
 		return res;
 	}
-	int threeSumMulti(vector<int>& nums, int target) {//ÈıÊıÖ®ºÍµÄ¶àÖÖ¿ÉÄÜ--ÈıÖ¸Õë
+	int threeSumMulti(vector<int>& nums, int target) {//ä¸‰æ•°ä¹‹å’Œçš„å¤šç§å¯èƒ½--ä¸‰æŒ‡é’ˆ
 		sort(nums.begin(), nums.end());
 		int mod = 1000000007;
 		int res = 0;
 		int numsLen = nums.size();
 		for (int i = 0; i < numsLen - 2 && nums[i] <= target; i++) {
 			int left = i + 1, right = numsLen - 1;
-			while (nums[left] < nums[right]) {//left,rightÊı²»ÏàµÈ
+			while (nums[left] < nums[right]) {//left,rightæ•°ä¸ç›¸ç­‰
 				if (nums[i] + nums[left] + nums[right] == target) {
 					int leftBak = left, rightBak = right;
 					while (nums[left] == nums[leftBak]) {
@@ -7442,7 +7443,7 @@ public:
 		}
 		return res;
 	}
-	vector<string> commonChars(vector<string>& A) {//²éÕÒ³£ÓÃ×Ö·û
+	vector<string> commonChars(vector<string>& A) {//æŸ¥æ‰¾å¸¸ç”¨å­—ç¬¦
 		unordered_map<char, int> charMapA, charMapB;
 		for (char& ch : A[0]) {
 			charMapA[ch]++;
@@ -7470,8 +7471,8 @@ public:
 		}
 		return res;
 	}
-	int shipWithinDays(vector<int>& weights, int D) {//ÔÚ D ÌìÄÚËÍ´ï°ü¹üµÄÄÜÁ¦--¶ş·Ö·¨
-		//»õÎï±ØĞë°´ÕÕ¸ø¶¨µÄË³Ğò×°ÔË
+	int shipWithinDays(vector<int>& weights, int D) {//åœ¨ D å¤©å†…é€è¾¾åŒ…è£¹çš„èƒ½åŠ›--äºŒåˆ†æ³•
+		//è´§ç‰©å¿…é¡»æŒ‰ç…§ç»™å®šçš„é¡ºåºè£…è¿
 		int minLim = 0;
 		int maxLim = 0;
 		for (int& weight : weights) {
@@ -7504,10 +7505,10 @@ public:
 		}
 		return true;
 	}
-	int heightChecker(vector<int>& heights) {//¸ß¶È¼ì²éÆ÷--Í°n£¬Èç¹ûÊ¹ÓÃÅÅĞòµÄ»°ÊÇnlogn
+	int heightChecker(vector<int>& heights) {//é«˜åº¦æ£€æŸ¥å™¨--æ¡¶nï¼Œå¦‚æœä½¿ç”¨æ’åºçš„è¯æ˜¯nlogn
 		vector<int> bucket(101, 0);
 		for (int& height : heights) {
-			bucket[height]++;//ÓĞĞòµÄ
+			bucket[height]++;//æœ‰åºçš„
 		}
 		int res = 0;
 		int cnt = 0;
@@ -7538,7 +7539,7 @@ public:
 		}
 		return;
 	}
-	int numEquivDominoPairs(vector<vector<int>>& dominoes) {//µÈ¼Û¶àÃ×Åµ¹ÇÅÆ¶ÔµÄÊıÁ¿
+	int numEquivDominoPairs(vector<vector<int>>& dominoes) {//ç­‰ä»·å¤šç±³è¯ºéª¨ç‰Œå¯¹çš„æ•°é‡
 		vector<vector<int>> dominoeMap(11, vector<int>(11, 0));
 		int res = 0;
 		for (vector<int>& dominoe : dominoes) {
@@ -7551,8 +7552,8 @@ public:
 		}
 		return res;
 	}
-	string dayOfTheWeek(int day, int month, int year) {//Ò»ÖÜÖĞµÄµÚ¼¸Ìì
-		//Ê×ÏÈÎÒÃÇÖªµÀ1971.1.1ÊÇFriday
+	string dayOfTheWeek(int day, int month, int year) {//ä¸€å‘¨ä¸­çš„ç¬¬å‡ å¤©
+		//é¦–å…ˆæˆ‘ä»¬çŸ¥é“1971.1.1æ˜¯Friday
 		vector<string> weekDayRes = { "Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday" };
 		vector<int> monthDatCnt = { 0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
 		int dayCnt = 0;
@@ -7581,7 +7582,7 @@ public:
 		}
 		return false;
 	}
-	int distanceBetweenBusStops(vector<int>& distance, int start, int destination) {//¹«½»Õ¾¼äµÄ¾àÀë
+	int distanceBetweenBusStops(vector<int>& distance, int start, int destination) {//å…¬äº¤ç«™é—´çš„è·ç¦»
 		int sum1 = 0;
 		int sum2 = 0;
 		size_t distCnt = distance.size();
@@ -7595,7 +7596,7 @@ public:
 		}
 		return min(sum2, sum1 - sum2);
 	}
-	vector<int> numSmallerByFrequency(vector<string>& queries, vector<string>& words) {//±È½Ï×Ö·û´®×îĞ¡×ÖÄ¸³öÏÖÆµ´Î
+	vector<int> numSmallerByFrequency(vector<string>& queries, vector<string>& words) {//æ¯”è¾ƒå­—ç¬¦ä¸²æœ€å°å­—æ¯å‡ºç°é¢‘æ¬¡
 		unordered_map<int, int> wordMap;
 		for (string& word : words) {
 			wordMap[getNum(word)]++;
@@ -7627,7 +7628,7 @@ public:
 		}
 		return cnt;
 	}
-	int countCharacters(vector<string>& words, string chars) {//Æ´Ğ´µ¥´Ê
+	int countCharacters(vector<string>& words, string chars) {//æ‹¼å†™å•è¯
 		unordered_map<char, int> charMap;
 		for (char& ch : chars) {
 			charMap[ch]++;
@@ -7655,7 +7656,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> minimumAbsDifference(vector<int>& arr) {//×îĞ¡¾ø¶Ô²î
+	vector<vector<int>> minimumAbsDifference(vector<int>& arr) {//æœ€å°ç»å¯¹å·®
 		sort(arr.begin(), arr.end());
 		size_t numsLen = arr.size();
 		vector<int> arrCopy(numsLen);
@@ -7672,7 +7673,7 @@ public:
 		}
 		return res;
 	}
-	int minCostToMoveChips(vector<int>& position) {//Íæ³ïÂë
+	int minCostToMoveChips(vector<int>& position) {//ç©ç­¹ç 
 		int numsLen = position.size();
 		int cnt = 0;
 		for (int& num : position) {
@@ -7682,7 +7683,7 @@ public:
 		}
 		return min(cnt, numsLen - cnt);
 	}
-	bool checkStraightLine(vector<vector<int>>& coordinates) {//×ºµã³ÉÏß
+	bool checkStraightLine(vector<vector<int>>& coordinates) {//ç¼€ç‚¹æˆçº¿
 		int paraA = coordinates[1][1] - coordinates[0][1];
 		int paraB = coordinates[0][0] - coordinates[1][0];
 		int paraComp = coordinates[0][0] * coordinates[1][1] - coordinates[1][0] * coordinates[0][1];
@@ -7694,7 +7695,7 @@ public:
 		}
 		return true;
 	}
-	int oddCells(int n, int m, vector<vector<int>>& indices) {//ÆæÊıÖµµ¥Ôª¸ñµÄÊıÄ¿
+	int oddCells(int n, int m, vector<vector<int>>& indices) {//å¥‡æ•°å€¼å•å…ƒæ ¼çš„æ•°ç›®
 		vector<int> rol(n), col(m);
 		for (vector<int>& indc : indices) {
 			rol[indc[0]]++;
@@ -7710,7 +7711,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> shiftGrid(vector<vector<int>>& grid, int k) {//¶şÎ¬Íø¸ñÇ¨ÒÆ
+	vector<vector<int>> shiftGrid(vector<vector<int>>& grid, int k) {//äºŒç»´ç½‘æ ¼è¿ç§»
 		vector<vector<int>> res(grid);
 		size_t rol = grid.size();
 		size_t col = grid[0].size();
@@ -7723,7 +7724,7 @@ public:
 		}
 		return res;
 	}
-	int minTimeToVisitAllPoints(vector<vector<int>>& points) {//·ÃÎÊËùÓĞµãµÄ×îĞ¡Ê±¼ä
+	int minTimeToVisitAllPoints(vector<vector<int>>& points) {//è®¿é—®æ‰€æœ‰ç‚¹çš„æœ€å°æ—¶é—´
 		int currentX = points[0][0];
 		int currentY = points[0][1];
 		int res = 0;
@@ -7738,7 +7739,7 @@ public:
 		vector<string> res = { "A", "B", "Draw", "Pending" };
 		size_t moveCnt = moves.size();
 		vector<vector<int>> grid(3, vector<int>(3, 0));
-		//ÏÂÆå
+		//ä¸‹æ£‹
 		for (size_t i = 0; i < moveCnt; i++) {
 			if (i % 2 == 0) {
 				grid[moves[i][0]][moves[i][1]] = 1;
@@ -7747,7 +7748,7 @@ public:
 				grid[moves[i][0]][moves[i][1]] = 2;
 			}
 		}
-		//¼ì²éÓ®¼Ò
+		//æ£€æŸ¥èµ¢å®¶
 		for (size_t i = 0; i < 3; i++) {
 			if (grid[i][0] == grid[i][1] && grid[i][1] == grid[i][2]) {
 				if (grid[i][0] == 0) {
@@ -7793,7 +7794,7 @@ public:
 		}
 		return (res[3]);
 	}
-	int findSpecialInteger(vector<int>& arr) {//ÓĞĞòÊı×éÖĞ³öÏÖ´ÎÊı³¬¹ı25%µÄÔªËØ
+	int findSpecialInteger(vector<int>& arr) {//æœ‰åºæ•°ç»„ä¸­å‡ºç°æ¬¡æ•°è¶…è¿‡25%çš„å…ƒç´ 
 		size_t targetLen = arr.size() / 4;
 		int target = arr[0];
 		int cnt = 0;
@@ -7811,7 +7812,7 @@ public:
 		}
 		return -1;
 	}
-	int findNumbers(vector<int>& nums) {//Í³¼ÆÎ»ÊıÎªÅ¼ÊıµÄÊı×Ö
+	int findNumbers(vector<int>& nums) {//ç»Ÿè®¡ä½æ•°ä¸ºå¶æ•°çš„æ•°å­—
 		int res = 0;
 		for (int& num : nums) {
 			int cnt = 0;
@@ -7825,7 +7826,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> replaceElements(vector<int>& arr) {//½«Ã¿¸öÔªËØÌæ»»ÎªÓÒ²à×î´óÔªËØ
+	vector<int> replaceElements(vector<int>& arr) {//å°†æ¯ä¸ªå…ƒç´ æ›¿æ¢ä¸ºå³ä¾§æœ€å¤§å…ƒç´ 
 		vector<int> res(arr);
 		int numsLen = arr.size();
 		res[numsLen - 1] = -1;
@@ -7834,7 +7835,7 @@ public:
 		}
 		return res;
 	}
-	int findBestValue(vector<int>& arr, int target) {//×ª±äÊı×éºó×î½Ó½üÄ¿±êÖµµÄÊı×éºÍ
+	int findBestValue(vector<int>& arr, int target) {//è½¬å˜æ•°ç»„åæœ€æ¥è¿‘ç›®æ ‡å€¼çš„æ•°ç»„å’Œ
 		int numsLen = arr.size();
 		if (numsLen == 0) {
 			return 0;
@@ -7856,7 +7857,7 @@ public:
 		}
 		return arr[numsLen - 1];
 	}
-	vector<int> sumZero(int n) {//ºÍÎªÁãµÄN¸öÎ¨Ò»ÕûÊı
+	vector<int> sumZero(int n) {//å’Œä¸ºé›¶çš„Nä¸ªå”¯ä¸€æ•´æ•°
 		vector<int> res(n);
 		int lim = n / 2;
 		for (int i = 1; i <= lim; i++) {
@@ -7865,7 +7866,7 @@ public:
 		}
 		return res;
 	}
-	bool canReach(vector<int>& arr, int start) {//ÌøÔ¾ÓÎÏ· III--»ØËİ
+	bool canReach(vector<int>& arr, int start) {//è·³è·ƒæ¸¸æˆ III--å›æº¯
 		if (start < 0 || start >= arr.size()) {
 			return false;
 		}
@@ -7882,7 +7883,7 @@ public:
 		arr[start] = arrCopy;
 		return left || right;
 	}
-	vector<int> decompressRLElist(vector<int>& nums) {//½âÑ¹Ëõ±àÂëÁĞ±í
+	vector<int> decompressRLElist(vector<int>& nums) {//è§£å‹ç¼©ç¼–ç åˆ—è¡¨
 		int numsLen = nums.size();
 		vector<int> res;
 		int cur = 0;
@@ -7897,7 +7898,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> getNoZeroIntegers(int n) {//½«ÕûÊı×ª»»ÎªÁ½¸öÎŞÁãÕûÊıµÄºÍ
+	vector<int> getNoZeroIntegers(int n) {//å°†æ•´æ•°è½¬æ¢ä¸ºä¸¤ä¸ªæ— é›¶æ•´æ•°çš„å’Œ
 		vector<int> res(2);
 		int part1 = n;
 		int part2 = 0;
@@ -7912,7 +7913,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> luckyNumbers(vector<vector<int>>& matrix) {//¾ØÕóÖĞµÄĞÒÔËÊı
+	vector<int> luckyNumbers(vector<vector<int>>& matrix) {//çŸ©é˜µä¸­çš„å¹¸è¿æ•°
 		size_t rol = matrix.size();
 		size_t col = matrix[0].size();
 		vector<int> res;
@@ -7940,7 +7941,7 @@ public:
 		}
 		return res;
 	}
-	int findTheDistanceValue(vector<int>& arr1, vector<int>& arr2, int d) {//Á½¸öÊı×é¼äµÄ¾àÀëÖµ
+	int findTheDistanceValue(vector<int>& arr1, vector<int>& arr2, int d) {//ä¸¤ä¸ªæ•°ç»„é—´çš„è·ç¦»å€¼
 		int res = 0;
 		for (int& num1 : arr1) {
 			bool isOK = true;
@@ -7956,7 +7957,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> createTargetArray(vector<int>& nums, vector<int>& index) {//°´¼È¶¨Ë³Ğò´´½¨Ä¿±êÊı×é
+	vector<int> createTargetArray(vector<int>& nums, vector<int>& index) {//æŒ‰æ—¢å®šé¡ºåºåˆ›å»ºç›®æ ‡æ•°ç»„
 		vector<int> res;
 		size_t numsLen = nums.size();
 		for (size_t i = 0; i < numsLen; i++) {
@@ -7964,11 +7965,11 @@ public:
 		}
 		return res;
 	}
-	int maxProduct(vector<int>& nums) {//Êı×éÖĞÁ½ÔªËØµÄ×î´ó³Ë»ı
+	int maxProduct(vector<int>& nums) {//æ•°ç»„ä¸­ä¸¤å…ƒç´ çš„æœ€å¤§ä¹˜ç§¯
 		sort(nums.begin(), nums.end());
 		return max((nums[0] - 1) * (nums[1] - 1), (nums[nums.size() - 1] - 1) * (nums[nums.size() - 2] - 1));
 	}
-	vector<int> shuffle(vector<int>& nums, int n) {//ÖØĞÂÅÅÁĞÊı×é
+	vector<int> shuffle(vector<int>& nums, int n) {//é‡æ–°æ’åˆ—æ•°ç»„
 		vector<int> res(nums);
 		size_t gap = nums.size() / 2;
 		for (size_t i = 0; i < gap; i++) {
@@ -7984,24 +7985,24 @@ public:
 		return;
 	}
 	bool book(int start, int end) {
-		auto it = timeMap.lower_bound(start);//k <= ?µÄµü´úÆ÷,µü´úÆ÷Ö¸Ïò->?
+		auto it = timeMap.lower_bound(start);//k <= ?çš„è¿­ä»£å™¨,è¿­ä»£å™¨æŒ‡å‘->?
 		if (it != timeMap.end() && it->first < end) {
 			return false;
 		}
 		if (it != timeMap.begin() && (--it)->second > start) {
 			return false;
 		}
-		timeMap[start] = end;//Ìí¼Ó»ò¸üĞÂ
+		timeMap[start] = end;//æ·»åŠ æˆ–æ›´æ–°
 		return true;
 	}
 private:
-	map<int, int> timeMap;//ºìºÚÊ÷
+	map<int, int> timeMap;//çº¢é»‘æ ‘
 };
 
-class MajorityChecker {//×ÓÊı×éÖĞÕ¼¾ø´ó¶àÊıµÄÔªËØ--Ä¦¶ûÍ¶Æ±+Ïß¶ÎÊ÷,ÔŞÊı³¬Ê±
-	//½â´ğË¼Â·£º
-	//Ïß¶ÎÊ÷ÊÇ°ÑÒ»¸ö´óµÄÇø¼ä²ğ·Ö³ÉºÜ¶à¸öĞ¡Çø¼ä
-	//Ã¿¸öĞ¡Çø¼äÄÚÊ¹ÓÃÄ¦¶ûÍ¶Æ±£¬×îÖÕ°ÑËùÓĞĞ¡Çø¼äºÏ²¢ÆğÀ´ÔÙÓÃÒ»´ÎÄ¦¶ûÍ¶Æ±
+class MajorityChecker {//å­æ•°ç»„ä¸­å ç»å¤§å¤šæ•°çš„å…ƒç´ --æ‘©å°”æŠ•ç¥¨+çº¿æ®µæ ‘,èµæ•°è¶…æ—¶
+	//è§£ç­”æ€è·¯ï¼š
+	//çº¿æ®µæ ‘æ˜¯æŠŠä¸€ä¸ªå¤§çš„åŒºé—´æ‹†åˆ†æˆå¾ˆå¤šä¸ªå°åŒºé—´
+	//æ¯ä¸ªå°åŒºé—´å†…ä½¿ç”¨æ‘©å°”æŠ•ç¥¨ï¼Œæœ€ç»ˆæŠŠæ‰€æœ‰å°åŒºé—´åˆå¹¶èµ·æ¥å†ç”¨ä¸€æ¬¡æ‘©å°”æŠ•ç¥¨
 public:
 	MajorityChecker(vector<int>& arr) {
 		nums = arr;
@@ -8012,7 +8013,7 @@ public:
 		root = buildTree(0, numsLen - 1);
 		return;
 	}
-	int query(int left, int right, int threshold) {//Ïß¶ÎÊ÷
+	int query(int left, int right, int threshold) {//çº¿æ®µæ ‘
 		//vector<int> tmp = queryTree(left, right, root);
 		int key = 0;
 		int count = 0;
@@ -8027,10 +8028,10 @@ public:
 	}
 private:
 	struct node {
-		int val = -1;//Ê¤Ñ¡ÕßID
-		int cnt = -1;//Ê¤Ñ¡Æ±Êı
-		int leftCur = -1;//Çø¼ä¿ªÊ¼Ğ¡±ê
-		int rightCur = -1;//Çø¼ä½áÊøÏÂ±ê
+		int val = -1;//èƒœé€‰è€…ID
+		int cnt = -1;//èƒœé€‰ç¥¨æ•°
+		int leftCur = -1;//åŒºé—´å¼€å§‹å°æ ‡
+		int rightCur = -1;//åŒºé—´ç»“æŸä¸‹æ ‡
 		node* left = nullptr;
 		node* right = nullptr;
 	};
@@ -8038,7 +8039,7 @@ private:
 	unordered_map<int, vector<int>> curMap;
 	size_t numsLen;
 	node* root = nullptr;
-	node* buildTree(int left, int right) {//µİ¹é¹¹ÔìÏß¶ÎÊ÷
+	node* buildTree(int left, int right) {//é€’å½’æ„é€ çº¿æ®µæ ‘
 		if (left > right) {
 			return nullptr;
 		}
@@ -8056,39 +8057,39 @@ private:
 		retNode->right = buildTree(mid + 1, right);
 		retNode->leftCur = left;
 		retNode->rightCur = right;
-		//´æÔÚµ¥±ßÃ»ÓĞ
-		if (retNode->left == nullptr) {//ÓÒ²à»ñÊ¤£¬×ó²àÃ»ÈË
+		//å­˜åœ¨å•è¾¹æ²¡æœ‰
+		if (retNode->left == nullptr) {//å³ä¾§è·èƒœï¼Œå·¦ä¾§æ²¡äºº
 			retNode->val = retNode->right->val;
 			retNode->cnt = retNode->right->cnt;
 		}
-		else if (retNode->right == nullptr) {//×ó²à»ñÊ¤£¬ÓÒ²àÃ»ÈË
+		else if (retNode->right == nullptr) {//å·¦ä¾§è·èƒœï¼Œå³ä¾§æ²¡äºº
 			retNode->val = retNode->left->val;
 			retNode->cnt = retNode->left->cnt;
 		}
-		//Á½±ß¶¼ÓĞ
-		else if (retNode->left->val == retNode->right->val) {//Á½²àÊ¤Ñ¡ÕßÏàÍ¬
+		//ä¸¤è¾¹éƒ½æœ‰
+		else if (retNode->left->val == retNode->right->val) {//ä¸¤ä¾§èƒœé€‰è€…ç›¸åŒ
 			retNode->val = retNode->left->val;
 			retNode->cnt = retNode->left->cnt + retNode->right->cnt;
 		}
-		else if (retNode->left->cnt > retNode->right->cnt) {//×ó²à»ñÊ¤
+		else if (retNode->left->cnt > retNode->right->cnt) {//å·¦ä¾§è·èƒœ
 			retNode->val = retNode->left->val;
 			retNode->cnt = retNode->left->cnt - retNode->right->cnt;
 		}
-		else {//×ó²àÃ»»ñÊ¤
+		else {//å·¦ä¾§æ²¡è·èƒœ
 			retNode->val = retNode->right->val;
 			retNode->cnt = retNode->right->cnt - retNode->left->cnt;
 		}
 		return retNode;
 	}
-	bool queryTree(int left, int right, node* root, int& key, int& count) {//²éÑ¯Ïß¶ÎÊ÷
+	bool queryTree(int left, int right, node* root, int& key, int& count) {//æŸ¥è¯¢çº¿æ®µæ ‘
 		if (root == nullptr || left > right) {
 			return false;
 		}
-		if (root->rightCur < left || root->leftCur > right) {//ÍêÈ«²»ÖØºÏÇø¼ä
+		if (root->rightCur < left || root->leftCur > right) {//å®Œå…¨ä¸é‡åˆåŒºé—´
 			return false;
 		}
 		int mid = (root->leftCur + root->rightCur) / 2;
-		if (root->leftCur >= left && root->rightCur <= right) {//½ÚµãÇø¼äÊÇËùÇóÇø¼äµÄ×Ó¿Õ¼ä
+		if (root->leftCur >= left && root->rightCur <= right) {//èŠ‚ç‚¹åŒºé—´æ˜¯æ‰€æ±‚åŒºé—´çš„å­ç©ºé—´
 			if (root->val == key) {
 				count += root->cnt;
 			}
@@ -8099,9 +8100,9 @@ private:
 			else if (root->cnt <= count) {
 				count -= root->cnt;
 			}
-			return true;//²»ÓÃ½«½ÚµãÇø¼äÏòÏÂ·Ö½âÁË
+			return true;//ä¸ç”¨å°†èŠ‚ç‚¹åŒºé—´å‘ä¸‹åˆ†è§£äº†
 		}
-		if (mid >= left) {//²»ÊÇ×Ó¿Õ¼äµÄ»°¾Íêş¿ª½Úµã
+		if (mid >= left) {//ä¸æ˜¯å­ç©ºé—´çš„è¯å°±æ°å¼€èŠ‚ç‚¹
 			queryTree(left, right, root->left, key, count);
 		}
 		if (right > mid) {
@@ -8127,13 +8128,13 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-×Ö·û´®
+//cookBook-å­—ç¬¦ä¸²
 #if false
 
 class Solution {
 public:
-	string addBinary(string a, string b) {//¶ş½øÖÆÇóºÍ
-		//×¢Òâ³¤¶È
+	string addBinary(string a, string b) {//äºŒè¿›åˆ¶æ±‚å’Œ
+		//æ³¨æ„é•¿åº¦
 		int aCur = a.size() - 1, bCur = b.size() - 1;
 		string res;
 		int sign = 0;
@@ -8152,7 +8153,7 @@ public:
 		}
 		return res;
 	}
-	int numDecodings(string s) {//½âÂë·½·¨
+	int numDecodings(string s) {//è§£ç æ–¹æ³•
 		size_t sLen = s.size();
 		if (sLen == 0 || s[0] == '0') {
 			return 0;
@@ -8164,7 +8165,7 @@ public:
 				if (s[i - 1] == '1' || s[i - 1] == '2') {
 					current = pre;
 				}
-				else {//ÒÔ 0 ¿ªÍ·µÄÊı×Ö²»ºÏ¹æÔò£¬0 ±ØĞëÊÇ½áÎ²
+				else {//ä»¥ 0 å¼€å¤´çš„æ•°å­—ä¸åˆè§„åˆ™ï¼Œ0 å¿…é¡»æ˜¯ç»“å°¾
 					return 0;
 				}
 			}
@@ -8175,7 +8176,7 @@ public:
 		}
 		return current;
 	}
-	int longestPalindrome(string s) {//×î³¤»ØÎÄ´®
+	int longestPalindrome(string s) {//æœ€é•¿å›æ–‡ä¸²
 		unordered_map<char, int> chMap;
 		for (char& ch : s) {
 			chMap[ch]++;
@@ -8194,7 +8195,7 @@ public:
 		}
 		return res;
 	}
-	vector<string> findWords(vector<string>& words) {//¼üÅÌĞĞ
+	vector<string> findWords(vector<string>& words) {//é”®ç›˜è¡Œ
 		int charMap[] = {
 			2, 3, 3, 2, 1, 2, 2,
 			2, 1, 2, 2, 2, 3, 3,
@@ -8217,7 +8218,7 @@ public:
 		}
 		return res;
 	}
-	string complexNumberMultiply(string a, string b) {//¸´Êı³Ë·¨
+	string complexNumberMultiply(string a, string b) {//å¤æ•°ä¹˜æ³•
 		int re1 = 0, im1 = 0, re2 = 0, im2 = 0;
 		imgStr2Int(a, re1, im1);
 		imgStr2Int(b, re2, im2);
@@ -8254,8 +8255,8 @@ public:
 		}
 		return;
 	}
-	string reverseStr(string s, int k) {//·´×ª×Ö·û´® II
-		//Í¨Ë×Ò»µãËµ£¬Ã¿¸ôk¸ö·´×ªk¸ö£¬Ä©Î²²»¹»k¸öÊ±È«²¿·´×ª
+	string reverseStr(string s, int k) {//åè½¬å­—ç¬¦ä¸² II
+		//é€šä¿—ä¸€ç‚¹è¯´ï¼Œæ¯éš”kä¸ªåè½¬kä¸ªï¼Œæœ«å°¾ä¸å¤Ÿkä¸ªæ—¶å…¨éƒ¨åè½¬
 		size_t sLen = s.size();
 		size_t processTime = sLen / k;
 		for (size_t i = 0; i < processTime; i++) {
@@ -8281,7 +8282,7 @@ public:
 		}
 		return s;
 	}
-	string shortestCompletingWord(string licensePlate, vector<string>& words) {//×î¶Ì²¹È«´Ê
+	string shortestCompletingWord(string licensePlate, vector<string>& words) {//æœ€çŸ­è¡¥å…¨è¯
 		unordered_map<char, int> plateMap;
 		for (char& ch : licensePlate) {
 			if (isalpha(ch)) {
@@ -8290,7 +8291,7 @@ public:
 		}
 		string res;
 		for (string& word : words) {
-			if (word.size() < res.size() || res == "") {//¼ôÖ¦
+			if (word.size() < res.size() || res == "") {//å‰ªæ
 				unordered_map<char, int> tmp(plateMap);
 				for (char& ch : word) {
 					char cur = tolower(ch);
@@ -8308,8 +8309,8 @@ public:
 		}
 		return res;
 	}
-	vector<int> smallestRange(vector<vector<int>>& nums) {//×îĞ¡Çø¼ä
-		//»¬¶¯´°¿Ú
+	vector<int> smallestRange(vector<vector<int>>& nums) {//æœ€å°åŒºé—´
+		//æ»‘åŠ¨çª—å£
 		unordered_map<int, vector<int>> indicator;
 		int minVal = INT_MAX, maxVal = INT_MIN;
 		size_t numsCnt = nums.size();
@@ -8321,19 +8322,19 @@ public:
 			maxVal = max(nums[i][nums[i].size() - 1], maxVal);
 		}
 		vector<int> freq(numsCnt);
-		int inside = 0;//´°¿ÚÄÚ£¡Êı×é£¡ÊıÁ¿
+		int inside = 0;//çª—å£å†…ï¼æ•°ç»„ï¼æ•°é‡
 		int left = minVal, right = minVal - 1;
 		int bestLeft = minVal, bestRight = maxVal;
 		while (right < maxVal) {
 			right++;
-			if (indicator.count(right) > 0) {//ÓĞĞ§ÊıÖµ
-				for (int& numSer : indicator[right]) {//Ôö¼Ó´°¿ÚÄÚ£¡Êı×Ö£¡ÊıÁ¿
+			if (indicator.count(right) > 0) {//æœ‰æ•ˆæ•°å€¼
+				for (int& numSer : indicator[right]) {//å¢åŠ çª—å£å†…ï¼æ•°å­—ï¼æ•°é‡
 					freq[numSer]++;
 					if (freq[numSer] == 1) {
 						inside++;
 					}
 				}
-				while (inside == numsCnt) {//´°¿Ú°üº¬Êı×é´ïµ½ÒªÇóºóËõĞ¡¿í¶È£¬¼õÉÙÊı×ÖÊıÁ¿
+				while (inside == numsCnt) {//çª—å£åŒ…å«æ•°ç»„è¾¾åˆ°è¦æ±‚åç¼©å°å®½åº¦ï¼Œå‡å°‘æ•°å­—æ•°é‡
 					if (right - left < bestRight - bestLeft) {
 						bestLeft = left;
 						bestRight = right;
@@ -8352,7 +8353,7 @@ public:
 		}
 		return { bestLeft, bestRight };
 	}
-	string mostCommonWord(string paragraph, vector<string>& banned) {//×î³£¼ûµÄµ¥´Ê
+	string mostCommonWord(string paragraph, vector<string>& banned) {//æœ€å¸¸è§çš„å•è¯
 		size_t sLen = paragraph.size();
 		unordered_map<string, int> freq;
 		unordered_set<string> bannedList(banned.begin(), banned.end());
@@ -8389,7 +8390,7 @@ public:
 		}
 		return res;
 	}
-	bool isLongPressedName(string name, string typed) {//³¤°´¼üÈë
+	bool isLongPressedName(string name, string typed) {//é•¿æŒ‰é”®å…¥
 		size_t typeLen = typed.size();
 		size_t nameLen = name.size();
 		size_t typeCur = 0, nameCur = 0;
@@ -8407,7 +8408,7 @@ public:
 		}
 		return nameCur == nameLen;
 	}
-	vector<int> diStringMatch(string S) {//Ôö¼õ×Ö·û´®Æ¥Åä
+	vector<int> diStringMatch(string S) {//å¢å‡å­—ç¬¦ä¸²åŒ¹é…
 		size_t sLen = S.size();
 		int left = 0, right = sLen;
 		vector<int> res(sLen + 1);
@@ -8422,7 +8423,7 @@ public:
 		res[sLen] = left;
 		return res;
 	}
-	string strWithout3a3b(int a, int b) {//²»º¬ AAA »ò BBB µÄ×Ö·û´®
+	string strWithout3a3b(int a, int b) {//ä¸å« AAA æˆ– BBB çš„å­—ç¬¦ä¸²
 		string res;
 		int aCnt = 0, bCnt = 0;
 		while (a > 0 || b > 0) {
@@ -8457,7 +8458,7 @@ public:
 		}
 		return res;
 	}
-	string decodeAtIndex(string S, int K) {//Ë÷Òı´¦µÄ½âÂë×Ö·û´®
+	string decodeAtIndex(string S, int K) {//ç´¢å¼•å¤„çš„è§£ç å­—ç¬¦ä¸²
 		string res;
 		long size = 0;
 		size_t sLen = S.size();
@@ -8482,8 +8483,8 @@ public:
 		}
 		return res;
 	}
-	int uniqueLetterString(string s) {//Í³¼Æ×Ó´®ÖĞµÄÎ¨Ò»×Ö·û
-		//ºÍÖ®Ç°Ò»µÀÌâ±È½ÏÏñ£¬Í³¼ÆÃ¿Ò»¸öµ¥¶À×Ö·ûµÄ¹±Ï×£¬ÏòÁ½²àÍØÕ¹
+	int uniqueLetterString(string s) {//ç»Ÿè®¡å­ä¸²ä¸­çš„å”¯ä¸€å­—ç¬¦
+		//å’Œä¹‹å‰ä¸€é“é¢˜æ¯”è¾ƒåƒï¼Œç»Ÿè®¡æ¯ä¸€ä¸ªå•ç‹¬å­—ç¬¦çš„è´¡çŒ®ï¼Œå‘ä¸¤ä¾§æ‹“å±•
 		size_t sLen = s.size();
 		vector<int> left(sLen), right(sLen), prev(26, -1);
 		for (size_t i = 0; i < sLen; i++) {
@@ -8502,13 +8503,13 @@ public:
 		}
 		return res;
 	}
-	vector<string> findOcurrences(string text, string first, string second) {//Bigram ·Ö´Ê
+	vector<string> findOcurrences(string text, string first, string second) {//Bigram åˆ†è¯
 		vector<string> res, textMap;
 		int last = 0, current = 0;
 		for (char& ch : text) {
 			if (ch == ' ') {
 				textMap.push_back(text.substr(last, current - last));
-				last = current + 1;//×¢Òâµ¥´ÊÇ°¿Õ¸ñ
+				last = current + 1;//æ³¨æ„å•è¯å‰ç©ºæ ¼
 			}
 			current++;
 		}
@@ -8521,7 +8522,7 @@ public:
 		}
 		return res;
 	}
-	string defangIPaddr(string s) {//IP µØÖ·ÎŞĞ§»¯
+	string defangIPaddr(string s) {//IP åœ°å€æ— æ•ˆåŒ–
 		string res;
 		for (char& ch : s) {
 			if (ch == '.') {
@@ -8533,14 +8534,14 @@ public:
 		}
 		return res;
 	}
-	int maxNumberOfBalloons(string text) {//¡°ÆøÇò¡± µÄ×î´óÊıÁ¿ balloon
+	int maxNumberOfBalloons(string text) {//â€œæ°”çƒâ€ çš„æœ€å¤§æ•°é‡ balloon
 		vector<int> charCnt(26);
 		for (char& ch : text) {
 			charCnt[ch - 'a']++;
 		}
 		return min(min(min(min(charCnt[1], charCnt[0]), charCnt[11] / 2), charCnt[14] / 2), charCnt[13]);
 	}
-	int balancedStringSplit(string s) {//·Ö¸îÆ½ºâ×Ö·û´®
+	int balancedStringSplit(string s) {//åˆ†å‰²å¹³è¡¡å­—ç¬¦ä¸²
 		int cnt = 0, res = 0;
 		for (char& ch : s) {
 			if (ch == 'L') {
@@ -8555,13 +8556,13 @@ public:
 		}
 		return res;
 	}
-	int isPrefixOfWord(string sentence, string searchWord) {//¼ì²éµ¥´ÊÊÇ·ñÎª¾äÖĞÆäËûµ¥´ÊµÄÇ°×º
+	int isPrefixOfWord(string sentence, string searchWord) {//æ£€æŸ¥å•è¯æ˜¯å¦ä¸ºå¥ä¸­å…¶ä»–å•è¯çš„å‰ç¼€
 		vector<string> textMap;
 		int last = 0, current = 0;
 		for (char& ch : sentence) {
 			if (ch == ' ') {
 				textMap.push_back(sentence.substr(last, current - last));
-				last = current + 1;//×¢Òâµ¥´ÊÇ°¿Õ¸ñ
+				last = current + 1;//æ³¨æ„å•è¯å‰ç©ºæ ¼
 			}
 			current++;
 		}
@@ -8582,7 +8583,7 @@ public:
 	}
 	int balancedString(string s) {
 		int sLen = s.size(), k = sLen / 4, res = sLen;
-		unordered_map<char, int> chMap;//´°¿ÚÍâ×Ö·û¼ÆÊı
+		unordered_map<char, int> chMap;//çª—å£å¤–å­—ç¬¦è®¡æ•°
 		for (char& ch : s) {
 			chMap[ch]++;
 		}
@@ -8590,8 +8591,8 @@ public:
 		while (rightCur < sLen) {
 			chMap[s[rightCur]]--;
 			while (leftCur <= rightCur + 1 && chMap['Q'] <= k && chMap['W'] <= k && chMap['E'] <= k && chMap['R'] <= k) {
-				//´°¿ÚÍâ¶¼Ğ¡ÓÚ1/4¿ÉÒÔÌæ»»µ±Ç°´°¿Ú
-				//È±ÉÙ²¿·Ö¿ÉÒÔÓÃ´°¿ÚÄÚÌæ»»µÄ²¹³¥
+				//çª—å£å¤–éƒ½å°äº1/4å¯ä»¥æ›¿æ¢å½“å‰çª—å£
+				//ç¼ºå°‘éƒ¨åˆ†å¯ä»¥ç”¨çª—å£å†…æ›¿æ¢çš„è¡¥å¿
 				res = min(res, rightCur - leftCur + 1);
 				chMap[s[leftCur]]++;
 				leftCur++;
@@ -8617,29 +8618,29 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-»¬¶¯´°¿ÚÓëË«Ö¸Õë
+//cookBook-æ»‘åŠ¨çª—å£ä¸åŒæŒ‡é’ˆ
 #if false
 
 class Solution {
 public:
-	int characterReplacement(string s, int k) {//Ìæ»»ºóµÄ×î³¤ÖØ¸´×Ö·û
-		int cnt = 0;//×î¶à×ÖÄ¸¼ÆÊı
+	int characterReplacement(string s, int k) {//æ›¿æ¢åçš„æœ€é•¿é‡å¤å­—ç¬¦
+		int cnt = 0;//æœ€å¤šå­—æ¯è®¡æ•°
 		size_t sLen = s.size();
-		vector<int> charCnt(26);//´°¿ÚÄÚ×ÖÄ¸¼ÆÊı
+		vector<int> charCnt(26);//çª—å£å†…å­—æ¯è®¡æ•°
 		size_t rightCur = 0, leftCur = 0;
 		while (rightCur < sLen) {
 			cnt = max(cnt, ++charCnt[s[rightCur] - 'A']);
 			if (rightCur - leftCur + 1 - cnt > k) {
 				charCnt[s[leftCur] - 'A']--;
 				leftCur++;
-				//²»Âú×ãÌõ¼şµÄÇé¿öÏÂ£¬leftºÍrightÒ»ÆğÒÆ¶¯,len²»±äµÄ
+				//ä¸æ»¡è¶³æ¡ä»¶çš„æƒ…å†µä¸‹ï¼Œleftå’Œrightä¸€èµ·ç§»åŠ¨,lenä¸å˜çš„
 			}
 			rightCur++;
 		}
 		return rightCur - leftCur;
 	}
 	unordered_map<char, int> pMap, tmpMap;
-	vector<int> findAnagrams(string s, string p) {//ÕÒµ½×Ö·û´®ÖĞËùÓĞ×ÖÄ¸ÒìÎ»´Ê
+	vector<int> findAnagrams(string s, string p) {//æ‰¾åˆ°å­—ç¬¦ä¸²ä¸­æ‰€æœ‰å­—æ¯å¼‚ä½è¯
 		for (char& ch : p) {
 			pMap[ch]++;
 		}
@@ -8670,7 +8671,7 @@ public:
 		}
 		return true;
 	}
-	bool checkInclusion(string p, string s) {//×Ö·û´®µÄÅÅÁĞ
+	bool checkInclusion(string p, string s) {//å­—ç¬¦ä¸²çš„æ’åˆ—
 		for (char& ch : p) {
 			pMap[ch]++;
 		}
@@ -8704,7 +8705,7 @@ public:
 		}
 		return true;
 	}
-	vector<int> partitionLabels(string s) {//»®·Ö×ÖÄ¸Çø¼ä
+	vector<int> partitionLabels(string s) {//åˆ’åˆ†å­—æ¯åŒºé—´
 		vector<int> endPos(26), res;
 		size_t sLen = s.size();
 		for (size_t i = 0; i < sLen; i++) {
@@ -8712,7 +8713,7 @@ public:
 		}
 		int startCur = 0, endCur = 0;
 		for (size_t i = 0; i < sLen; i++) {
-			endCur = max(endCur, endPos[s[i] - 'a']);//¾¡¿ÉÄÜ°ÑÇø¼äÏòÓÒÀ©
+			endCur = max(endCur, endPos[s[i] - 'a']);//å°½å¯èƒ½æŠŠåŒºé—´å‘å³æ‰©
 			if (i == endCur) {
 				res.push_back(endCur - startCur + 1);
 				startCur = endCur + 1;
@@ -8720,7 +8721,7 @@ public:
 		}
 		return res;
 	}
-	vector<double> medianSlidingWindowBAK(vector<int>& nums, int k) {//»¬¶¯´°¿ÚÖĞÎ»Êı--±©Á¦·¨³¬Ê±
+	vector<double> medianSlidingWindowBAK(vector<int>& nums, int k) {//æ»‘åŠ¨çª—å£ä¸­ä½æ•°--æš´åŠ›æ³•è¶…æ—¶
 		vector<double> res;
 		size_t numsLen = nums.size();
 		bool isOdd = k % 2 == 1;
@@ -8737,20 +8738,20 @@ public:
 		}
 		return res;
 	}
-	vector<double> medianSlidingWindow(vector<int>& nums, int k) {//»¬¶¯´°¿ÚÖĞÎ»Êı--Ê¹ÓÃSTL multiset
-		//multisetÄ¬ÈÏ´ÓĞ¡µ½´óÅÅĞò£¬ºìºÚÊ÷
+	vector<double> medianSlidingWindow(vector<int>& nums, int k) {//æ»‘åŠ¨çª—å£ä¸­ä½æ•°--ä½¿ç”¨STL multiset
+		//multiseté»˜è®¤ä»å°åˆ°å¤§æ’åºï¼Œçº¢é»‘æ ‘
 		size_t numsLen = nums.size();
 		vector<double> res(numsLen - k + 1);
 		multiset<int> window(nums.begin(), nums.begin() + k);
-		auto mid = next(window.begin(), k / 2);//ÏòºóÒÆ¶¯µü´úÆ÷£¬ÀàËÆprev()
+		auto mid = next(window.begin(), k / 2);//å‘åç§»åŠ¨è¿­ä»£å™¨ï¼Œç±»ä¼¼prev()
 		for (size_t i = k; i < numsLen; i++) {
 			res[i - k] = (0.0 + *mid + *next(mid, k % 2 - 1)) * 0.5;
 			window.insert(nums[i]);
-			// 5 / 2 == 2£¬ 4 / 2 == 2. ¹ÊÖ»¿¼ÂÇÔÚÇ°²åÈëºÍÒÆ³ıµÄÇé¿ö
-			if (nums[i] < *mid) {//Èë´°¿ÚÔªËØ£¬Î»ÖÃÔÚmidÖ®Ç°
+			// 5 / 2 == 2ï¼Œ 4 / 2 == 2. æ•…åªè€ƒè™‘åœ¨å‰æ’å…¥å’Œç§»é™¤çš„æƒ…å†µ
+			if (nums[i] < *mid) {//å…¥çª—å£å…ƒç´ ï¼Œä½ç½®åœ¨midä¹‹å‰
 				mid--;
 			}
-			if (nums[i - k] <= *mid) {//³ö´°¿ÚÔªËØ£¬Î»ÖÃÔÚmidÖ®Ç°
+			if (nums[i - k] <= *mid) {//å‡ºçª—å£å…ƒç´ ï¼Œä½ç½®åœ¨midä¹‹å‰
 				mid++;
 			}
 			window.erase(window.lower_bound(nums[i - k]));
@@ -8758,8 +8759,8 @@ public:
 		res[numsLen - k] = (0.0 + *mid + *next(mid, k % 2 - 1)) * 0.5;
 		return res;
 	}
-	int maxProfitAssignment(vector<int>& difficulty, vector<int>& profit, vector<int>& worker) {//°²ÅÅ¹¤×÷ÒÔ´ïµ½×î´óÊÕÒæ
-		//¹şÏ£Ó³Éä+¶¯Ì¬¹æ»®
+	int maxProfitAssignment(vector<int>& difficulty, vector<int>& profit, vector<int>& worker) {//å®‰æ’å·¥ä½œä»¥è¾¾åˆ°æœ€å¤§æ”¶ç›Š
+		//å“ˆå¸Œæ˜ å°„+åŠ¨æ€è§„åˆ’
 		size_t diffLen = difficulty.size();
 		vector<vector<int>> dp(diffLen + 1, vector<int>(2));
 		for (size_t i = 0; i < diffLen; i++) {
@@ -8786,9 +8787,9 @@ public:
 		}
 		return res;
 	}
-	int longestMountain(vector<int>& arr) {//Êı×éÖĞµÄ×î³¤É½Âö
+	int longestMountain(vector<int>& arr) {//æ•°ç»„ä¸­çš„æœ€é•¿å±±è„‰
 		size_t arrLen = arr.size();
-		//ÆğÊ¼ÓëÖÕµã
+		//èµ·å§‹ä¸ç»ˆç‚¹
 		vector<int> left(arrLen, 0), right(arrLen, arrLen), climax(arrLen, 0);
 		for (size_t i = 1; i < arrLen; i++) {
 			if (arr[i] > arr[i - 1]) {
@@ -8817,11 +8818,11 @@ public:
 		}
 		return res > 2 ? res : 0;
 	}
-	string pushDominoes(string s) {//ÍÆ¶àÃ×Åµ
-		//ÊÜÁ¦¼ÆËã
+	string pushDominoes(string s) {//æ¨å¤šç±³è¯º
+		//å—åŠ›è®¡ç®—
 		size_t sLen = s.size();
 		vector<int> left(sLen, 0), right(sLen, 0);
-		int force = 0;//×î´óÁ¦
+		int force = 0;//æœ€å¤§åŠ›
 		for (size_t i = 0; i < sLen; i++) {
 			if (s[i] == 'R') {
 				force = sLen;
@@ -8857,7 +8858,7 @@ public:
 		}
 		return s;
 	}
-	int numRescueBoats(vector<int>& people, int limit) {//¾ÈÉúÍ§
+	int numRescueBoats(vector<int>& people, int limit) {//æ•‘ç”Ÿè‰‡
 		sort(people.begin(), people.end());
 		size_t numsLen = people.size();
 		int leftCur = 0, rightCur = numsLen - 1;
@@ -8874,13 +8875,13 @@ public:
 		}
 		return res;
 	}
-	int totalFruit(vector<int>& tree) {//Ë®¹û³ÉÀº£¬ÓÃmap±ÈÓÃset¼òµ¥
+	int totalFruit(vector<int>& tree) {//æ°´æœæˆç¯®ï¼Œç”¨mapæ¯”ç”¨setç®€å•
 		unordered_map<int, int> fruits;
 		int res = 0;
 		int left = 0;
 		for (int i = 0; i < tree.size(); i++) {
-			fruits[tree[i]]++;//Èë´°¿Ú
-			while (fruits.size() > 2) {//³ö´°¿Ú
+			fruits[tree[i]]++;//å…¥çª—å£
+			while (fruits.size() > 2) {//å‡ºçª—å£
 				fruits[tree[left]]--;
 				if (fruits[tree[left]] == 0) {
 					fruits.erase(tree[left]);
@@ -8891,30 +8892,30 @@ public:
 		}
 		return res;
 	}
-	int numSubarraysWithSum(vector<int>& nums, int target) {//ºÍÏàÍ¬µÄ¶şÔª×ÓÊı×é
+	int numSubarraysWithSum(vector<int>& nums, int target) {//å’Œç›¸åŒçš„äºŒå…ƒå­æ•°ç»„
 		unordered_map<int, int> prefixMap;
 		int res = 0, prefix = 0;
 		prefixMap[0] = 1;
 		for (int& num : nums) {
 			prefix += num;
 			if (prefixMap.count(prefix - target) > 0) {
-				//´æÔÚ prefix2 - prefix1 == target µÄÇé¿ö
+				//å­˜åœ¨ prefix2 - prefix1 == target çš„æƒ…å†µ
 				res += prefixMap[prefix - target];
 			}
 			prefixMap[prefix]++;
 		}
 		return res;
 	}
-	vector<vector<int>> intervalIntersection(vector<vector<int>>& firstList, vector<vector<int>>& secondList) {//Çø¼äÁĞ±íµÄ½»¼¯
+	vector<vector<int>> intervalIntersection(vector<vector<int>>& firstList, vector<vector<int>>& secondList) {//åŒºé—´åˆ—è¡¨çš„äº¤é›†
 		size_t flistLen = firstList.size(), slistLen = secondList.size(), fCur = 0, sCur = 0;
 		vector<vector<int>> res;
 		while (fCur < flistLen && sCur < slistLen) {
 			int leftEnd = max(firstList[fCur][0], secondList[sCur][0]);
 			int rightEnd = min(firstList[fCur][1], secondList[sCur][1]);
-			if (leftEnd <= rightEnd) {//ºÏ·¨Çø¼ä
+			if (leftEnd <= rightEnd) {//åˆæ³•åŒºé—´
 				res.push_back({ leftEnd, rightEnd });
 			}
-			//½«¿¿Ç°µÄÇø¼äÏòºóÒÆ
+			//å°†é å‰çš„åŒºé—´å‘åç§»
 			if (firstList[fCur][1] < secondList[sCur][1]) {
 				fCur++;
 			}
@@ -8924,12 +8925,12 @@ public:
 		}
 		return res;
 	}
-	int subarraysWithKDistinct(vector<int>& nums, int cnt) {//K ¸ö²»Í¬ÕûÊıµÄ×ÓÊı×é
-		//½«¡°Ç¡ºÃÎÊÌâ¡±×ª»»ÎªÖÁ¶àÏà¼õ
+	int subarraysWithKDistinct(vector<int>& nums, int cnt) {//K ä¸ªä¸åŒæ•´æ•°çš„å­æ•°ç»„
+		//å°†â€œæ°å¥½é—®é¢˜â€è½¬æ¢ä¸ºè‡³å¤šç›¸å‡
 		return subarraysWithKDistinctMax(nums, cnt) - subarraysWithKDistinctMax(nums, cnt - 1);
 	}
 	int subarraysWithKDistinctMax(vector<int>& nums, int cnt) {
-		//´°¿ÚÀïÖÁ¶àÓĞkÖÖÔªËØ
+		//çª—å£é‡Œè‡³å¤šæœ‰kç§å…ƒç´ 
 		int numsLen = nums.size();
 		unordered_map<int, int> numsMap;
 		int left = 0, res = 0;
@@ -8942,13 +8943,13 @@ public:
 				}
 				left++;
 			}
-			//ÒÔÓÒ²àÎªÍ·Ïò×óÍØÕ¹µÄ×ÓÊı×éÊıÁ¿
+			//ä»¥å³ä¾§ä¸ºå¤´å‘å·¦æ‹“å±•çš„å­æ•°ç»„æ•°é‡
 			res += i - left + 1;
 		}
 		return res;
 	}
-	int minKBitFlipsBAK(vector<int>& nums, int wide) {//K Á¬ĞøÎ»µÄ×îĞ¡·­×ª´ÎÊı
-		//±©Á¦Ëã·¨³¬Ê±
+	int minKBitFlipsBAK(vector<int>& nums, int wide) {//K è¿ç»­ä½çš„æœ€å°ç¿»è½¬æ¬¡æ•°
+		//æš´åŠ›ç®—æ³•è¶…æ—¶
 		size_t numsLen = nums.size();
 		int res = 0;
 		for (size_t i = 0; i <= numsLen - wide; i++) {
@@ -8967,14 +8968,14 @@ public:
 		}
 		return res;
 	}
-	int minKBitFlips(vector<int>& nums, int k) {//K Á¬ĞøÎ»µÄ×îĞ¡·­×ª´ÎÊı
+	int minKBitFlips(vector<int>& nums, int k) {//K è¿ç»­ä½çš„æœ€å°ç¿»è½¬æ¬¡æ•°
 		size_t numsLen = nums.size();
-		int res = 0, flipTime = 0;//´°¿ÚÄÚÀÛ¼Æ·­×ª´ÎÊı
+		int res = 0, flipTime = 0;//çª—å£å†…ç´¯è®¡ç¿»è½¬æ¬¡æ•°
 		for (size_t i = 0; i < numsLen; i++) {
-			if (i >= k && nums[i - k] == 2) {//³¬³öÉÏÒ»¸ö´°¿Ú·­×ª·¶Î§
+			if (i >= k && nums[i - k] == 2) {//è¶…å‡ºä¸Šä¸€ä¸ªçª—å£ç¿»è½¬èŒƒå›´
 				flipTime--;
 			}
-			if (flipTime % 2 == nums[i]) {//ĞèÒª·­×ª£¨ÀÛ»ıÓ°Ïì£©
+			if (flipTime % 2 == nums[i]) {//éœ€è¦ç¿»è½¬ï¼ˆç´¯ç§¯å½±å“ï¼‰
 				if (i + k > numsLen) {
 					return -1;
 				}
@@ -8985,19 +8986,19 @@ public:
 		}
 		return res;
 	}
-	int longestOnes(vector<int>& nums, int K) {//×î´óÁ¬Ğø1µÄ¸öÊı III
+	int longestOnes(vector<int>& nums, int K) {//æœ€å¤§è¿ç»­1çš„ä¸ªæ•° III
 		int numsLen = nums.size(), left = 0, res = 0, right = 0;
 		while (left < numsLen) {
 			if (right < numsLen && ((K > 0 && nums[right] == 0) || nums[right] == 1)) {
-				if (nums[right++] == 0) {//ÏÈ°ÑK·ÖÅä
+				if (nums[right++] == 0) {//å…ˆæŠŠKåˆ†é…
 					K--;
 				}
 			}
 			else {
-				if (K == 0 || (right == numsLen && K > 0)) {//Òì³£ÅĞ¶Ï
+				if (K == 0 || (right == numsLen && K > 0)) {//å¼‚å¸¸åˆ¤æ–­
 					res = max(res, right - left);
 				}
-				if (nums[left] == 0) {//ÒÆ¶¯°²²åÎ»ÖÃ
+				if (nums[left] == 0) {//ç§»åŠ¨å®‰æ’ä½ç½®
 					K++;
 				}
 				left++;
@@ -9005,20 +9006,20 @@ public:
 		}
 		return res;
 	}
-	vector<int> numMovesStonesII(vector<int>& stones) {//ÒÆ¶¯Ê¯×ÓÖ±µ½Á¬Ğø II
+	vector<int> numMovesStonesII(vector<int>& stones) {//ç§»åŠ¨çŸ³å­ç›´åˆ°è¿ç»­ II
 		sort(stones.begin(), stones.end());
 		int stoneCnt = stones.size();
 		int minStep = INT_MAX, maxStep = 0, s1 = 0, s2 = 0;
-		s1 = stones[stoneCnt - 1] - stones[0] + 1 - stoneCnt;//¿ÉÒÆ¶¯¿ÕÎ»
-		s2 = min(stones[1] - stones[0] - 1, stones[stoneCnt - 1] - stones[stoneCnt - 2] - 1);//²»¿ÉÀûÓÃ¿ÕÎ»
+		s1 = stones[stoneCnt - 1] - stones[0] + 1 - stoneCnt;//å¯ç§»åŠ¨ç©ºä½
+		s2 = min(stones[1] - stones[0] - 1, stones[stoneCnt - 1] - stones[stoneCnt - 2] - 1);//ä¸å¯åˆ©ç”¨ç©ºä½
 		maxStep = s1 - s2;
 		int right = 0;
 		for (int left = 0; left < stoneCnt; left++) {
 			while (right + 1 < stoneCnt && stones[right + 1] - stones[left] < stoneCnt) {
-				//ÕÒµ½´°¿Ú
+				//æ‰¾åˆ°çª—å£
 				right++;
 			}
-			int cost = stoneCnt - (right - left + 1);//´°¿ÚÄÚÈ±Ê§µÄÊ¯Í·ÊıÁ¿
+			int cost = stoneCnt - (right - left + 1);//çª—å£å†…ç¼ºå¤±çš„çŸ³å¤´æ•°é‡
 			if ((right - left + 1 == stoneCnt - 1) && (stones[right] - stones[left] + 1 == stoneCnt - 1)) {
 				cost = 2;
 			}
@@ -9026,7 +9027,7 @@ public:
 		}
 		return { minStep, maxStep };
 	}
-	int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int X) {//°®ÉúÆøµÄÊéµêÀÏ°å
+	int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int X) {//çˆ±ç”Ÿæ°”çš„ä¹¦åº—è€æ¿
 		size_t numsLen = customers.size();
 		int res = 0;
 		for (size_t i = 0; i < numsLen; i++) {
@@ -9045,13 +9046,13 @@ public:
 		}
 		return res;
 	}
-	vector<double> sampleStats(vector<int>& count) {//´óÑù±¾Í³¼Æ
-		//×îĞ¡Öµ¡¢×î´óÖµ¡¢Æ½¾ùÖµ¡¢ÖĞÎ»ÊıºÍÖÚÊı
+	vector<double> sampleStats(vector<int>& count) {//å¤§æ ·æœ¬ç»Ÿè®¡
+		//æœ€å°å€¼ã€æœ€å¤§å€¼ã€å¹³å‡å€¼ã€ä¸­ä½æ•°å’Œä¼—æ•°
 		vector<double> res(5, 0.0);
 		int minVal = -1, maxVal = 0;
 		int cand = 0, cnt = 0;
 		int totalCnt = 0, currentCnt = 0, lastCnt = 0;
-		for (int& num : count) {//ÓĞĞ§Ñù±¾ÊıÁ¿
+		for (int& num : count) {//æœ‰æ•ˆæ ·æœ¬æ•°é‡
 			totalCnt += num;
 		}
 		int lim = totalCnt / 2;
@@ -9061,15 +9062,15 @@ public:
 			if (valCnt == 0) {
 				continue;
 			}
-			//ÇóÆ½¾ù
+			//æ±‚å¹³å‡
 			res[2] += 1.0 * valCnt * val / totalCnt;
-			//×îĞ¡Öµ
+			//æœ€å°å€¼
 			if (minVal == -1) {
 				minVal = val;
 			}
-			//×î´óÖµ
+			//æœ€å¤§å€¼
 			maxVal = val;
-			//ÖÚÊı
+			//ä¼—æ•°
 			if (valCnt > cnt) {
 				cand = val;
 				cnt = valCnt;
@@ -9081,14 +9082,14 @@ public:
 			if (valCnt == 0) {
 				continue;
 			}
-			//ÖĞÎ»Êı£¬ÈıÖÖÇé¿ö£¬ÆæÊı£¬Å¼Êı·Ç¿çÇø£¬Å¼Êı¿çÇø
+			//ä¸­ä½æ•°ï¼Œä¸‰ç§æƒ…å†µï¼Œå¥‡æ•°ï¼Œå¶æ•°éè·¨åŒºï¼Œå¶æ•°è·¨åŒº
 			lastCnt = currentCnt;
 			currentCnt += valCnt;
-			if (isOdd && lastCnt < lim && lim <= currentCnt) {//ÆæÊı
+			if (isOdd && lastCnt < lim && lim <= currentCnt) {//å¥‡æ•°
 				res[3] = val + 0.0;
 				break;
 			}
-			else if (!isOdd && lastCnt < lim && lim + 1 <= currentCnt) {//Å¼Êı·Ç¿çÇø
+			else if (!isOdd && lastCnt < lim && lim + 1 <= currentCnt) {//å¶æ•°éè·¨åŒº
 				res[3] = val + 0.0;
 				break;
 			}
@@ -9103,7 +9104,7 @@ public:
 		res[4] = cand + 0.0;
 		return res;
 	}
-	int equalSubstring(string s, string t, int maxCost) {//¾¡¿ÉÄÜÊ¹×Ö·û´®ÏàµÈ
+	int equalSubstring(string s, string t, int maxCost) {//å°½å¯èƒ½ä½¿å­—ç¬¦ä¸²ç›¸ç­‰
 		int res = 0;
 		int sLen = s.size(), left = 0;
 		for (int i = 0; i < sLen; i++) {
@@ -9117,9 +9118,9 @@ public:
 		return res;
 	}
 	//int prefix[300][300];
-	int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {//ÔªËØºÍÎªÄ¿±êÖµµÄ×Ó¾ØÕóÊıÁ¿
+	int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {//å…ƒç´ å’Œä¸ºç›®æ ‡å€¼çš„å­çŸ©é˜µæ•°é‡
 		size_t rol = matrix.size(), col = matrix[0].size();
-		//ÇóÀÛ¼Ó¾ØÕó
+		//æ±‚ç´¯åŠ çŸ©é˜µ
 		int** prefix = new int* [rol + 1];
 		for (int i = 0; i <= rol; i++) {
 			prefix[i] = new int[col + 1];
@@ -9167,7 +9168,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-Á´±í
+//cookBook-é“¾è¡¨
 #if false
 
 class Solution {
@@ -9189,7 +9190,7 @@ public:
 		}
 		return rootNode->next;
 	}
-	ListNode* deleteDuplicatesMKI(ListNode* head) {//É¾³ıÅÅĞòÁ´±íÖĞµÄÖØ¸´ÔªËØ
+	ListNode* deleteDuplicatesMKI(ListNode* head) {//åˆ é™¤æ’åºé“¾è¡¨ä¸­çš„é‡å¤å…ƒç´ 
 		if (head == nullptr) {
 			return head;
 		}
@@ -9204,7 +9205,7 @@ public:
 		currentNode->next = nextNode;
 		return head;
 	}
-	ListNode* deleteDuplicates(ListNode* head) {//É¾³ıÅÅĞòÁ´±íÖĞµÄÖØ¸´ÔªËØ II
+	ListNode* deleteDuplicates(ListNode* head) {//åˆ é™¤æ’åºé“¾è¡¨ä¸­çš„é‡å¤å…ƒç´  II
 		if (head == nullptr || head->next == nullptr) {
 			return head;
 		}
@@ -9228,7 +9229,7 @@ public:
 		currentNode->next = leftNode->next == nullptr ? leftNode : nullptr;
 		return rootNode->next;
 	}
-	ListNode* partition(ListNode* head, int x) {//·Ö¸ôÁ´±í
+	ListNode* partition(ListNode* head, int x) {//åˆ†éš”é“¾è¡¨
 		ListNode* sortNode = new ListNode;
 		ListNode* rminNode = new ListNode;
 		ListNode* sortCur = sortNode, * rminCur = rminNode;
@@ -9249,8 +9250,8 @@ public:
 		sortCur->next = rminNode->next;
 		return sortNode->next;
 	}
-	ListNode* reverseBetween(ListNode* head, int m, int n) {//·´×ªÁ´±í II
-		//·´×ª´ÓÎ»ÖÃ m µ½ n µÄÁ´±í¡£ÇëÊ¹ÓÃÒ»ÌËÉ¨ÃèÍê³É·´×ª¡£
+	ListNode* reverseBetween(ListNode* head, int m, int n) {//åè½¬é“¾è¡¨ II
+		//åè½¬ä»ä½ç½® m åˆ° n çš„é“¾è¡¨ã€‚è¯·ä½¿ç”¨ä¸€è¶Ÿæ‰«æå®Œæˆåè½¬ã€‚
 		ListNode* root = new ListNode;
 		root->next = head;
 		ListNode* last = root;
@@ -9274,9 +9275,9 @@ public:
 		last->next = head;
 		return root->next;
 	}
-	ListNode* reverseKGroupBAK(ListNode* head, int k) {//K ¸öÒ»×é·­×ªÁ´±í
-		//Ö»Ê¹ÓÃ³£Êı¿Õ¼ä
-		//Õ»°æ±¾
+	ListNode* reverseKGroupBAK(ListNode* head, int k) {//K ä¸ªä¸€ç»„ç¿»è½¬é“¾è¡¨
+		//åªä½¿ç”¨å¸¸æ•°ç©ºé—´
+		//æ ˆç‰ˆæœ¬
 		ListNode* rootNode = new ListNode;
 		rootNode->next = head;
 		ListNode* slowCur = rootNode, * fastCur = rootNode;
@@ -9304,9 +9305,9 @@ public:
 		}
 		return rootNode->next;
 	}
-	ListNode* reverseKGroup(ListNode* head, int k) {//K ¸öÒ»×é·­×ªÁ´±í
-		//Ö»Ê¹ÓÃ³£Êı¿Õ¼ä
-		//²»ÒÆ¶¯Í·½Úµã¹Ì¶¨Î»ÖÃ²åÈë¾Í¿ÉÒÔÊµÏÖ·´Ğò
+	ListNode* reverseKGroup(ListNode* head, int k) {//K ä¸ªä¸€ç»„ç¿»è½¬é“¾è¡¨
+		//åªä½¿ç”¨å¸¸æ•°ç©ºé—´
+		//ä¸ç§»åŠ¨å¤´èŠ‚ç‚¹å›ºå®šä½ç½®æ’å…¥å°±å¯ä»¥å®ç°ååº
 		ListNode* rootNode = new ListNode;
 		rootNode->next = head;
 		ListNode* slowCur = rootNode, * fastCur = rootNode;
@@ -9330,7 +9331,7 @@ public:
 		}
 		return rootNode->next;
 	}
-	void reorderList(ListNode* head) {//ÖØÅÅÁ´±í
+	void reorderList(ListNode* head) {//é‡æ’é“¾è¡¨
 		vector<ListNode*> nodeVtr;
 		ListNode* current = head;
 		while (current != nullptr) {
@@ -9354,7 +9355,7 @@ public:
 		head = head->next;
 		return;
 	}
-	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {//Á½ÊıÏà¼Ó II
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {//ä¸¤æ•°ç›¸åŠ  II
 		stack<ListNode*> stk1, stk2;
 		while (l1 != nullptr) {
 			stk1.push(l1);
@@ -9384,7 +9385,7 @@ public:
 		}
 		return root->next;
 	}
-	vector<ListNode*> splitListToParts(ListNode* root, int k) {//·Ö¸ôÁ´±í
+	vector<ListNode*> splitListToParts(ListNode* root, int k) {//åˆ†éš”é“¾è¡¨
 		ListNode* current = root;
 		int cnt = 0;
 		while (current != nullptr) {
@@ -9415,7 +9416,7 @@ public:
 		}
 		return res;
 	}
-	ListNode* middleNode(ListNode* head) {//Á´±íµÄÖĞ¼ä½áµã
+	ListNode* middleNode(ListNode* head) {//é“¾è¡¨çš„ä¸­é—´ç»“ç‚¹
 		ListNode* root = new ListNode;
 		root->next = head;
 		ListNode* slowCur = root, * fastCur = root;
@@ -9433,7 +9434,7 @@ public:
 		}
 		return slowCur;
 	}
-	int getDecimalValue(ListNode* head) {//¶ş½øÖÆÁ´±í×ªÕûÊı
+	int getDecimalValue(ListNode* head) {//äºŒè¿›åˆ¶é“¾è¡¨è½¬æ•´æ•°
 		int res = 0;
 		while (head != nullptr) {
 			res *= 2;
@@ -9442,7 +9443,7 @@ public:
 		}
 		return res;
 	}
-	ListNode* removeZeroSumSublists(ListNode* head) {//´ÓÁ´±íÖĞÉ¾È¥×ÜºÍÖµÎªÁãµÄÁ¬Ğø½Úµã
+	ListNode* removeZeroSumSublists(ListNode* head) {//ä»é“¾è¡¨ä¸­åˆ å»æ€»å’Œå€¼ä¸ºé›¶çš„è¿ç»­èŠ‚ç‚¹
 		unordered_map<int, ListNode*> prefixMap;
 		int sum = 0;
 		ListNode* root = new ListNode;
@@ -9461,7 +9462,7 @@ public:
 		}
 		return root->next;
 	}
-	vector<int> nextLargerNodes(ListNode* head) {//Á´±íÖĞµÄÏÂÒ»¸ö¸ü´ó½Úµã
+	vector<int> nextLargerNodes(ListNode* head) {//é“¾è¡¨ä¸­çš„ä¸‹ä¸€ä¸ªæ›´å¤§èŠ‚ç‚¹
 		vector<int> nums;
 		for (ListNode* cur = head; cur != nullptr; cur = cur->next) {
 			nums.push_back(cur->val);
@@ -9477,7 +9478,7 @@ public:
 		}
 		return res;
 	}
-	int numComponents(ListNode* head, vector<int>& G) {//Á´±í×é¼ş
+	int numComponents(ListNode* head, vector<int>& G) {//é“¾è¡¨ç»„ä»¶
 		unordered_set<int> gSet;
 		for (int& num : G) {
 			gSet.emplace(num);
@@ -9521,10 +9522,10 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-Õ»ºÍ¶ÓÁĞ
+//cookBook-æ ˆå’Œé˜Ÿåˆ—
 #if false
 
-class FreqStack {//×î´óÆµÂÊÕ»
+class FreqStack {//æœ€å¤§é¢‘ç‡æ ˆ
 public:
 	FreqStack() {
 
@@ -9552,7 +9553,7 @@ private:
 	int maxFreq = 0;
 };
 
-class StockSpanner {//¹ÉÆ±¼Û¸ñ¿ç¶È
+class StockSpanner {//è‚¡ç¥¨ä»·æ ¼è·¨åº¦
 public:
 	StockSpanner() {
 		return;
@@ -9602,7 +9603,7 @@ public:
 
 class Solution {
 public:
-	string simplifyPath(string path) {//¼ò»¯Â·¾¶
+	string simplifyPath(string path) {//ç®€åŒ–è·¯å¾„
 		path.push_back('/');
 		stack<string> pathStack;
 		string current;
@@ -9635,10 +9636,10 @@ public:
 		}
 		return res;
 	}
-	int calculate(string s) {//»ù±¾¼ÆËãÆ÷
+	int calculate(string s) {//åŸºæœ¬è®¡ç®—å™¨
 		int res = 0, sym = 1, tmp = 0;
 		stack<int> numStack;
-		//¼ÙÉèÖ»ÓĞÁ½¸ö²Ù×÷Êı£¬A - (B - C) = A + £¨-1£©* (B - C)
+		//å‡è®¾åªæœ‰ä¸¤ä¸ªæ“ä½œæ•°ï¼ŒA - (B - C) = A + ï¼ˆ-1ï¼‰* (B - C)
 		for (char& ch : s) {
 			if (ch == ' ') {
 				continue;
@@ -9674,10 +9675,10 @@ public:
 		}
 		return res + tmp * sym;
 	}
-	bool isValidSerialization(string preorder) {//ÑéÖ¤¶ş²æÊ÷µÄÇ°ĞòĞòÁĞ»¯
+	bool isValidSerialization(string preorder) {//éªŒè¯äºŒå‰æ ‘çš„å‰åºåºåˆ—åŒ–
 		int cur = 0, sLen = preorder.size();
 		bool isLeave = false;
-		while (cur < sLen) {//ÏÈ×ª»»Îª½Úµã±ê¼Ç
+		while (cur < sLen) {//å…ˆè½¬æ¢ä¸ºèŠ‚ç‚¹æ ‡è®°
 			if (preorder[cur] <= '9' && preorder[cur] >= '0') {
 				if (isLeave == false) {
 					isLeave = true;
@@ -9691,7 +9692,7 @@ public:
 			}
 			cur++;
 		}
-		int diff = 1;//³ö¶È - Èë¶È
+		int diff = 1;//å‡ºåº¦ - å…¥åº¦
 		for (char& ch : preorder) {
 			if (ch == ',') {
 				continue;
@@ -9706,8 +9707,8 @@ public:
 		}
 		return diff == 0;
 	}
-	NestedInteger deserialize(string s) {//ÃÔÄãÓï·¨·ÖÎöÆ÷
-		//ÕûÊıÒ²ĞèÒª´´½¨ÈİÆ÷
+	NestedInteger deserialize(string s) {//è¿·ä½ è¯­æ³•åˆ†æå™¨
+		//æ•´æ•°ä¹Ÿéœ€è¦åˆ›å»ºå®¹å™¨
 		int n = s.size();
 		if (n == 0)return NestedInteger();
 		if (s[0] != '[')return NestedInteger(stoi(s));
@@ -9737,25 +9738,25 @@ public:
 		}
 		return st.top();
 	}
-	string removeKdigits(string num, int k) {//ÒÆµôKÎ»Êı×Ö
+	string removeKdigits(string num, int k) {//ç§»æ‰Kä½æ•°å­—
 		stack<char> stk;
-		for (char& ch : num) {//µ¥µ÷²»¼õÕ»
+		for (char& ch : num) {//å•è°ƒä¸å‡æ ˆ
 			while (stk.size() > 0 && stk.top() > ch && k > 0) {
 				stk.pop();
 				--k;
 			}
 			stk.push(ch);
 		}
-		while (k-- > 0) {//Î²²¿µ¯³ö
+		while (k-- > 0) {//å°¾éƒ¨å¼¹å‡º
 			stk.pop();
 		}
 		string res = "";
-		while (!stk.empty()) {//µ¹ĞğÉú³É
+		while (!stk.empty()) {//å€’å™ç”Ÿæˆ
 			res = stk.top() + res;
 			stk.pop();
 		}
 		size_t resLen = res.size(), cur = 0;
-		while (cur < resLen) {//È¥Áã
+		while (cur < resLen) {//å»é›¶
 			if (res[cur] != '0') {
 				break;
 			}
@@ -9764,8 +9765,8 @@ public:
 		res = res.substr(cur, resLen - cur);
 		return res == "" ? "0" : res;
 	}
-	bool find132pattern(vector<int>& nums) {//132Ä£Ê½
-		//Ì°ĞÄ+µİ¼õÕ»
+	bool find132pattern(vector<int>& nums) {//132æ¨¡å¼
+		//è´ªå¿ƒ+é€’å‡æ ˆ
 		size_t numsLen = nums.size();
 		if (numsLen < 3) {
 			return false;
@@ -9777,10 +9778,10 @@ public:
 		stack<int> stk;
 		for (int i = numsLen - 1; i > -1; i--) {
 			if (left[i] < nums[i]) {
-				while (!stk.empty() && stk.top() <= left[i]) {//µİ¼õÕ»£¬´Ó1ÏòÉÏÕÒ
+				while (!stk.empty() && stk.top() <= left[i]) {//é€’å‡æ ˆï¼Œä»1å‘ä¸Šæ‰¾
 					stk.pop();
 				}
-				if (!stk.empty() && stk.top() < nums[i]) {//ÕÒµ½Âú×ã<3µÄ¾ÍĞĞ
+				if (!stk.empty() && stk.top() < nums[i]) {//æ‰¾åˆ°æ»¡è¶³<3çš„å°±è¡Œ
 					return true;
 				}
 				stk.push(nums[i]);
@@ -9788,12 +9789,12 @@ public:
 		}
 		return false;
 	}
-	vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {//ÏÂÒ»¸ö¸ü´óÔªËØ I
+	vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {//ä¸‹ä¸€ä¸ªæ›´å¤§å…ƒç´  I
 		stack<int> stk;
 		vector<int> res;
 		unordered_map<int, int> resMap;
 		for (int& num : nums2) {
-			while (!stk.empty() && stk.top() < num) {//´øÈëÕ»ÔªËØ´óÓÚÕ»¶¥ÔªËØ£¬Ö¤Ã÷ÕÒµ½ÁËÓÒ²à¸ü´óµÄ
+			while (!stk.empty() && stk.top() < num) {//å¸¦å…¥æ ˆå…ƒç´ å¤§äºæ ˆé¡¶å…ƒç´ ï¼Œè¯æ˜æ‰¾åˆ°äº†å³ä¾§æ›´å¤§çš„
 				resMap[stk.top()] = num;
 				stk.pop();
 			}
@@ -9808,7 +9809,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> nextGreaterElements(vector<int>& nums) {//ÏÂÒ»¸ö¸ü´óÔªËØ II
+	vector<int> nextGreaterElements(vector<int>& nums) {//ä¸‹ä¸€ä¸ªæ›´å¤§å…ƒç´  II
 		int numnsLen = nums.size();
 		vector<int> res(numnsLen, -1);
 		for (int i = 0; i < numnsLen; i++) {
@@ -9827,17 +9828,17 @@ public:
 		}
 		return res;
 	}
-	vector<int> exclusiveTime(int n, vector<string>& logs) {//º¯ÊıµÄ¶ÀÕ¼Ê±¼ä
-		//¹Ø¼üµã£ºÕ»¶¥ÔªËØÇÀÕ¼cpu
+	vector<int> exclusiveTime(int n, vector<string>& logs) {//å‡½æ•°çš„ç‹¬å æ—¶é—´
+		//å…³é”®ç‚¹ï¼šæ ˆé¡¶å…ƒç´ æŠ¢å cpu
 		vector<int> res(n, 0);
-		stack<int> stk;//¼ÇÂ¼id
-		int prev = 0;//ÉÏ´ÎË¢ĞÂÊ±¼ä´Á
+		stack<int> stk;//è®°å½•id
+		int prev = 0;//ä¸Šæ¬¡åˆ·æ–°æ—¶é—´æˆ³
 		for (string& str : logs) {
 			int cur = 0;
 			int sLen = str.size();
 			int id = 0, time = 0;
 			string flag;
-			while (cur < sLen) {//»ñÈ¡ID
+			while (cur < sLen) {//è·å–ID
 				if (str[cur] == ':') {
 					break;
 				}
@@ -9846,7 +9847,7 @@ public:
 				cur++;
 			}
 			cur++;
-			while (cur < sLen) {//»ñÈ¡×´Ì¬
+			while (cur < sLen) {//è·å–çŠ¶æ€
 				if (str[cur] == ':') {
 					break;
 				}
@@ -9854,7 +9855,7 @@ public:
 				cur++;
 			}
 			cur++;
-			while (cur < sLen) {//»ñÈ¡Ê±¼ä
+			while (cur < sLen) {//è·å–æ—¶é—´
 				time *= 10;
 				time += str[cur] - '0';
 				cur++;
@@ -9877,7 +9878,7 @@ public:
 		}
 		return res;
 	}
-	int calPoints(vector<string>& ops) {//°ôÇò±ÈÈü
+	int calPoints(vector<string>& ops) {//æ£’çƒæ¯”èµ›
 		stack<int> stk;
 		for (string& op : ops) {
 			if (op == "+") {
@@ -9904,7 +9905,7 @@ public:
 		}
 		return res;
 	}
-	bool backspaceCompare(string S, string T) {//±È½Ïº¬ÍË¸ñµÄ×Ö·û´®
+	bool backspaceCompare(string S, string T) {//æ¯”è¾ƒå«é€€æ ¼çš„å­—ç¬¦ä¸²
 		stack<char> stkS, stkT;
 		for (char& ch : S) {
 			if (ch == '#') {
@@ -9938,19 +9939,19 @@ public:
 		}
 		return true;
 	}
-	vector<int> asteroidCollision(vector<int>& asteroids) {//ĞĞĞÇÅö×²
+	vector<int> asteroidCollision(vector<int>& asteroids) {//è¡Œæ˜Ÿç¢°æ’
 		stack<int> stk;
 		int asteroidsCnt = asteroids.size();
 		int cur = 0;
 		while (cur < asteroidsCnt) {
 			int num = asteroids[cur];
-			if (stk.empty() || (!stk.empty() && stk.top() * num > 0) || (!stk.empty() && stk.top() < 0 && num > 0)) {//ĞÂĞĞĞÇÈëÕ»
+			if (stk.empty() || (!stk.empty() && stk.top() * num > 0) || (!stk.empty() && stk.top() < 0 && num > 0)) {//æ–°è¡Œæ˜Ÿå…¥æ ˆ
 				stk.push(num);
 			}
-			else if (abs(stk.top()) == abs(num)) {//ĞÂĞĞĞÇºÍÕ»¶¥ĞĞĞÇäÎÃğ
+			else if (abs(stk.top()) == abs(num)) {//æ–°è¡Œæ˜Ÿå’Œæ ˆé¡¶è¡Œæ˜Ÿæ¹®ç­
 				stk.pop();
 			}
-			else if (abs(stk.top()) < abs(num)) {//Õ»¶¥ĞĞĞÇÏûÃğ
+			else if (abs(stk.top()) < abs(num)) {//æ ˆé¡¶è¡Œæ˜Ÿæ¶ˆç­
 				stk.pop();
 				continue;
 			}
@@ -9973,7 +9974,7 @@ public:
 		while (cur <= rightCur) {
 			char ch = str[cur];
 			if (isUpper(ch)) {
-				if (!atomName.empty()) {//Õı³£ÔªËØ
+				if (!atomName.empty()) {//æ­£å¸¸å…ƒç´ 
 					atomMap[atomName] += max(cnt, 1);
 					atomName.clear();
 					cnt = 0;
@@ -9988,12 +9989,12 @@ public:
 				cnt += ch - '0';
 			}
 			else if (ch == '(') {
-				if (!atomName.empty()) {//À¨ºÅÇ°ÔªËØ
+				if (!atomName.empty()) {//æ‹¬å·å‰å…ƒç´ 
 					atomMap[atomName] += max(cnt, 1);
 					atomName.clear();
 					cnt = 0;
 				}
-				int newCur = ++cur;//À¨ºÅÄÚµÚÒ»¸öÔªËØÍ·
+				int newCur = ++cur;//æ‹¬å·å†…ç¬¬ä¸€ä¸ªå…ƒç´ å¤´
 				int bracket = 1;
 				while (cur <= rightCur) {
 					if (str[cur] == '(') {
@@ -10007,7 +10008,7 @@ public:
 					}
 					cur++;
 				}
-				map<string, int> newAtomMap = atomSplit(str, newCur, cur - 1);//´¦ÀíÀ¨ºÅÄÚ
+				map<string, int> newAtomMap = atomSplit(str, newCur, cur - 1);//å¤„ç†æ‹¬å·å†…
 				cnt = 0;
 				while (cur + 1 <= rightCur && isDigit(str[cur + 1])) {
 					cnt *= 10;
@@ -10027,9 +10028,9 @@ public:
 		}
 		return atomMap;
 	}
-	string countOfAtoms(string formula) {//Ô­×ÓµÄÊıÁ¿
+	string countOfAtoms(string formula) {//åŸå­çš„æ•°é‡
 		map<string, int> atomMap = atomSplit(formula, 0, formula.size() - 1);
-		//ºó´¦Àí
+		//åå¤„ç†
 		string res;
 		for (auto& it : atomMap) {
 			res += it.first;
@@ -10039,7 +10040,7 @@ public:
 		}
 		return res;
 	}
-	int scoreOfParentheses(string S) {//À¨ºÅµÄ·ÖÊı
+	int scoreOfParentheses(string S) {//æ‹¬å·çš„åˆ†æ•°
 		stack<int> stk;
 		for (char& ch : S) {
 			if (ch == '(') {
@@ -10068,7 +10069,7 @@ public:
 		}
 		return res;
 	}
-	int shortestSubarray(vector<int>& nums, int K) {//ºÍÖÁÉÙÎª K µÄ×î¶Ì×ÓÊı×é
+	int shortestSubarray(vector<int>& nums, int K) {//å’Œè‡³å°‘ä¸º K çš„æœ€çŸ­å­æ•°ç»„
 		size_t numsLen = nums.size();
 		vector<int> prefix(numsLen + 1);
 		for (size_t i = 0; i < numsLen; i++) {
@@ -10088,7 +10089,7 @@ public:
 		}
 		return res == INT_MAX ? -1 : res;
 	}
-	string removeOuterParentheses(string S) {//É¾³ı×îÍâ²ãµÄÀ¨ºÅ
+	string removeOuterParentheses(string S) {//åˆ é™¤æœ€å¤–å±‚çš„æ‹¬å·
 		stack<int> stk;
 		int sLen = S.size();
 		int cur = 0;
@@ -10117,7 +10118,7 @@ public:
 		}
 		return res;
 	}
-	string removeDuplicates(string S) {//É¾³ı×Ö·û´®ÖĞµÄËùÓĞÏàÁÚÖØ¸´Ïî
+	string removeDuplicates(string S) {//åˆ é™¤å­—ç¬¦ä¸²ä¸­çš„æ‰€æœ‰ç›¸é‚»é‡å¤é¡¹
 		string res;
 		for (char& ch : S) {
 			if (!res.empty() && ch == res.back()) {
@@ -10130,7 +10131,7 @@ public:
 		}
 		return res;
 	}
-	bool isValid(string s) {//¼ì²éÌæ»»ºóµÄ´ÊÊÇ·ñÓĞĞ§
+	bool isValid(string s) {//æ£€æŸ¥æ›¿æ¢åçš„è¯æ˜¯å¦æœ‰æ•ˆ
 		stack<char> stk;
 		for (char& ch : s) {
 			if (ch == 'c') {
@@ -10148,7 +10149,7 @@ public:
 		}
 		return stk.empty();
 	}
-	bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {//ÑéÖ¤Õ»ĞòÁĞ
+	bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {//éªŒè¯æ ˆåºåˆ—
 		int totalCnt = pushed.size();
 		int pushCur = 0, popCur = 0;
 		stack<int> stk;
@@ -10170,7 +10171,7 @@ public:
 		}
 		return popCur == totalCnt;
 	}
-	int minAddToMakeValid(string S) {//Ê¹À¨ºÅÓĞĞ§µÄ×îÉÙÌí¼Ó
+	int minAddToMakeValid(string S) {//ä½¿æ‹¬å·æœ‰æ•ˆçš„æœ€å°‘æ·»åŠ 
 		stack<char> stk;
 		for (char& ch : S) {
 			if (!stk.empty() && ch == ')' && stk.top() == '(') {
@@ -10203,7 +10204,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-Ê÷
+//cookBook-æ ‘
 #if false
 
 class Solution {
@@ -10223,7 +10224,7 @@ public:
 		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 		TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
 	};
-	int numTrees(int n) {//²»Í¬µÄ¶ş²æËÑË÷Ê÷
+	int numTrees(int n) {//ä¸åŒçš„äºŒå‰æœç´¢æ ‘
 		vector<int> dp(n + 1, 0);
 		dp[0] = 1, dp[1] = 1;
 		for (int i = 2; i <= n; i++) {
@@ -10233,7 +10234,7 @@ public:
 		}
 		return dp[n];
 	}
-	bool isSameTree(TreeNode* p, TreeNode* q) {//ÏàÍ¬µÄÊ÷
+	bool isSameTree(TreeNode* p, TreeNode* q) {//ç›¸åŒçš„æ ‘
 		if (p == nullptr && q == nullptr) {
 			return true;
 		}
@@ -10245,7 +10246,7 @@ public:
 		}
 		return false;
 	}
-	void recoverTree(TreeNode* root) {//»Ö¸´¶ş²æËÑË÷Ê÷
+	void recoverTree(TreeNode* root) {//æ¢å¤äºŒå‰æœç´¢æ ‘
 		vector<int> nums;
 		recoverTreeSubFunc(root, nums);
 		size_t numsLen = nums.size();
@@ -10264,7 +10265,7 @@ public:
 		recoverTreeSubFuncRec(root, x, y, 2);
 		return;
 	}
-	void recoverTreeSubFunc(TreeNode* root, vector<int>& nums) {//ÖĞĞò±éÀú»ñÈ¡
+	void recoverTreeSubFunc(TreeNode* root, vector<int>& nums) {//ä¸­åºéå†è·å–
 		if (root == nullptr) {
 			return;
 		}
@@ -10273,7 +10274,7 @@ public:
 		recoverTreeSubFunc(root->right, nums);
 		return;
 	}
-	void recoverTreeSubFuncRec(TreeNode* root, int x, int y, int cnt) {//ÖĞĞò±éÀú»Ö¸´
+	void recoverTreeSubFuncRec(TreeNode* root, int x, int y, int cnt) {//ä¸­åºéå†æ¢å¤
 		if (root == nullptr) {
 			return;
 		}
@@ -10288,7 +10289,7 @@ public:
 		recoverTreeSubFuncRec(root->right, x, y, cnt);
 		return;
 	}
-	bool isSymmetric(TreeNode* root) {//¶Ô³Æ¶ş²æÊ÷
+	bool isSymmetric(TreeNode* root) {//å¯¹ç§°äºŒå‰æ ‘
 		return isSymmetricCheck(root, root);
 	}
 	bool isSymmetricCheck(TreeNode* leftCur, TreeNode* rightCur) {
@@ -10300,13 +10301,13 @@ public:
 		}
 		return leftCur->val == rightCur->val && isSymmetricCheck(leftCur->left, rightCur->right) && isSymmetricCheck(leftCur->right, rightCur->left);
 	}
-	int maxDepth(TreeNode* root) {//¶ş²æÊ÷µÄ×î´óÉî¶È
+	int maxDepth(TreeNode* root) {//äºŒå‰æ ‘çš„æœ€å¤§æ·±åº¦
 		if (root == nullptr) {
 			return 0;
 		}
 		return max(maxDepth(root->left), maxDepth(root->right)) + 1;
 	}
-	vector<vector<int>> levelOrderBottom(TreeNode* root) {//¶ş²æÊ÷µÄ²ãĞò±éÀú II
+	vector<vector<int>> levelOrderBottom(TreeNode* root) {//äºŒå‰æ ‘çš„å±‚åºéå† II
 		vector<vector<int>> res;
 		if (root == nullptr) {
 			return res;
@@ -10332,7 +10333,7 @@ public:
 		}
 		return res;
 	}
-	TreeNode* sortedListToBST(ListNode* head) {//ÓĞĞòÁ´±í×ª»»¶ş²æËÑË÷Ê÷
+	TreeNode* sortedListToBST(ListNode* head) {//æœ‰åºé“¾è¡¨è½¬æ¢äºŒå‰æœç´¢æ ‘
 		vector<int> nums;
 		while (head != nullptr) {
 			nums.push_back(head->val);
@@ -10352,7 +10353,7 @@ public:
 		current->right = sortedListToBSTSub(nums, mid + 1, right);
 		return current;
 	}
-	int minDepth(TreeNode* root) {//¶ş²æÊ÷µÄ×îĞ¡Éî¶È
+	int minDepth(TreeNode* root) {//äºŒå‰æ ‘çš„æœ€å°æ·±åº¦
 		if (root == nullptr) {
 			return 0;
 		}
@@ -10368,7 +10369,7 @@ public:
 		}
 		return min(left, right) + 1;
 	}
-	vector<vector<int>> pathSumBAK(TreeNode* root, int targetSum) {//Â·¾¶×ÜºÍ II
+	vector<vector<int>> pathSumBAK(TreeNode* root, int targetSum) {//è·¯å¾„æ€»å’Œ II
 		vector<vector<int>> res;
 		vector<int> tmp;
 		pathSumSubBAK(root, targetSum, res, tmp);
@@ -10388,11 +10389,11 @@ public:
 		tmp.pop_back();
 		return;
 	}
-	void flatten(TreeNode* root) {//¶ş²æÊ÷Õ¹¿ªÎªÁ´±í
+	void flatten(TreeNode* root) {//äºŒå‰æ ‘å±•å¼€ä¸ºé“¾è¡¨
 		if (root == nullptr) {
 			return;
 		}
-		//´Óºóµ½Ç°µÄÏÈĞò±éÀú
+		//ä»ååˆ°å‰çš„å…ˆåºéå†
 		flatten(root->right);
 		if (root->left == nullptr) {
 			return;
@@ -10407,7 +10408,7 @@ public:
 		root->left = nullptr;
 		return;
 	}
-	vector<int> rightSideView(TreeNode* root) {//¶ş²æÊ÷µÄÓÒÊÓÍ¼
+	vector<int> rightSideView(TreeNode* root) {//äºŒå‰æ ‘çš„å³è§†å›¾
 		vector<int> res;
 		if (root == nullptr) {
 			return res;
@@ -10432,7 +10433,7 @@ public:
 		}
 		return res;
 	}
-	int sumNumbers(TreeNode* root) {//Çó¸ùµ½Ò¶×Ó½ÚµãÊı×ÖÖ®ºÍ
+	int sumNumbers(TreeNode* root) {//æ±‚æ ¹åˆ°å¶å­èŠ‚ç‚¹æ•°å­—ä¹‹å’Œ
 		int res = 0, tmp = 0;
 		sumNumbersSub(root, tmp, res);
 		return res;
@@ -10451,7 +10452,7 @@ public:
 		tmp /= 10;
 		return;
 	}
-	class BSTIterator {//¶ş²æËÑË÷Ê÷µü´úÆ÷
+	class BSTIterator {//äºŒå‰æœç´¢æ ‘è¿­ä»£å™¨
 	public:
 		BSTIterator(TreeNode* root) {
 			serialize(root);
@@ -10481,7 +10482,7 @@ public:
 			return;
 		}
 	};
-	TreeNode* invertTree(TreeNode* root) {//·­×ª¶ş²æÊ÷
+	TreeNode* invertTree(TreeNode* root) {//ç¿»è½¬äºŒå‰æ ‘
 		if (root == nullptr) {
 			return nullptr;
 		}
@@ -10490,7 +10491,7 @@ public:
 		swap(root->left, root->right);
 		return root;
 	}
-	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {//¶ş²æËÑË÷Ê÷µÄ×î½ü¹«¹²×æÏÈ
+	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {//äºŒå‰æœç´¢æ ‘çš„æœ€è¿‘å…¬å…±ç¥–å…ˆ
 		TreeNode* res = root;
 		while (res != nullptr) {
 			if ((p->val < res->val) && (q->val < res->val)) {
@@ -10505,7 +10506,7 @@ public:
 		}
 		return res;
 	}
-	vector<string> binaryTreePaths(TreeNode* root) {//¶ş²æÊ÷µÄËùÓĞÂ·¾¶
+	vector<string> binaryTreePaths(TreeNode* root) {//äºŒå‰æ ‘çš„æ‰€æœ‰è·¯å¾„
 		vector<string> res;
 		string tmp;
 		binaryTreePathsSub(root, res, tmp);
@@ -10525,7 +10526,7 @@ public:
 		tmp = tmpCopy;
 		return;
 	}
-	int rob(TreeNode* root) {//´ò¼Ò½ÙÉá III
+	int rob(TreeNode* root) {//æ‰“å®¶åŠ«èˆ III
 		unordered_map<TreeNode*, int> nodeMapY, nodeMapN;
 		nodeMapY[nullptr] = 0, nodeMapN[nullptr] = 0;
 		robSub(root, nodeMapY, nodeMapN);
@@ -10541,7 +10542,7 @@ public:
 		nodeMapN[root] = max(nodeMapN[root->left], nodeMapY[root->left]) + max(nodeMapN[root->right], nodeMapY[root->right]);
 		return;
 	}
-	int sumOfLeftLeaves(TreeNode* root) {//×óÒ¶×ÓÖ®ºÍ
+	int sumOfLeftLeaves(TreeNode* root) {//å·¦å¶å­ä¹‹å’Œ
 		if (root == nullptr) {
 			return 0;
 		}
@@ -10567,7 +10568,7 @@ public:
 		}
 		return res;
 	}
-	int pathSum(TreeNode* root, int sum) {//Â·¾¶×ÜºÍ III
+	int pathSum(TreeNode* root, int sum) {//è·¯å¾„æ€»å’Œ III
 		int res = 0;
 		unordered_map<int, int> prefix;
 		prefix[0] = 1;
@@ -10588,7 +10589,7 @@ public:
 		prefix[current]--;
 		return;
 	}
-	vector<int> findFrequentTreeSum(TreeNode* root) {//³öÏÖ´ÎÊı×î¶àµÄ×ÓÊ÷ÔªËØºÍ
+	vector<int> findFrequentTreeSum(TreeNode* root) {//å‡ºç°æ¬¡æ•°æœ€å¤šçš„å­æ ‘å…ƒç´ å’Œ
 		unordered_map<int, int> sumMap;
 		findFrequentTreeSumSub(root, sumMap);
 		int maxCnt = 0;
@@ -10615,7 +10616,7 @@ public:
 		sumMap[res]++;
 		return res;
 	}
-	int findBottomLeftValue(TreeNode* root) {//ÕÒÊ÷×óÏÂ½ÇµÄÖµ
+	int findBottomLeftValue(TreeNode* root) {//æ‰¾æ ‘å·¦ä¸‹è§’çš„å€¼
 		if (root == nullptr) {
 			return 0;
 		}
@@ -10639,7 +10640,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> largestValues(TreeNode* root) {//ÔÚÃ¿¸öÊ÷ĞĞÖĞÕÒ×î´óÖµ
+	vector<int> largestValues(TreeNode* root) {//åœ¨æ¯ä¸ªæ ‘è¡Œä¸­æ‰¾æœ€å¤§å€¼
 		vector<int> res;
 		if (root == nullptr) {
 			return res;
@@ -10665,7 +10666,7 @@ public:
 		}
 		return res;
 	}
-	int findTilt(TreeNode* root) {//¶ş²æÊ÷µÄÆÂ¶È
+	int findTilt(TreeNode* root) {//äºŒå‰æ ‘çš„å¡åº¦
 		int res = 0;
 		findTiltSub(root, res);
 		return res;
@@ -10680,7 +10681,7 @@ public:
 		int sum = root->val + left + right;
 		return sum;
 	}
-	bool isSubtree(TreeNode* s, TreeNode* t) {//ÁíÒ»¸öÊ÷µÄ×ÓÊ÷
+	bool isSubtree(TreeNode* s, TreeNode* t) {//å¦ä¸€ä¸ªæ ‘çš„å­æ ‘
 		if (s == nullptr) {
 			return false;
 		}
@@ -10689,7 +10690,7 @@ public:
 		}
 		return isSubtree(s->left, t) || isSubtree(s->right, t);
 	}
-	vector<double> averageOfLevels(TreeNode* root) {//¶ş²æÊ÷µÄ²ãÆ½¾ùÖµ
+	vector<double> averageOfLevels(TreeNode* root) {//äºŒå‰æ ‘çš„å±‚å¹³å‡å€¼
 		vector<double> res;
 		if (root == nullptr) {
 			return res;
@@ -10715,7 +10716,7 @@ public:
 		}
 		return res;
 	}
-	int widthOfBinaryTree(TreeNode* root) {//¶ş²æÊ÷×î´ó¿í¶È
+	int widthOfBinaryTree(TreeNode* root) {//äºŒå‰æ ‘æœ€å¤§å®½åº¦
 		if (root == nullptr) {
 			return 0;
 		}
@@ -10730,7 +10731,7 @@ public:
 				pos = que.front().second;
 				que.pop();
 				qLen--;
-				//¶ş²æÊ÷×Ó½Úµã±àºÅ
+				//äºŒå‰æ ‘å­èŠ‚ç‚¹ç¼–å·
 				if (cur->left) {
 					que.push(make_pair(cur->left, pos * 2));
 				}
@@ -10742,7 +10743,7 @@ public:
 		}
 		return (int)res;
 	}
-	bool findTarget(TreeNode* root, int k) {//Á½ÊıÖ®ºÍ IV - ÊäÈë BST
+	bool findTarget(TreeNode* root, int k) {//ä¸¤æ•°ä¹‹å’Œ IV - è¾“å…¥ BST
 		bool res = false;
 		unordered_set<int> valSet;
 		findTargetSub(root, k, valSet, res);
@@ -10760,7 +10761,7 @@ public:
 		findTargetSub(root->right, k, valSet, res);
 		return;
 	}
-	bool leafSimilar(TreeNode* root1, TreeNode* root2) {//Ò¶×ÓÏàËÆµÄÊ÷
+	bool leafSimilar(TreeNode* root1, TreeNode* root2) {//å¶å­ç›¸ä¼¼çš„æ ‘
 		vector<int> nums1, nums2;
 		leafSimilarSub(root1, nums1);
 		leafSimilarSub(root2, nums2);
@@ -10777,7 +10778,7 @@ public:
 		}
 		return;
 	}
-	TreeNode* increasingBST(TreeNode* root) {//µİÔöË³Ğò²éÕÒÊ÷
+	TreeNode* increasingBST(TreeNode* root) {//é€’å¢é¡ºåºæŸ¥æ‰¾æ ‘
 		stack<TreeNode*> stk;
 		increasingBSTSub(root, stk);
 		TreeNode* res = nullptr;
@@ -10798,7 +10799,7 @@ public:
 		increasingBSTSub(root->right, stk);
 		return;
 	}
-	bool isCousins(TreeNode* root, int x, int y) {//¶ş²æÊ÷µÄÌÃĞÖµÜ½Úµã
+	bool isCousins(TreeNode* root, int x, int y) {//äºŒå‰æ ‘çš„å ‚å…„å¼ŸèŠ‚ç‚¹
 		queue<TreeNode*> que;
 		que.push(root);
 		int level = 0, xLev = -1, yLev = -1;
@@ -10838,7 +10839,7 @@ public:
 		}
 		return xLev == yLev && fx != fy;
 	}
-	int distributeCoins(TreeNode* root) {//ÔÚ¶ş²æÊ÷ÖĞ·ÖÅäÓ²±Ò
+	int distributeCoins(TreeNode* root) {//åœ¨äºŒå‰æ ‘ä¸­åˆ†é…ç¡¬å¸
 		int res = 0;
 		distributeCoinsSub(root, res);
 		return res;
@@ -10847,13 +10848,13 @@ public:
 		if (root == nullptr) {
 			return 0;
 		}
-		//Á½²àĞèÒªÒÆ¶¯²½Êı
+		//ä¸¤ä¾§éœ€è¦ç§»åŠ¨æ­¥æ•°
 		int left = distributeCoinsSub(root->left, res);
 		int right = distributeCoinsSub(root->right, res);
 		res += abs(left) + abs(right);
 		return left + right + root->val - 1;
 	}
-	vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {//¶ş²æÊ÷ÖĞËùÓĞ¾àÀëÎª K µÄ½áµã
+	vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {//äºŒå‰æ ‘ä¸­æ‰€æœ‰è·ç¦»ä¸º K çš„ç»“ç‚¹
 		unordered_map<TreeNode*, TreeNode*> parent;
 		distanceKSub(root, nullptr, parent);
 		queue<TreeNode*> que;
@@ -10888,7 +10889,7 @@ public:
 		return res;
 	}
 	void distanceKSub(TreeNode* root, TreeNode* par, unordered_map<TreeNode*, TreeNode*>& parent) {
-		//×ª»»ÎªÍ¼¼ÆËã
+		//è½¬æ¢ä¸ºå›¾è®¡ç®—
 		if (root == nullptr) {
 			return;
 		}
@@ -10897,7 +10898,7 @@ public:
 		distanceKSub(root->right, root, parent);
 		return;
 	}
-	int deepestLeavesSum(TreeNode* root) {//²ãÊı×îÉîÒ¶×Ó½ÚµãµÄºÍ
+	int deepestLeavesSum(TreeNode* root) {//å±‚æ•°æœ€æ·±å¶å­èŠ‚ç‚¹çš„å’Œ
 		int res = 0, maxDepth = 0, currentDepth = 0;
 		deepestLeavesSumSub(root, maxDepth, currentDepth, res);
 		return res;
@@ -10919,7 +10920,7 @@ public:
 		currentDepth--;
 		return;
 	}
-	TreeNode* lcaDeepestLeaves(TreeNode* root) {//×îÉîÒ¶½ÚµãµÄ×î½ü¹«¹²×æÏÈ
+	TreeNode* lcaDeepestLeaves(TreeNode* root) {//æœ€æ·±å¶èŠ‚ç‚¹çš„æœ€è¿‘å…¬å…±ç¥–å…ˆ
 		int maxDepth = 0;
 		return lcaDeepestLeavesSub(root, maxDepth);
 	}
@@ -10940,7 +10941,7 @@ public:
 		}
 		return rightNode;
 	}
-	int maxAncestorDiff(TreeNode* root) {//½ÚµãÓëÆä×æÏÈÖ®¼äµÄ×î´ó²îÖµ
+	int maxAncestorDiff(TreeNode* root) {//èŠ‚ç‚¹ä¸å…¶ç¥–å…ˆä¹‹é—´çš„æœ€å¤§å·®å€¼
 		int res = 0;
 		maxAncestorDiffSub(root, root->val, root->val, res);
 		return res;
@@ -10956,7 +10957,7 @@ public:
 		maxAncestorDiffSub(root->right, hi, lo, res);
 		return;
 	}
-	vector<TreeNode*> delNodes(TreeNode* root, vector<int>& to_delete) {//É¾µã³ÉÁÖ
+	vector<TreeNode*> delNodes(TreeNode* root, vector<int>& to_delete) {//åˆ ç‚¹æˆæ—
 		vector<TreeNode*> res;
 		unordered_set<int> delSet(to_delete.begin(), to_delete.end());
 		if (delNodesSub(root, delSet, res) != nullptr) {
@@ -10981,7 +10982,7 @@ public:
 		}
 		return root;
 	}
-	bool btreeGameWinningMove(TreeNode* root, int n, int x) {//¶ş²æÊ÷×ÅÉ«ÓÎÏ·
+	bool btreeGameWinningMove(TreeNode* root, int n, int x) {//äºŒå‰æ ‘ç€è‰²æ¸¸æˆ
 		int leftCon = 0, rightCon = 0;
 		btreeGameWinningMoveSub(root, x, leftCon, rightCon);
 		int parent = n - leftCon - rightCon - 1;
@@ -11000,7 +11001,7 @@ public:
 		}
 		return leftCnt + rightCnt + 1;
 	}
-	TreeNode* recoverFromPreorder(string s) {//´ÓÏÈĞò±éÀú»¹Ô­¶ş²æÊ÷
+	TreeNode* recoverFromPreorder(string s) {//ä»å…ˆåºéå†è¿˜åŸäºŒå‰æ ‘
 		stack<pair<TreeNode*, int>> stk;
 		TreeNode* tmp = new TreeNode;
 		stk.push(make_pair(tmp, -1));
@@ -11036,7 +11037,7 @@ public:
 		}
 		return tmp->left;
 	}
-	int minCameraCover(TreeNode* root) {//¼à¿Ø¶ş²æÊ÷
+	int minCameraCover(TreeNode* root) {//ç›‘æ§äºŒå‰æ ‘
 		int res = 0;
 		if (minCameraCoverSub(root, res) == 0) {
 			res++;
@@ -11044,7 +11045,7 @@ public:
 		return res;
 	}
 	int minCameraCoverSub(TreeNode* root, int& res) {
-		//0: ÎŞ¸²¸Ç, 1: ÓĞÉãÏñÍ·, 2: ¸²¸Ç
+		//0: æ— è¦†ç›–, 1: æœ‰æ‘„åƒå¤´, 2: è¦†ç›–
 		if (root == nullptr) {
 			return 2;
 		}
@@ -11062,7 +11063,7 @@ public:
 		}
 		return -1;
 	}
-	vector<int> sumOfDistancesInTree(int N, vector<vector<int>>& edges) {//Ê÷ÖĞ¾àÀëÖ®ºÍ
+	vector<int> sumOfDistancesInTree(int N, vector<vector<int>>& edges) {//æ ‘ä¸­è·ç¦»ä¹‹å’Œ
 		if (N == 0 || edges.empty()) {
 			return { 0 };
 		}
@@ -11090,7 +11091,7 @@ public:
 	void sumOfDistancesInTreeSub2(int child, int parent, vector<vector<int>>& graph, vector<int>& cnt, vector<int>& res) {
 		for (int i = 0; i < graph[child].size(); i++) {
 			if (parent != graph[child][i]) {
-				res[graph[child][i]] = res[child] - cnt[graph[child][i]] + res.size() - cnt[graph[child][i]];//ÏÈ¼ÆËã³ö¸ù½ÚµãµÄ×Ó½Úµã£¬È»ºóÔÙµİ¹éÈ¥Ëã×Ó½ÚµãµÄ×Ó½Úµã
+				res[graph[child][i]] = res[child] - cnt[graph[child][i]] + res.size() - cnt[graph[child][i]];//å…ˆè®¡ç®—å‡ºæ ¹èŠ‚ç‚¹çš„å­èŠ‚ç‚¹ï¼Œç„¶åå†é€’å½’å»ç®—å­èŠ‚ç‚¹çš„å­èŠ‚ç‚¹
 				sumOfDistancesInTreeSub2(graph[child][i], child, graph, cnt, res);
 			}
 		}
@@ -11117,12 +11118,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-¶¯Ì¬¹æ»®
+//cookBook-åŠ¨æ€è§„åˆ’
 #if false
 
 class Solution {
 public:
-	int integerBreak(int n) {//ÕûÊı²ğ·Ö
+	int integerBreak(int n) {//æ•´æ•°æ‹†åˆ†
 		vector<int> dp(n + 1, 0);
 		for (int i = 2; i <= n; i++) {
 			int tmp = 0;
@@ -11133,7 +11134,7 @@ public:
 		}
 		return dp[n];
 	}
-	bool canPartition(vector<int>& nums) {//·Ö¸îµÈºÍ×Ó¼¯
+	bool canPartition(vector<int>& nums) {//åˆ†å‰²ç­‰å’Œå­é›†
 		size_t numsLen = nums.size();
 		if (numsLen < 2) {
 			return false;
@@ -11148,7 +11149,7 @@ public:
 		}
 		target /= 2;
 		vector<vector<bool>> dp(numsLen, vector<bool>(target + 1, false));
-		//dp[i][j]: ½ØÖ¹µ½ÏÂ±êi£¬ÊÇ·ñÓĞÇ¡ºÃµÈÓÚjµÄºÍ
+		//dp[i][j]: æˆªæ­¢åˆ°ä¸‹æ ‡iï¼Œæ˜¯å¦æœ‰æ°å¥½ç­‰äºjçš„å’Œ
 		for (int i = 0; i < numsLen; i++) {
 			dp[i][0] = true;
 		}
@@ -11164,7 +11165,7 @@ public:
 		}
 		return dp[numsLen - 1][target];
 	}
-	int eraseOverlapIntervals(vector<vector<int>>& intervals) {//ÎŞÖØµşÇø¼ä
+	int eraseOverlapIntervals(vector<vector<int>>& intervals) {//æ— é‡å åŒºé—´
 		size_t intvCnt = intervals.size();
 		if (intvCnt < 2) {
 			return 0;
@@ -11180,7 +11181,7 @@ public:
 		}
 		return intvCnt - *max_element(dp.begin(), dp.end());
 	}
-	int findMaxForm(vector<string>& strs, int m, int n) {//Ò»ºÍÁã
+	int findMaxForm(vector<string>& strs, int m, int n) {//ä¸€å’Œé›¶
 		vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
 		for (string& str : strs) {
 			pair<int, int> cnt = findMaxFormSub(str);
@@ -11205,7 +11206,7 @@ public:
 		}
 		return { zero, one };
 	}
-	int minHeightShelves(vector<vector<int>>& books, int shelf_width) {//Ìî³äÊé¼Ü
+	int minHeightShelves(vector<vector<int>>& books, int shelf_width) {//å¡«å……ä¹¦æ¶
 		int bookCnt = books.size();
 		vector<int> dp(bookCnt + 1, INT_MAX);
 		dp[books.size()] = 0;
@@ -11220,7 +11221,7 @@ public:
 		}
 		return dp[0];
 	}
-	int lastStoneWeightII(vector<int>& stones) {//×îºóÒ»¿éÊ¯Í·µÄÖØÁ¿ II
+	int lastStoneWeightII(vector<int>& stones) {//æœ€åä¸€å—çŸ³å¤´çš„é‡é‡ II
 		int stoneCnt = stones.size();
 		int target = 0, sum = 0;
 		for (int& stone : stones) {
@@ -11235,9 +11236,9 @@ public:
 		}
 		return sum - dp[target] * 2;
 	}
-	int numMusicPlaylists(int N, int L, int K) {//²¥·ÅÁĞ±íµÄÊıÁ¿
+	int numMusicPlaylists(int N, int L, int K) {//æ’­æ”¾åˆ—è¡¨çš„æ•°é‡
 		const int divider = 1000000007;
-		//Áî dp[i][j] Îª²¥·ÅÁĞ±í³¤¶ÈÎª i °üº¬Ç¡ºÃ j Ê×²»Í¬¸èÇúµÄÊıÁ¿
+		//ä»¤ dp[i][j] ä¸ºæ’­æ”¾åˆ—è¡¨é•¿åº¦ä¸º i åŒ…å«æ°å¥½ j é¦–ä¸åŒæ­Œæ›²çš„æ•°é‡
 		vector<vector<long long>> dp(L + 1, vector<long long>(N + 1, 0));
 		dp[0][0] = 1;
 		for (int i = 1; i <= L; i++) {
@@ -11275,7 +11276,7 @@ int main(int argc, char* argv[]) {
 
 class Solution {
 public:
-	vector<string> restoreIpAddresses(string s) {//¸´Ô­ IP µØÖ·
+	vector<string> restoreIpAddresses(string s) {//å¤åŸ IP åœ°å€
 		int sLen = s.size();
 		vector<string> res;
 		if (sLen < 4) {
@@ -11325,7 +11326,7 @@ public:
 		res.pop_back();
 		return res;
 	}
-	vector<vector<int>> combine(int n, int k) {//×éºÏ
+	vector<vector<int>> combine(int n, int k) {//ç»„åˆ
 		vector<vector<int>> res;
 		vector<int> tmp;
 		combineSub(res, tmp, k, 1, n);
@@ -11348,7 +11349,7 @@ public:
 		combineSub(res, tmp, k, cur + 1, n);
 		return;
 	}
-	vector<int> grayCode(int n) {//¸ñÀ×±àÂë
+	vector<int> grayCode(int n) {//æ ¼é›·ç¼–ç 
 		vector<int> res(1, 0);
 		int cnt = pow(2, n);
 		for (int i = 1; i < cnt; i++) {
@@ -11356,7 +11357,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> permuteUnique(vector<int>& nums) {//È«ÅÅÁĞ II
+	vector<vector<int>> permuteUnique(vector<int>& nums) {//å…¨æ’åˆ— II
 		vector<vector<int>> res;
 		vector<int> tmp;
 		vector<bool> vist(nums.size(), false);
@@ -11370,7 +11371,7 @@ public:
 			return;
 		}
 		for (int i = 0; i < numCnt; i++) {
-			if (vist[i] || (i > 0 && nums[i] == nums[i - 1] && !vist[i - 1])) {//×îºóÒ»¸öÊÇ¼ôÖ¦
+			if (vist[i] || (i > 0 && nums[i] == nums[i - 1] && !vist[i - 1])) {//æœ€åä¸€ä¸ªæ˜¯å‰ªæ
 				continue;
 			}
 			vist[i] = true;
@@ -11381,8 +11382,8 @@ public:
 		}
 		return;
 	}
-	void solveSudoku(vector<vector<char>>& board) {//½âÊı¶À
-		//¼ÇÂ¼Ä³¸öÊı×ÖÊÇ·ñ´æÔÚ
+	void solveSudoku(vector<vector<char>>& board) {//è§£æ•°ç‹¬
+		//è®°å½•æŸä¸ªæ•°å­—æ˜¯å¦å­˜åœ¨
 		vector<vector<bool>> rolExist(9, vector<bool>(9, false));
 		vector<vector<bool>> colExist(9, vector<bool>(9, false));
 		vector<vector<vector<bool>>> blockExist(3, vector<vector<bool>>(3, vector<bool>(9, false)));
@@ -11393,7 +11394,7 @@ public:
 					pos.push_back(make_pair(i, j));
 				}
 				else {
-					int tmp = board[i][j] - '0' - 1;//·¶Î§£º1-9
+					int tmp = board[i][j] - '0' - 1;//èŒƒå›´ï¼š1-9
 					rolExist[i][tmp] = true;
 					colExist[j][tmp] = true;
 					blockExist[i / 3][j / 3][tmp] = true;
@@ -11414,7 +11415,7 @@ public:
 				rolExist[rol][i] = true;
 				colExist[col][i] = true;
 				blockExist[rol / 3][col / 3][i] = true;
-				board[rol][col] = i + 1 + '0';//Ö±½Ó¸ÄÆåÅÌ£¬²»ÓÃ»ØËİ£¬ÒòÎªÒÑ¾­±£´æÔÚÈı¸öboolÊı×éÖĞ
+				board[rol][col] = i + 1 + '0';//ç›´æ¥æ”¹æ£‹ç›˜ï¼Œä¸ç”¨å›æº¯ï¼Œå› ä¸ºå·²ç»ä¿å­˜åœ¨ä¸‰ä¸ªboolæ•°ç»„ä¸­
 				solveSudokuSub(board, rolExist, colExist, blockExist, pos, cur + 1, valid);
 				rolExist[rol][i] = false;
 				colExist[col][i] = false;
@@ -11423,7 +11424,7 @@ public:
 		}
 		return;
 	}
-	vector<vector<string>> solveNQueens(int n) {//N »Êºó
+	vector<vector<string>> solveNQueens(int n) {//N çš‡å
 		vector<string> tmp(n, string(n, '.'));
 		vector<vector<string>> res;
 		vector<bool> colExist(n, false), LLExist(2 * n - 1, false), LRExist(2 * n - 1, false);
@@ -11431,7 +11432,7 @@ public:
 		return res;
 	}
 	void solveNQueensSub(vector<vector<string>>& res, vector<string>& tmp, vector<bool>& colExist, vector<bool>& LLExist, vector<bool>& LRExist, int n, int pos) {
-		if (pos == n) {//ÔÚµÚiĞĞ°²ÖÃ»Êºó£¬ÊÔÌ½»ÊºóÔÚjÁĞ
+		if (pos == n) {//åœ¨ç¬¬iè¡Œå®‰ç½®çš‡åï¼Œè¯•æ¢çš‡ååœ¨jåˆ—
 			res.push_back(tmp);
 			return;
 		}
@@ -11450,7 +11451,7 @@ public:
 		}
 		return;
 	}
-	int totalNQueens(int n) {//N»Êºó II
+	int totalNQueens(int n) {//Nçš‡å II
 		int res = 0;
 		vector<bool> colExist(n, false), LLExist(2 * n - 1, false), LRExist(2 * n - 1, false);
 		totalNQueensSub(res, colExist, LLExist, LRExist, n, 0);
@@ -11473,8 +11474,8 @@ public:
 			}
 		}
 	}
-	//string getPermutation(int n, int k) {//ÅÅÁĞĞòÁĞ
-	//	//DFS±©Á¦³¬Ê±
+	//string getPermutation(int n, int k) {//æ’åˆ—åºåˆ—
+	//	//DFSæš´åŠ›è¶…æ—¶
 	//	vector<bool> vist(n, false);
 	//	vector<string> strSet;
 	//	string tmp;
@@ -11496,7 +11497,7 @@ public:
 	//	}
 	//	return;
 	//}
-	string getPermutation(int n, int k) {//ÅÅÁĞĞòÁĞ
+	string getPermutation(int n, int k) {//æ’åˆ—åºåˆ—
 		vector<int> frac(n);
 		frac[0] = 1;
 		for (int i = 1; i < n; i++) {
@@ -11519,8 +11520,8 @@ public:
 		}
 		return res;
 	}
-	bool isAdditiveNumber(string str) {//ÀÛ¼ÓÊı
-		//ÒÀ´ÎÈ¡Ò»¸öÊı
+	bool isAdditiveNumber(string str) {//ç´¯åŠ æ•°
+		//ä¾æ¬¡å–ä¸€ä¸ªæ•°
 		vector<long double> tmp;
 		return isAdditiveNumberSub(str, tmp);
 	}
@@ -11546,7 +11547,7 @@ public:
 		}
 		return false;
 	}
-	int countNumbersWithUniqueDigits(int n) {//¼ÆËã¸÷¸öÎ»Êı²»Í¬µÄÊı×Ö¸öÊı
+	int countNumbersWithUniqueDigits(int n) {//è®¡ç®—å„ä¸ªä½æ•°ä¸åŒçš„æ•°å­—ä¸ªæ•°
 		if (n == 0) {
 			return 1;
 		}
@@ -11559,7 +11560,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> lexicalOrder(int n) {//×ÖµäĞòÅÅÊı
+	vector<int> lexicalOrder(int n) {//å­—å…¸åºæ’æ•°
 		vector<int> res;
 		for (int i = 1; i <= 9; i++) {
 			lexicalOrderSub(res, i, n);
@@ -11576,7 +11577,7 @@ public:
 		}
 		return;
 	}
-	int findTargetSumWays(vector<int>& nums, int target) {//Ä¿±êºÍ--±©Á¦DFS
+	int findTargetSumWays(vector<int>& nums, int target) {//ç›®æ ‡å’Œ--æš´åŠ›DFS
 		int res = 0;
 		int numsLen = nums.size();
 		findTargetSumWaysSub(nums, target, 0, numsLen, 0, res);
@@ -11593,7 +11594,7 @@ public:
 		findTargetSumWaysSub(nums, target, cur + 1, numsLen, acc - nums[cur], res);
 		return;
 	}
-	int minMutation(string start, string end, vector<string>& bank) {//×îĞ¡»ùÒò±ä»¯
+	int minMutation(string start, string end, vector<string>& bank) {//æœ€å°åŸºå› å˜åŒ–
 		unordered_map<string, bool> vist;
 		string current = start;
 		for (string& str : bank) {
@@ -11630,7 +11631,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> findSubsequences(vector<int>& nums) {//µİÔö×ÓĞòÁĞ
+	vector<vector<int>> findSubsequences(vector<int>& nums) {//é€’å¢å­åºåˆ—
 		vector<vector<int>> res;
 		vector<int> tmp;
 		findSubsequencesSub(res, tmp, nums, 0, INT_MIN);
@@ -11653,7 +11654,7 @@ public:
 		}
 		return;
 	}
-	int countArrangement(int n) {//ÓÅÃÀµÄÅÅÁĞ
+	int countArrangement(int n) {//ä¼˜ç¾çš„æ’åˆ—
 		vector<bool> vist(n + 1, false);
 		int res = 0;
 		countArrangementSub(vist, res, 1, n);
@@ -11673,7 +11674,7 @@ public:
 		}
 		return;
 	}
-	vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {//É¨À×ÓÎÏ·
+	vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {//æ‰«é›·æ¸¸æˆ
 		size_t rol = board.size(), col = board[0].size();
 		vector<vector<bool>> vist(rol, vector<bool>(col, false));
 		queue<pair<int, int>> que;
@@ -11691,7 +11692,7 @@ public:
 				return board;
 			}
 			int mineCnt = 0;
-			for (int i = 0; i < 8; i++) {//È·¶¨µØÀ×ÊıÄ¿
+			for (int i = 0; i < 8; i++) {//ç¡®å®šåœ°é›·æ•°ç›®
 				int tmpRol = rolCur + dir[i][0];
 				int tmpCol = colCur + dir[i][1];
 				if (tmpRol < 0 || tmpRol >= rol || tmpCol < 0 || tmpCol >= col) {
@@ -11704,10 +11705,10 @@ public:
 			}
 			board[rolCur][colCur] = mineCnt == 0 ? 'B' : mineCnt + '0';
 			if (board[rolCur][colCur] != 'B') {
-				//Ö»ÓĞÖÜ±ßÃ»ÓĞµØÀ×µÄÇé¿öÏÂ£¬ÖÜÎ§µÄ·½¿é²Å»á±»Ìí¼Ó
+				//åªæœ‰å‘¨è¾¹æ²¡æœ‰åœ°é›·çš„æƒ…å†µä¸‹ï¼Œå‘¨å›´çš„æ–¹å—æ‰ä¼šè¢«æ·»åŠ 
 				continue;
 			}
-			for (int i = 0; i < 8; i++) {//Ìí¼ÓÖÜÎ§·½¿é
+			for (int i = 0; i < 8; i++) {//æ·»åŠ å‘¨å›´æ–¹å—
 				int tmpRol = rolCur + dir[i][0];
 				int tmpCol = colCur + dir[i][1];
 				if (tmpRol < 0 || tmpRol >= rol || tmpCol < 0 || tmpCol >= col) {
@@ -11718,9 +11719,9 @@ public:
 		}
 		return board;
 	}
-	bool pyramidTransition(string bottom, vector<string>& allowed) {//½ğ×ÖËş×ª»»¾ØÕó
+	bool pyramidTransition(string bottom, vector<string>& allowed) {//é‡‘å­—å¡”è½¬æ¢çŸ©é˜µ
 		int heit = bottom.size();
-		//¹¹½¨½ğ×ÖËş
+		//æ„å»ºé‡‘å­—å¡”
 		string str;
 		vector<string> tower;
 		for (int i = 1; i < heit; i++) {
@@ -11730,7 +11731,7 @@ public:
 		tower.push_back(bottom);
 		int total = (heit - 1) * heit / 2;
 		bool res = false;
-		//¹¹½¨×ø±ê¹şÏ£±í
+		//æ„å»ºåæ ‡å“ˆå¸Œè¡¨
 		unordered_map<int, pair<int, int>> curMap;
 		heit--;
 		int cur = 0;
@@ -11751,7 +11752,7 @@ public:
 		}
 		int rolCur = curMap[cur].first, colCur = curMap[cur].second;
 		char targetL = tower[rolCur + 1][colCur], targetR = tower[rolCur + 1][colCur + 1];
-		for (int i = 0; i < listCnt && !res; i++) {//¼ôÖ¦£¬ÕÒµ½´ğ°¸¾Í·µ»Ø
+		for (int i = 0; i < listCnt && !res; i++) {//å‰ªæï¼Œæ‰¾åˆ°ç­”æ¡ˆå°±è¿”å›
 			if (allowed[i][0] == targetL && allowed[i][1] == targetR) {
 				tower[rolCur][colCur] = allowed[i][2];
 				pyramidTransitionSub(allowed, tower, res, cur + 1, total, curMap, listCnt);
@@ -11760,7 +11761,7 @@ public:
 		}
 		return;
 	}
-	vector<string> letterCasePermutation(string s) {//×ÖÄ¸´óĞ¡Ğ´È«ÅÅÁĞ
+	vector<string> letterCasePermutation(string s) {//å­—æ¯å¤§å°å†™å…¨æ’åˆ—
 		int cur = s.size() - 1;
 		vector<string> res;
 		res.push_back("");
@@ -11785,7 +11786,7 @@ public:
 		}
 		return res;
 	}
-	int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {//´óÀñ°ü
+	int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {//å¤§ç¤¼åŒ…
 		int res = INT_MAX;
 		int initCost = 0;
 		for (int i = 0; i < price.size(); i++) {
@@ -11799,7 +11800,7 @@ public:
 			res = min(res, cost);
 			return;
 		}
-		//Ñ¡Ôñµ±Ç°µÄ
+		//é€‰æ‹©å½“å‰çš„
 		vector<int> needsCopy(needs);
 		bool chose = true;
 		int currentCost = cost;
@@ -11815,22 +11816,22 @@ public:
 		if (chose) {
 			shoppingOffersSub(price, special, needsCopy, res, currentCost, cur);
 		}
-		//²»Ñ¡Ôñµ±Ç°µÄ
+		//ä¸é€‰æ‹©å½“å‰çš„
 		shoppingOffersSub(price, special, needs, res, cost, cur + 1);
 		return;
 	}
 	string crackSafe(int n, int k) {
-		int kn = pow(k, n), kn_1 = pow(k, n - 1);//½«ËùÓĞn-1Î»Êı×÷Îª½ÚµãµÄ½Úµã¸öÊı
-		vector<int> num(kn_1, k - 1);//±íÊ¾k^(n-1)¸ö½ÚµãµÄÏÂÒ»Î»¿ÉÒÔ´Ók-1Ñ¡µ½0£¬µ±Ç°Ë÷Òı´¦¶ÔÓ¦µÄÔªËØÖµ±íÊ¾¸Ã½ÚµãÒÑ¾­°Ñ±ÈÔªËØÖµ´óµÄÖµ¶¼×÷ÎªÏÂÒ»Êı×ÖÌí¼Ó¹ıÁË
-		string s(kn + (n - 1), '0');//×Ö·û´®³õÊ¼»¯£¬£¨½á¹ûÒ»¶¨ÊÇkn+n-1Î»£©
-		for (int i = n - 1, node = 0; i < s.size(); ++i) {//i´Ón-1¿ªÊ¼µİÔö £¨µÚÒ»¸öÃÜÂëÊÇn-1¸ö0£¨00...ÎªÆğÊ¼µã£©£©
-			s[i] = num[node]-- + '0';//¸üĞÂ×Ö·û´®¡£ÏÈÔËËã ÔÙ--£¬±íÊ¾ÏÂÒ»´Î¸Ã½ÚµãÒªÑ¡µÄÏÂÒ»Êı×Ö
-			node = node * k - (s[i - (n - 1)] - '0') * kn_1 + num[node] + 1;//¸üĞÂµ±Ç°½Úµã¡£
-			//×óÒÆ²Ù×÷£º1.*k,2.¼õÈ¥×ó²à³¬³öµÄÒ»Î»´ú±íµÄÊı×Ö£¨ÕâÎ»Êı×ÖÒÑ¾­µ½ÁËk^(n-1)ÉÏ£¬ËùÒÔºóÃæ¡ÁÒ»¸ök(n-1)£©,3.¼ÓÉÏÓÒ±ß½øÀ´µÄĞÂÊı×Ö(¸Õ²Å-1ÓÃÓÚÏÂ´ÎµÄÑ¡Â·¾¶£¬µ«Õâ´ÎµÄ½Úµã»¹Ã»¸üĞÂÄØ£¬Òª°ÑÕâ¸ö1¼Ó»ØÀ´)
+		int kn = pow(k, n), kn_1 = pow(k, n - 1);//å°†æ‰€æœ‰n-1ä½æ•°ä½œä¸ºèŠ‚ç‚¹çš„èŠ‚ç‚¹ä¸ªæ•°
+		vector<int> num(kn_1, k - 1);//è¡¨ç¤ºk^(n-1)ä¸ªèŠ‚ç‚¹çš„ä¸‹ä¸€ä½å¯ä»¥ä»k-1é€‰åˆ°0ï¼Œå½“å‰ç´¢å¼•å¤„å¯¹åº”çš„å…ƒç´ å€¼è¡¨ç¤ºè¯¥èŠ‚ç‚¹å·²ç»æŠŠæ¯”å…ƒç´ å€¼å¤§çš„å€¼éƒ½ä½œä¸ºä¸‹ä¸€æ•°å­—æ·»åŠ è¿‡äº†
+		string s(kn + (n - 1), '0');//å­—ç¬¦ä¸²åˆå§‹åŒ–ï¼Œï¼ˆç»“æœä¸€å®šæ˜¯kn+n-1ä½ï¼‰
+		for (int i = n - 1, node = 0; i < s.size(); ++i) {//iä»n-1å¼€å§‹é€’å¢ ï¼ˆç¬¬ä¸€ä¸ªå¯†ç æ˜¯n-1ä¸ª0ï¼ˆ00...ä¸ºèµ·å§‹ç‚¹ï¼‰ï¼‰
+			s[i] = num[node]-- + '0';//æ›´æ–°å­—ç¬¦ä¸²ã€‚å…ˆè¿ç®— å†--ï¼Œè¡¨ç¤ºä¸‹ä¸€æ¬¡è¯¥èŠ‚ç‚¹è¦é€‰çš„ä¸‹ä¸€æ•°å­—
+			node = node * k - (s[i - (n - 1)] - '0') * kn_1 + num[node] + 1;//æ›´æ–°å½“å‰èŠ‚ç‚¹ã€‚
+			//å·¦ç§»æ“ä½œï¼š1.*k,2.å‡å»å·¦ä¾§è¶…å‡ºçš„ä¸€ä½ä»£è¡¨çš„æ•°å­—ï¼ˆè¿™ä½æ•°å­—å·²ç»åˆ°äº†k^(n-1)ä¸Šï¼Œæ‰€ä»¥åé¢Ã—ä¸€ä¸ªk(n-1)ï¼‰,3.åŠ ä¸Šå³è¾¹è¿›æ¥çš„æ–°æ•°å­—(åˆšæ‰-1ç”¨äºä¸‹æ¬¡çš„é€‰è·¯å¾„ï¼Œä½†è¿™æ¬¡çš„èŠ‚ç‚¹è¿˜æ²¡æ›´æ–°å‘¢ï¼Œè¦æŠŠè¿™ä¸ª1åŠ å›æ¥)
 		}
 		return s;
 	}
-	vector<int> splitIntoFibonacci(string s) {//½«Êı×é²ğ·Ö³Éì³²¨ÄÇÆõĞòÁĞ
+	vector<int> splitIntoFibonacci(string s) {//å°†æ•°ç»„æ‹†åˆ†æˆæ–æ³¢é‚£å¥‘åºåˆ—
 		vector<int> res;
 		bool done = false;
 		splitIntoFibonacciSub(res, s, 0, s.size(), done);
@@ -11857,14 +11858,14 @@ public:
 			}
 		}
 	}
-	vector<int> eventualSafeNodes(vector<vector<int>>& graph) {//ÕÒµ½×îÖÕµÄ°²È«×´Ì¬
+	vector<int> eventualSafeNodes(vector<vector<int>>& graph) {//æ‰¾åˆ°æœ€ç»ˆçš„å®‰å…¨çŠ¶æ€
 		vector<int> res;
 		int nodeCnt = graph.size();
-		vector<int> memo(nodeCnt, 0);//¼ÇÒä½Úµã×´Ì¬0 : Î´Öª, 1 : ÓĞ»·, 2 : ÎŞ»·
+		vector<int> memo(nodeCnt, 0);//è®°å¿†èŠ‚ç‚¹çŠ¶æ€0 : æœªçŸ¥, 1 : æœ‰ç¯, 2 : æ— ç¯
 		for (int i = 0; i < nodeCnt; i++) {
 			vector<bool> vist(nodeCnt, false);
 			vist[i] = true;
-			if (!eventualSafeNodesSub(graph, vist, memo, i)) {//ÊÇ·ñÓĞ»·
+			if (!eventualSafeNodesSub(graph, vist, memo, i)) {//æ˜¯å¦æœ‰ç¯
 				res.push_back(i);
 			}
 		}
@@ -11876,11 +11877,11 @@ public:
 			return false;
 		}
 		for (int& i : graph[cur]) {
-			if (vist[i]) {//·ÃÎÊ¹ı£¬ÓĞ»·
+			if (vist[i]) {//è®¿é—®è¿‡ï¼Œæœ‰ç¯
 				memo[i] = 1;
 				return true;
 			}
-			if (memo[i] == 2) {//´ı·ÃÎÊ½ÚµãÈ·¶¨ÎŞ»·
+			if (memo[i] == 2) {//å¾…è®¿é—®èŠ‚ç‚¹ç¡®å®šæ— ç¯
 				continue;
 			}
 			vist[i] = true;
@@ -11893,17 +11894,17 @@ public:
 		memo[cur] = 2;
 		return false;
 	}
-	vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {//ĞúÄÖºÍ¸»ÓĞ
+	vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {//å–§é—¹å’Œå¯Œæœ‰
 		int peopleCnt = quiet.size();
 		vector<int> res(peopleCnt, -1), inDegree(peopleCnt, 0);
 		vector<vector<int>> inferiorGraph(peopleCnt);
-		for (vector<int>& rich : richer) {//±È½ÏÇîµÄÁÚ¾Ó
+		for (vector<int>& rich : richer) {//æ¯”è¾ƒç©·çš„é‚»å±…
 			inferiorGraph[rich[0]].push_back(rich[1]);
-			inDegree[rich[1]]++;//±ÈÕâ¸öÁÚ¾Ó¸ü¸»µÄÈËÊı
+			inDegree[rich[1]]++;//æ¯”è¿™ä¸ªé‚»å±…æ›´å¯Œçš„äººæ•°
 		}
 		queue<int> que;
 		for (int i = 0; i < peopleCnt; i++) {
-			if (inDegree[i] == 0) {//×î¸»µÄ
+			if (inDegree[i] == 0) {//æœ€å¯Œçš„
 				que.push(i);
 			}
 			res[i] = i;
@@ -11912,7 +11913,7 @@ public:
 			int cur = que.front();
 			que.pop();
 			for (int& neigh : inferiorGraph[cur]) {
-				if (quiet[res[cur]] < quiet[res[neigh]]) {//¸üĞÂ¸ü°²¾²µÄ
+				if (quiet[res[cur]] < quiet[res[neigh]]) {//æ›´æ–°æ›´å®‰é™çš„
 					res[neigh] = res[cur];
 				}
 				inDegree[neigh]--;
@@ -11923,13 +11924,13 @@ public:
 		}
 		return res;
 	}
-	int numBusesToDestination(vector<vector<int>>& routes, int source, int target) {//¹«½»Â·Ïß
+	int numBusesToDestination(vector<vector<int>>& routes, int source, int target) {//å…¬äº¤è·¯çº¿
 		if (source == target) {
 			return 0;
 		}
 		int busCnt = routes.size();
 		unordered_map<int, unordered_set<int>> graph;
-		for (int i = routes.size() - 1; i > -1; i--) {//Õ¾Îª½Úµã
+		for (int i = routes.size() - 1; i > -1; i--) {//ç«™ä¸ºèŠ‚ç‚¹
 			for (int& j : routes[i]) {
 				graph[j].insert(i);
 			}
@@ -11959,7 +11960,7 @@ public:
 		}
 		return -1;
 	}
-	int numEnclaves(vector<vector<int>>& grid) {//·ÉµØµÄÊıÁ¿
+	int numEnclaves(vector<vector<int>>& grid) {//é£åœ°çš„æ•°é‡
 		int rolSize = grid.size(), colSize = grid[0].size();
 		if (rolSize == 1 || colSize == 1) {
 			return 0;
@@ -12009,7 +12010,7 @@ public:
 		}
 		return res;
 	}
-	int closedIsland(vector<vector<int>>& grid) {//Í³¼Æ·â±ÕµºÓìµÄÊıÄ¿
+	int closedIsland(vector<vector<int>>& grid) {//ç»Ÿè®¡å°é—­å²›å±¿çš„æ•°ç›®
 		int rolSize = grid.size(), colSize = grid[0].size();
 		if (rolSize == 1 || colSize == 1) {
 			return 0;
@@ -12018,7 +12019,7 @@ public:
 		vector<vector<bool>> vist(rolSize, vector<bool>(colSize, false));
 		vector<vector<int>> dir = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
 		queue<pair<int, int>> que;
-		//Ïû³ıµØÍ¼ÖÜÎ§µÄÂ½µØ
+		//æ¶ˆé™¤åœ°å›¾å‘¨å›´çš„é™†åœ°
 		for (int i = 0; i < rolSize; i++) {
 			if (grid[i][0] == 0) {
 				closedIslandSub(grid, vist, i, 0, rolSize, colSize);
@@ -12035,7 +12036,7 @@ public:
 				closedIslandSub(grid, vist, rolSize - 1, i, rolSize, colSize);
 			}
 		}
-		//Í³¼ÆÂ½µØÊıÁ¿
+		//ç»Ÿè®¡é™†åœ°æ•°é‡
 		for (int i = 0; i < rolSize; i++) {
 			for (int j = 0; j < colSize; j++) {
 				if (grid[i][j] == 0) {
@@ -12070,7 +12071,7 @@ public:
 		}
 		return;
 	}
-	int numTilePossibilities(string str) {//»î×ÖÓ¡Ë¢
+	int numTilePossibilities(string str) {//æ´»å­—å°åˆ·
 		int sLen = str.size();
 		vector<bool> vist(sLen, false);
 		sort(str.begin(), str.end());
@@ -12080,7 +12081,7 @@ public:
 	}
 	void numTilePossibilitiesSub(string& str, vector<bool>& vist, int& res, int& sLen) {
 		for (int i = 0; i < sLen; i++) {
-			if (i > 0 && str[i - 1] == str[i] && !vist[i - 1]) {//ÅÅĞòºó¼ôÖ¦
+			if (i > 0 && str[i - 1] == str[i] && !vist[i - 1]) {//æ’åºåå‰ªæ
 				continue;
 			}
 			if (!vist[i]) {
@@ -12092,7 +12093,7 @@ public:
 		}
 		return;
 	}
-	int uniquePathsIII(vector<vector<int>>& grid) {//²»Í¬Â·¾¶ III
+	int uniquePathsIII(vector<vector<int>>& grid) {//ä¸åŒè·¯å¾„ III
 		int rolSize = grid.size(), colSize = grid[0].size();
 		vector<vector<int>> dir = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
 		pair<int, int> startPoint, endPoint;
@@ -12138,7 +12139,7 @@ public:
 		}
 		return;
 	}
-	int numSquarefulPerms(vector<int>& nums) {//Õı·½ĞÎÊı×éµÄÊıÄ¿
+	int numSquarefulPerms(vector<int>& nums) {//æ­£æ–¹å½¢æ•°ç»„çš„æ•°ç›®
 		vector<bool> vist(nums.size(), false);
 		int res = 0;
 		vector<int> tmp;
@@ -12165,7 +12166,7 @@ public:
 		}
 		return;
 	}
-	int shortestPathAllKeys(vector<string>& grid) {//»ñÈ¡ËùÓĞÔ¿³×µÄ×î¶ÌÂ·¾¶
+	int shortestPathAllKeys(vector<string>& grid) {//è·å–æ‰€æœ‰é’¥åŒ™çš„æœ€çŸ­è·¯å¾„
 		int rolSize = grid.size(), colSize = grid[0].size();
 		vector<vector<int>> dir = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
 		int keyCnt = 0;
@@ -12189,16 +12190,16 @@ public:
 			for (int i = 0; i < 4; i++) {
 				int tmpRol = cur[0] + dir[i][0], tmpCol = cur[1] + dir[i][1];
 				if (tmpRol < 0 || tmpRol == rolSize || tmpCol < 0 || tmpCol == colSize || grid[tmpRol][tmpCol] == '#') {
-					//Ô½½ç»òÕßÊÇÇ½
+					//è¶Šç•Œæˆ–è€…æ˜¯å¢™
 					continue;
 				}
 				if (grid[tmpRol][tmpCol] >= 'A' && grid[tmpRol][tmpCol] <= 'Z' && !(cur[2] & (1 << (grid[tmpRol][tmpCol] - 'A')))) {
-					//ÓĞËøÃ»Ô¿³×
+					//æœ‰é”æ²¡é’¥åŒ™
 					continue;
 				}
 				int keyStat = cur[2];
 				if (grid[tmpRol][tmpCol] >= 'a' && grid[tmpRol][tmpCol] <= 'z') {
-					//µ±Ç°ÊÇÔ¿³×¾ÍĞÂÔöÔ¿³××´Ì¬
+					//å½“å‰æ˜¯é’¥åŒ™å°±æ–°å¢é’¥åŒ™çŠ¶æ€
 					keyStat |= 1 << (grid[tmpRol][tmpCol] - 'a');
 					if (keyStat == target) {
 						return distance[cur[0]][cur[1]][cur[2]] + 1;
@@ -12244,7 +12245,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-¶ş·ÖËÑË÷
+//cookBook-äºŒåˆ†æœç´¢
 #if false
 
 class Solution {
@@ -12257,7 +12258,7 @@ public:
 		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 		TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
 	};
-	int countNodes(TreeNode* root) {//ÍêÈ«¶ş²æÊ÷µÄ½Úµã¸öÊı
+	int countNodes(TreeNode* root) {//å®Œå…¨äºŒå‰æ ‘çš„èŠ‚ç‚¹ä¸ªæ•°
 		if (root == nullptr) {
 			return 0;
 		}
@@ -12292,7 +12293,7 @@ public:
 		}
 		return root != nullptr;
 	}
-	bool isSubsequence(string s, string t) {//ÅĞ¶Ï×ÓĞòÁĞ
+	bool isSubsequence(string s, string t) {//åˆ¤æ–­å­åºåˆ—
 		size_t sLen = s.size(), tLen = t.size(), sCur = 0, tCur = 0;
 		while (sCur < sLen && tCur < tLen) {
 			if (s[sCur] == t[tCur]) {
@@ -12302,7 +12303,7 @@ public:
 		}
 		return sCur == sLen;
 	}
-	int hIndex(vector<int>& nums) {//H Ö¸Êı II
+	int hIndex(vector<int>& nums) {//H æŒ‡æ•° II
 		int numsLen = nums.size();
 		int left = 0, right = numsLen;
 		while (left < right) {
@@ -12316,7 +12317,7 @@ public:
 		}
 		return numsLen - left;
 	}
-	int calculateMinimumHP(vector<vector<int>>& grid) {//µØÏÂ³ÇÓÎÏ·
+	int calculateMinimumHP(vector<vector<int>>& grid) {//åœ°ä¸‹åŸæ¸¸æˆ
 		int rolSize = grid.size(), colSize = grid[0].size();
 		vector<vector<int>> dp(rolSize + 1, vector<int>(colSize + 1, INT_MAX));
 		dp[rolSize][colSize - 1] = 1, dp[rolSize - 1][colSize] = 1;
@@ -12328,7 +12329,7 @@ public:
 		}
 		return dp[0][0];
 	}
-	int maxEnvelopes(vector<vector<int>>& envelopes) {//¶íÂŞË¹Ì×ÍŞĞÅ·âÎÊÌâ
+	int maxEnvelopes(vector<vector<int>>& envelopes) {//ä¿„ç½—æ–¯å¥—å¨ƒä¿¡å°é—®é¢˜
 		sort(envelopes.begin(), envelopes.end(), [](vector<int>& v1, vector<int>& v2) {
 			return v1[0] < v2[0] || (v1[0] == v2[0] && v1[1] < v2[1]);
 			});
@@ -12343,7 +12344,7 @@ public:
 		}
 		return *max_element(dp.begin(), dp.end());
 	}
-	int arrangeCoins(int n) {//ÅÅÁĞÓ²±Ò
+	int arrangeCoins(int n) {//æ’åˆ—ç¡¬å¸
 		if (n <= 0) {
 			return 0;
 		}
@@ -12354,7 +12355,7 @@ public:
 		}
 		return res - 1;
 	}
-	int findRadius(vector<int>& houses, vector<int>& heaters) {//¹©Å¯Æ÷
+	int findRadius(vector<int>& houses, vector<int>& heaters) {//ä¾›æš–å™¨
 		sort(houses.begin(), houses.end());
 		sort(heaters.begin(), heaters.end());
 		int left = 0;
@@ -12362,11 +12363,11 @@ public:
 		while (left < right) {
 			int  mid = left + (right - left) / 2;
 			if (findRadiusSub(houses, heaters, mid)) {
-				//ÄÜ¸²¸Ç
+				//èƒ½è¦†ç›–
 				right = mid;
 			}
 			else {
-				//midÈ·¶¨²»ÄÜ¸²¸Ç£¬ËùÒÔ+1
+				//midç¡®å®šä¸èƒ½è¦†ç›–ï¼Œæ‰€ä»¥+1
 				left = mid + 1;
 			}
 		}
@@ -12385,7 +12386,7 @@ public:
 		}
 		return houseCur == houseCnt;
 	}
-	vector<int> findRightInterval(vector<vector<int>>& intervals) {//Ñ°ÕÒÓÒÇø¼ä
+	vector<int> findRightInterval(vector<vector<int>>& intervals) {//å¯»æ‰¾å³åŒºé—´
 		vector<pair<int, int>> curMap;
 		int intervalCnt = intervals.size();
 		for (int i = 0; i < intervalCnt; i++) {
@@ -12411,9 +12412,9 @@ public:
 		}
 		return left == curMap.size() ? -1 : curMap[left].second;
 	}
-	string smallestGoodBase(string n) {//×îĞ¡ºÃ½øÖÆ
+	string smallestGoodBase(string n) {//æœ€å°å¥½è¿›åˆ¶
 		long long num = stol(n);
-		long long res = num - 1;//Ä¬ÈÏ´ğ°¸
+		long long res = num - 1;//é»˜è®¤ç­”æ¡ˆ
 		for (int base = 59; base > 1; base--) {
 			int k = pow(num, 1.0 / base);
 			if (k > 1) {
@@ -12430,7 +12431,7 @@ public:
 		}
 		return to_string(res);
 	}
-	bool judgeSquareSum(int c) {//Æ½·½ÊıÖ®ºÍ
+	bool judgeSquareSum(int c) {//å¹³æ–¹æ•°ä¹‹å’Œ
 		int left = 0, right = sqrt(c);
 		while (left <= right) {
 			long long tmp = (long long)left * left + right * right;
@@ -12446,7 +12447,7 @@ public:
 		}
 		return false;
 	}
-	int findKthNumber(int m, int n, int k) {//³Ë·¨±íÖĞµÚkĞ¡µÄÊı
+	int findKthNumber(int m, int n, int k) {//ä¹˜æ³•è¡¨ä¸­ç¬¬kå°çš„æ•°
 		int lo = 1, hi = m * n;
 		while (lo < hi) {
 			int mid = lo + (hi - lo) / 2;
@@ -12467,7 +12468,7 @@ public:
 		}
 		return cnt >= k;
 	}
-	vector<int> kthSmallestPrimeFraction(vector<int>& nums, int k) {//µÚ K ¸ö×îĞ¡µÄËØÊı·ÖÊı
+	vector<int> kthSmallestPrimeFraction(vector<int>& nums, int k) {//ç¬¬ K ä¸ªæœ€å°çš„ç´ æ•°åˆ†æ•°
 		double lo = 0.0, hi = 1.0;
 		int numsLen = nums.size();
 		while (lo < hi) {
@@ -12496,7 +12497,7 @@ public:
 		}
 		return {};
 	}
-	int peakIndexInMountainArray(vector<int>& arr) {//É½ÂöÊı×éµÄ·å¶¥Ë÷Òı
+	int peakIndexInMountainArray(vector<int>& arr) {//å±±è„‰æ•°ç»„çš„å³°é¡¶ç´¢å¼•
 		int left = 1, right = arr.size() - 2;
 		while (left <= right) {
 			int mid = left + (right - left) / 2;
@@ -12512,7 +12513,7 @@ public:
 		}
 		return 0;
 	}
-	class RecentCounter {//×î½üµÄÇëÇó´ÎÊı
+	class RecentCounter {//æœ€è¿‘çš„è¯·æ±‚æ¬¡æ•°
 	public:
 		RecentCounter() {
 			return;
@@ -12530,7 +12531,7 @@ public:
 		vector<int> time = { -3000, 0 };
 		vector<int> log;
 	};
-	int minEatingSpeed(vector<int>& nums, int h) {//°®³ÔÏã½¶µÄçæçæ
+	int minEatingSpeed(vector<int>& nums, int h) {//çˆ±åƒé¦™è•‰çš„ç‚ç‚
 		sort(nums.begin(), nums.end());
 		int left = 1, right = nums[nums.size() - 1];
 		while (left < right) {
@@ -12545,7 +12546,7 @@ public:
 		return left;
 	}
 	bool minEatingSpeedSub(vector<int>& nums, int h, int spd) {
-		//ÄÜ²»ÄÜÔÚ¹æ¶¨Ê±¼ä³ÔÍê
+		//èƒ½ä¸èƒ½åœ¨è§„å®šæ—¶é—´åƒå®Œ
 		int cnt = 0;
 		for (int& num : nums) {
 			cnt += num / spd;
@@ -12555,7 +12556,7 @@ public:
 		}
 		return cnt <= h;
 	}
-	class TimeMap {//»ùÓÚÊ±¼äµÄ¼üÖµ´æ´¢
+	class TimeMap {//åŸºäºæ—¶é—´çš„é”®å€¼å­˜å‚¨
 	public:
 		/** Initialize your data structure here. */
 		TimeMap() {
@@ -12581,7 +12582,7 @@ public:
 		unordered_map<string, map<int, string>> keyMap;
 	};
 
-	class TopVotedCandidate {////ÔÚÏßÑ¡¾Ù
+	class TopVotedCandidate {////åœ¨çº¿é€‰ä¸¾
 	public:
 		TopVotedCandidate(vector<int>& persons, vector<int>& times) {
 			int N = persons.size();
@@ -12606,7 +12607,7 @@ public:
 	private:
 		map<int, int> mp; // time stamp to lead
 	};
-	int preimageSizeFZF(int K) {//½×³Ëº¯Êıºó K ¸öÁã
+	int preimageSizeFZF(int K) {//é˜¶ä¹˜å‡½æ•°å K ä¸ªé›¶
 		long long left = 0, right = 5l * K;
 		while (left <= right) {
 			long long mid = left + (right - left) / 2;
@@ -12631,9 +12632,9 @@ public:
 		}
 		return res;
 	}
-	int nthMagicalNumber(int n, int a, int b) {//µÚ N ¸öÉñÆæÊı×Ö
+	int nthMagicalNumber(int n, int a, int b) {//ç¬¬ N ä¸ªç¥å¥‡æ•°å­—
 		const int mod = 1000000007;
-		int L = a * b / gcd(a, b);//×îĞ¡¹«±¶Êı
+		int L = a * b / gcd(a, b);//æœ€å°å…¬å€æ•°
 		long long left = min(a, b), right = 1e15;
 		while (left < right) {
 			long long mid = left + (right - left) / 2;
@@ -12650,7 +12651,7 @@ public:
 		if (x == 0) return y;
 		return gcd(y % x, x);
 	}
-	vector<int> maxDepthAfterSplit(string seq) {//ÓĞĞ§À¨ºÅµÄÇ¶Ì×Éî¶È
+	vector<int> maxDepthAfterSplit(string seq) {//æœ‰æ•ˆæ‹¬å·çš„åµŒå¥—æ·±åº¦
 		vector<int> res;
 		int cnt = 0;
 		for (char& ch : seq) {
@@ -12665,7 +12666,7 @@ public:
 		}
 		return res;
 	}
-	int nthUglyNumber(int n, int a, int b, int c) {//³óÊı III
+	int nthUglyNumber(int n, int a, int b, int c) {//ä¸‘æ•° III
 		long long ab = 1l * a * b / gcd(a, b), ac = 1l * a * c / gcd(a, c), bc = 1l * b * c / gcd(b, c);
 		long long abc = 1l * a * bc / gcd(a, bc);
 		long long left = min(min(a, b), c), right = n * left;
@@ -12680,7 +12681,7 @@ public:
 		}
 		return (int)left;
 	}
-	int smallestDivisor(vector<int>& nums, int threshold) {//Ê¹½á¹û²»³¬¹ıãĞÖµµÄ×îĞ¡³ıÊı
+	int smallestDivisor(vector<int>& nums, int threshold) {//ä½¿ç»“æœä¸è¶…è¿‡é˜ˆå€¼çš„æœ€å°é™¤æ•°
 		int left = 1, right = *max_element(nums.begin(), nums.end());
 		while (left < right) {
 			int mid = left + (right - left) / 2;
@@ -12703,7 +12704,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> threeEqualParts(vector<int>& arr) {//ÈıµÈ·Ö
+	vector<int> threeEqualParts(vector<int>& arr) {//ä¸‰ç­‰åˆ†
 		vector<int> bits;
 		int arrLen = arr.size();
 		for (int i = 0; i < arrLen; i++) {
@@ -12739,7 +12740,7 @@ public:
 
 //class Solution {
 //public:
-//	Solution(vector<int>& w) {//°´È¨ÖØËæ»úÑ¡Ôñ
+//	Solution(vector<int>& w) {//æŒ‰æƒé‡éšæœºé€‰æ‹©
 //		nums = w;
 //		int numsLen = nums.size();
 //		for (int i = 1; i < numsLen; i++) {
@@ -12758,7 +12759,7 @@ public:
 //	int lo, hi;
 //};
 
-//class Solution {//·ÇÖØµş¾ØĞÎÖĞµÄËæ»úµã
+//class Solution {//éé‡å çŸ©å½¢ä¸­çš„éšæœºç‚¹
 //public:
 //	Solution(vector<vector<int>>& rects) {
 //		int rectCnt = rects.size();
@@ -12816,12 +12817,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-ÊıÑ§
+//cookBook-æ•°å­¦
 #if false
 
 class Solution {
 public:
-	bool isPalindrome(int x) {//»ØÎÄÊı
+	bool isPalindrome(int x) {//å›æ–‡æ•°
 		if (x == 0) {
 			return true;
 		}
@@ -12836,7 +12837,7 @@ public:
 		}
 		return tmp == xCopy;
 	}
-	string convertToTitle(int columnNumber) {//Excel±íÁĞÃû³Æ
+	string convertToTitle(int columnNumber) {//Excelè¡¨åˆ—åç§°
 		string res;
 		while (columnNumber != 0) {
 			res.insert(res.begin(), (columnNumber - 1) % 26 + 'A');
@@ -12844,7 +12845,7 @@ public:
 		}
 		return res;
 	}
-	int titleToNumber(string columnTitle) {//Excel±íÁĞĞòºÅ
+	int titleToNumber(string columnTitle) {//Excelè¡¨åˆ—åºå·
 		int res = 0;
 		for (char& ch : columnTitle) {
 			res *= 26;
@@ -12852,7 +12853,7 @@ public:
 		}
 		return res;
 	}
-	int trailingZeroes(int n) {//½×³ËºóµÄÁã
+	int trailingZeroes(int n) {//é˜¶ä¹˜åçš„é›¶
 		int res = 0;
 		while (n != 0) {
 			res += n / 5;
@@ -12860,10 +12861,10 @@ public:
 		}
 		return res;
 	}
-	int addDigits(int num) {//¸÷Î»Ïà¼Ó
+	int addDigits(int num) {//å„ä½ç›¸åŠ 
 		return (num - 1) % 9 + 1;
 	}
-	bool isUgly(int n) {//³óÊı
+	bool isUgly(int n) {//ä¸‘æ•°
 		if (n == 0) {
 			return false;
 		}
@@ -12878,7 +12879,7 @@ public:
 		}
 		return n == 1;
 	}
-	bool isPowerOfThree(int n) {//3µÄÃİ
+	bool isPowerOfThree(int n) {//3çš„å¹‚
 		if (n == 0) {
 			return false;
 		}
@@ -12887,7 +12888,7 @@ public:
 		}
 		return n == 1;
 	}
-	int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {//¾ØĞÎÃæ»ı
+	int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {//çŸ©å½¢é¢ç§¯
 		int x = max(A, E), y = max(B, F);
 		int z = min(C, G), w = min(D, H);
 		return (int)(computeAreaSub(A, B, C, D) + computeAreaSub(E, F, G, H) - computeAreaSub(x, y, z, w));
@@ -12899,7 +12900,7 @@ public:
 		}
 		return h * l;
 	}
-	int superPow(int a, vector<int>& b) {//³¬¼¶´Î·½
+	int superPow(int a, vector<int>& b) {//è¶…çº§æ¬¡æ–¹
 		if (a < 2) {
 			return a;
 		}
@@ -12918,14 +12919,14 @@ public:
 		}
 		return res % moder;
 	}
-	int maxCount(int m, int n, vector<vector<int>>& ops) {//·¶Î§ÇóºÍ II
+	int maxCount(int m, int n, vector<vector<int>>& ops) {//èŒƒå›´æ±‚å’Œ II
 		for (vector<int>& lim : ops) {
 			m = min(lim[0], m);
 			n = min(lim[1], n);
 		}
 		return m * n;
 	}
-	bool checkPerfectNumber(int num) {//ÍêÃÀÊı
+	bool checkPerfectNumber(int num) {//å®Œç¾æ•°
 		if (num < 2) {
 			return false;
 		}
@@ -12939,7 +12940,7 @@ public:
 		}
 		return res == num;
 	}
-	int minMoves(vector<int>& nums) {//×îĞ¡²Ù×÷´ÎÊıÊ¹Êı×éÔªËØÏàµÈ
+	int minMoves(vector<int>& nums) {//æœ€å°æ“ä½œæ¬¡æ•°ä½¿æ•°ç»„å…ƒç´ ç›¸ç­‰
 		int sum = 0, minVal = INT_MAX;
 		for (int& num : nums) {
 			minVal = min(minVal, num);
@@ -12947,7 +12948,7 @@ public:
 		}
 		return sum - minVal * nums.size();
 	}
-	vector<int> findErrorNums(vector<int>& nums) {//´íÎóµÄ¼¯ºÏ
+	vector<int> findErrorNums(vector<int>& nums) {//é”™è¯¯çš„é›†åˆ
 		unordered_set<int> numSet;
 		vector<int> res(2, 0);
 		int sum = (nums.size() + 1) * nums.size() / 2;
@@ -12961,7 +12962,7 @@ public:
 		res[1] = res[0] + sum;
 		return res;
 	}
-	int numRabbits(vector<int>& answers) {//É­ÁÖÖĞµÄÍÃ×Ó
+	int numRabbits(vector<int>& answers) {//æ£®æ—ä¸­çš„å…”å­
 		unordered_map<int, int> rabbits;
 		int res = 0;
 		for (int& num : answers) {
@@ -12978,7 +12979,7 @@ public:
 		}
 		return res;
 	}
-	double largestTriangleArea(vector<vector<int>>& points) {//×î´óÈı½ÇĞÎÃæ»ı
+	double largestTriangleArea(vector<vector<int>>& points) {//æœ€å¤§ä¸‰è§’å½¢é¢ç§¯
 		double res = 0.0;
 		int pointCnt = points.size();
 		for (int i = 0; i < pointCnt; i++) {
@@ -12993,7 +12994,7 @@ public:
 	double largestTriangleAreaSub(vector<int>& p, vector<int>& q, vector<int>& r) {
 		return 0.5 * abs(p[0] * q[1] + q[0] * r[1] + r[0] * p[1] - p[1] * q[0] - q[1] * r[0] - r[1] * p[0]);
 	}
-	bool isRectangleOverlap(vector<int>& rec1, vector<int>& rec2) {//¾ØĞÎÖØµş
+	bool isRectangleOverlap(vector<int>& rec1, vector<int>& rec2) {//çŸ©å½¢é‡å 
 		int x = max(rec1[0], rec2[0]), y = max(rec1[1], rec2[1]);
 		int z = min(rec1[2], rec2[2]), w = min(rec1[3], rec2[3]);
 		if (z - x <= 0 || w - y <= 0) {
@@ -13001,7 +13002,7 @@ public:
 		}
 		return true;
 	}
-	vector<vector<int>> spiralMatrixIII(int R, int C, int r0, int c0) {//ÂİĞı¾ØÕó III
+	vector<vector<int>> spiralMatrixIII(int R, int C, int r0, int c0) {//èºæ—‹çŸ©é˜µ III
 		vector<vector<int>> copy;
 		copy.push_back({ r0, c0 });
 		int last = 2;
@@ -13014,28 +13015,28 @@ public:
 	}
 	int spiralMatrixIIISub(int rolSize, int colSize, int r0, int c0, int radius, int start, vector<vector<int>>& copy) {
 		for (int i = r0 - radius + 1; i <= r0 + radius; i++) {
-			if (i < 0 || i >= rolSize || c0 + radius >= colSize) {//ÓÒ
+			if (i < 0 || i >= rolSize || c0 + radius >= colSize) {//å³
 				continue;
 			}
 			start++;
 			copy.push_back({ i, c0 + radius });
 		}
 		for (int i = c0 + radius - 1; i >= c0 - radius; i--) {
-			if (i < 0 || i >= colSize || r0 + radius >= rolSize) {//ÏÂ
+			if (i < 0 || i >= colSize || r0 + radius >= rolSize) {//ä¸‹
 				continue;
 			}
 			start++;
 			copy.push_back({ r0 + radius, i });
 		}
 		for (int i = r0 + radius - 1; i >= r0 - radius; i--) {
-			if (i < 0 || i >= rolSize || c0 - radius < 0) {//×ó
+			if (i < 0 || i >= rolSize || c0 - radius < 0) {//å·¦
 				continue;
 			}
 			start++;
 			copy.push_back({ i, c0 - radius });
 		}
 		for (int i = c0 - radius + 1; i <= c0 + radius; i++) {
-			if (r0 - radius < 0 || i < 0 || i >= colSize) {//ÉÏ
+			if (r0 - radius < 0 || i < 0 || i >= colSize) {//ä¸Š
 				continue;
 			}
 			start++;
@@ -13043,7 +13044,7 @@ public:
 		}
 		return start;
 	}
-	int surfaceArea(vector<vector<int>>& grid) {//ÈıÎ¬ĞÎÌåµÄ±íÃæ»ı
+	int surfaceArea(vector<vector<int>>& grid) {//ä¸‰ç»´å½¢ä½“çš„è¡¨é¢ç§¯
 		int gridLen = grid.size();
 		vector<vector<int>> dir = { {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
 		int res = 0;
@@ -13063,7 +13064,7 @@ public:
 		}
 		return res;
 	}
-	string largestTimeFromDigits(vector<int>& arr) {//¸ø¶¨Êı×ÖÄÜ×é³ÉµÄ×î´óÊ±¼ä--»ØËİ
+	string largestTimeFromDigits(vector<int>& arr) {//ç»™å®šæ•°å­—èƒ½ç»„æˆçš„æœ€å¤§æ—¶é—´--å›æº¯
 		vector<bool> vist(4, false);
 		int hourTmp = 0, minTmp = 0;
 		int res = -1;
@@ -13111,7 +13112,7 @@ public:
 		}
 		return str1 + ':' + str2;
 	}
-	vector<int> powerfulIntegers(int x, int y, int bound) {//Ç¿ÕûÊı
+	vector<int> powerfulIntegers(int x, int y, int bound) {//å¼ºæ•´æ•°
 		unordered_set<int> resSet;
 		int tmpX = 1;
 		while (tmpX < bound) {
@@ -13134,7 +13135,7 @@ public:
 		}
 		return res;
 	}
-	int tribonacci(int n) {//µÚ N ¸öÌ©²¨ÄÇÆõÊı
+	int tribonacci(int n) {//ç¬¬ N ä¸ªæ³°æ³¢é‚£å¥‘æ•°
 		if (n == 0) {
 			return 0;
 		}
@@ -13152,7 +13153,7 @@ public:
 		}
 		return res;
 	}
-	int dayOfYear(string date) {//Ò»ÄêÖĞµÄµÚ¼¸Ìì
+	int dayOfYear(string date) {//ä¸€å¹´ä¸­çš„ç¬¬å‡ å¤©
 		int year = stoi(date.substr(0, 4)), month = stoi(date.substr(5, 2)), day = stoi(date.substr(8, 2));
 		int res = 0;
 		vector<int> prefix = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
@@ -13164,7 +13165,7 @@ public:
 		}
 		return res;
 	}
-	int numPrimeArrangements(int n) {//ÖÊÊıÅÅÁĞ
+	int numPrimeArrangements(int n) {//è´¨æ•°æ’åˆ—
 		if (n < 2) {
 			return n;
 		}
@@ -13195,7 +13196,7 @@ public:
 		}
 		return (int)res;
 	}
-	int subtractProductAndSum(int n) {//ÕûÊıµÄ¸÷Î»»ıºÍÖ®²î
+	int subtractProductAndSum(int n) {//æ•´æ•°çš„å„ä½ç§¯å’Œä¹‹å·®
 		int tmp1 = 1, tmp2 = 0;
 		while (n != 0) {
 			tmp1 *= n % 10;
@@ -13204,13 +13205,13 @@ public:
 		}
 		return tmp1 - tmp2;
 	}
-	bool divisorGame(int N) {//³ıÊı²©ŞÄ
+	bool divisorGame(int N) {//é™¤æ•°åšå¼ˆ
 		return N % 2 == 0;
 	}
-	bool isBoomerang(vector<vector<int>>& points) {//ÓĞĞ§µÄ»ØĞıïÚ
+	bool isBoomerang(vector<vector<int>>& points) {//æœ‰æ•ˆçš„å›æ—‹é•–
 		return(points[0][0] * points[1][1] + points[2][0] * points[0][1] + points[1][0] * points[2][1] != points[1][0] * points[0][1] + points[2][0] * points[1][1] + points[0][0] * points[2][1]);
 	}
-	string baseNeg2(int N) {//¸º¶ş½øÖÆ×ª»»
+	string baseNeg2(int N) {//è´ŸäºŒè¿›åˆ¶è½¬æ¢
 		if (N == 0) {
 			return "0";
 		}
@@ -13226,7 +13227,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> addNegabinary(vector<int>& arr1, vector<int>& arr2) {//¸º¶ş½øÖÆÊıÏà¼Ó
+	vector<int> addNegabinary(vector<int>& arr1, vector<int>& arr2) {//è´ŸäºŒè¿›åˆ¶æ•°ç›¸åŠ 
 		reverse(arr1.begin(), arr1.end());
 		reverse(arr2.begin(), arr2.end());
 		int arr1Len = arr1.size(), arr2Len = arr2.size();
@@ -13306,12 +13307,12 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-¹şÏ£±í
+//cookBook-å“ˆå¸Œè¡¨
 #if false
 
 class Solution {
 public:
-	int repeatedNTimes(vector<int>& nums) {//ÖØ¸´ N ´ÎµÄÔªËØ
+	int repeatedNTimes(vector<int>& nums) {//é‡å¤ N æ¬¡çš„å…ƒç´ 
 		int target = nums.size() / 2;
 		unordered_map<int, int> numMap;
 		for (int& num : nums) {
@@ -13321,7 +13322,7 @@ public:
 		}
 		return -1;
 	}
-	bool uniqueOccurrences(vector<int>& arr) {//¶ÀÒ»ÎŞ¶şµÄ³öÏÖ´ÎÊı
+	bool uniqueOccurrences(vector<int>& arr) {//ç‹¬ä¸€æ— äºŒçš„å‡ºç°æ¬¡æ•°
 		unordered_map<int, int> arrMap;
 		for (int& num : arr) {
 			++arrMap[num];
@@ -13335,7 +13336,7 @@ public:
 		}
 		return true;
 	}
-	bool wordPattern(string pattern, string s) {//µ¥´Ê¹æÂÉ
+	bool wordPattern(string pattern, string s) {//å•è¯è§„å¾‹
 		unordered_map<char, string> chMap;
 		unordered_map<string, char> strMap;
 		int cur = 0, sLen = s.size();
@@ -13359,14 +13360,14 @@ public:
 		}
 		return cur == sLen + 1;
 	}
-	int distributeCandies(vector<int>& candyType) {//·ÖÌÇ¹û
+	int distributeCandies(vector<int>& candyType) {//åˆ†ç³–æœ
 		unordered_map<int, int> candyMap;
 		for (int& candy : candyType) {
 			candyMap[candy]++;
 		}
 		return min(candyMap.size(), candyType.size() / 2);
 	}
-	int findLHS(vector<int>& nums) {//×î³¤ºÍĞ³×ÓĞòÁĞ
+	int findLHS(vector<int>& nums) {//æœ€é•¿å’Œè°å­åºåˆ—
 		unordered_map<int, int> numMap;
 		int res = 0;
 		for (int& num : nums) {
@@ -13382,7 +13383,7 @@ public:
 		}
 		return res;
 	}
-	vector<string> uncommonFromSentences(string A, string B) {//Á½¾ä»°ÖĞµÄ²»³£¼ûµ¥´Ê
+	vector<string> uncommonFromSentences(string A, string B) {//ä¸¤å¥è¯ä¸­çš„ä¸å¸¸è§å•è¯
 		unordered_map<string, int> strMap;
 		A = A + ' ' + B + ' ';
 		int sLen = A.size(), cur = 0, last = 0;
@@ -13403,7 +13404,7 @@ public:
 		}
 		return res;
 	}
-	vector<string> subdomainVisits(vector<string>& cpdomains) {//×ÓÓòÃû·ÃÎÊ¼ÆÊı
+	vector<string> subdomainVisits(vector<string>& cpdomains) {//å­åŸŸåè®¿é—®è®¡æ•°
 		unordered_map<string, int> urlCnt;
 		for (string& s : cpdomains) {
 			int sLen = s.size(), cur = 0, cnt = 0;
@@ -13429,7 +13430,7 @@ public:
 		}
 		return res;
 	}
-	class MagicDictionary {//ÊµÏÖÒ»¸öÄ§·¨×Öµä
+	class MagicDictionary {//å®ç°ä¸€ä¸ªé­”æ³•å­—å…¸
 	public:
 		/** Initialize your data structure here. */
 		MagicDictionary() {
@@ -13467,7 +13468,7 @@ public:
 	private:
 		unordered_map<string, unordered_set<string>> wordDict;
 	};
-	vector<int> findSubstring(string s, vector<string>& words) {//´®ÁªËùÓĞµ¥´ÊµÄ×Ó´®
+	vector<int> findSubstring(string s, vector<string>& words) {//ä¸²è”æ‰€æœ‰å•è¯çš„å­ä¸²
 		vector<int> res;
 		int sLen = s.size();
 		if (sLen == 0 || words.empty()) {
@@ -13509,7 +13510,7 @@ public:
 		}
 		return res;
 	}
-	class WordFilter {//Ç°×ººÍºó×ºËÑË÷
+	class WordFilter {//å‰ç¼€å’Œåç¼€æœç´¢
 	public:
 		WordFilter(vector<string>& words) {
 			int wordCnt = words.size();
@@ -13579,7 +13580,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-ÅÅĞò
+//cookBook-æ’åº
 #if false
 
 class Solution {
@@ -13598,7 +13599,7 @@ public:
 		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 		
 	};
-	vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {//²åÈëÇø¼ä
+	vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {//æ’å…¥åŒºé—´
 		int intervalCnt = intervals.size();
 		int cur = 0;
 		vector<vector<int>> res;
@@ -13624,7 +13625,7 @@ public:
 		}
 		return res;
 	}
-	void sortColors(vector<int>& nums) {//ÑÕÉ«·ÖÀà
+	void sortColors(vector<int>& nums) {//é¢œè‰²åˆ†ç±»
 		sortColorsSub(nums, 0, nums.size() - 1);
 		return;
 	}
@@ -13663,7 +13664,7 @@ public:
 		}
 		return rootNode->next;
 	}
-	ListNode* insertionSortList(ListNode* head) {//¶ÔÁ´±í½øĞĞ²åÈëÅÅĞò
+	ListNode* insertionSortList(ListNode* head) {//å¯¹é“¾è¡¨è¿›è¡Œæ’å…¥æ’åº
 		if (head == nullptr || head->next == nullptr) {
 			return head;
 		}
@@ -13688,7 +13689,7 @@ public:
 		}
 		return root->next;
 	}
-	int findKthLargest(vector<int>& nums, int k) {//Êı×éÖĞµÄµÚK¸ö×î´óÔªËØ
+	int findKthLargest(vector<int>& nums, int k) {//æ•°ç»„ä¸­çš„ç¬¬Kä¸ªæœ€å¤§å…ƒç´ 
 		findKthLargestSub(nums, 0, nums.size() - 1);
 		return nums[nums.size() - k];
 	}
@@ -13716,7 +13717,7 @@ public:
 		findKthLargestSub(nums, i + 1, right);
 		return;
 	}
-	bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {//´æÔÚÖØ¸´ÔªËØ III
+	bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {//å­˜åœ¨é‡å¤å…ƒç´  III
 		if (t < 0) {
 			return false;
 		}
@@ -13744,7 +13745,7 @@ public:
 	long long containsNearbyAlmostDuplicateID(long long x, long long wt) {
 		return x < 0 ? (x + 1) / wt - 1 : x / wt;
 	}
-	int hIndex(vector<int>& citations) {//H Ö¸Êı
+	int hIndex(vector<int>& citations) {//H æŒ‡æ•°
 		int citationsCnt = citations.size();
 		hIndexSub(citations, 0, citationsCnt - 1);
 		int left = 0, right = citationsCnt;
@@ -13783,7 +13784,7 @@ public:
 		hIndexSub(nums, i + 1, right);
 		return;
 	}
-	//int maximumGap(vector<int>& nums) {//×î´ó¼ä¾à
+	//int maximumGap(vector<int>& nums) {//æœ€å¤§é—´è·
 	//	int numsLen = nums.size();
 	//	if (numsLen < 2) {
 	//		return 0;
@@ -13819,8 +13820,8 @@ public:
 	//	maximumGapSub(nums, i + 1, right);
 	//	return;
 	//}
-	int maximumGap(vector<int>& nums) {//×î´ó¼ä¾à
-		//²ÉÓÃ»ùÊıÅÅĞò·¨
+	int maximumGap(vector<int>& nums) {//æœ€å¤§é—´è·
+		//é‡‡ç”¨åŸºæ•°æ’åºæ³•
 		int numsLen = nums.size();
 		if (numsLen < 2) {
 			return 0;
@@ -13829,14 +13830,14 @@ public:
 		vector<int> buffer(numsLen);
 		while (exp <= maxElem) {
 			vector<int> digitCnt(10, 0);
-			for (int i = 0; i < numsLen; i++) {//ÇóÍ¬Ò»ÊıÎ»ÉÏÏàÍ¬ÊıÖµÔªËØÊıÁ¿
+			for (int i = 0; i < numsLen; i++) {//æ±‚åŒä¸€æ•°ä½ä¸Šç›¸åŒæ•°å€¼å…ƒç´ æ•°é‡
 				digitCnt[(nums[i] / exp) % 10]++;
 			}
 			for (int i = 1; i < 10; i++) {
 				digitCnt[i] += digitCnt[i - 1];
 			}
 			for (int i = numsLen - 1; i > -1; i--) {
-				//ÔõÃ´ÕâÃ´ÉñÆæ£¿
+				//æ€ä¹ˆè¿™ä¹ˆç¥å¥‡ï¼Ÿ
 				int digit = (nums[i] / exp) % 10;
 				buffer[--digitCnt[digit]] = nums[i];
 			}
@@ -13849,7 +13850,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {//²éÕÒºÍ×îĞ¡µÄK¶ÔÊı×Ö
+	vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {//æŸ¥æ‰¾å’Œæœ€å°çš„Kå¯¹æ•°å­—
 		vector<vector<int>> res;
 		int nums1Len = nums1.size(), nums2Len = nums2.size();
 		int cnt = nums1Len * nums2Len;
@@ -13869,7 +13870,7 @@ public:
 		}
 		return res;
 	}
-	int findContentChildren(vector<int>& nums1, vector<int>& nums2) {//·Ö·¢±ı¸É
+	int findContentChildren(vector<int>& nums1, vector<int>& nums2) {//åˆ†å‘é¥¼å¹²
 		int res = 0, nums1Len = nums1.size(), nums2Len = nums2.size(), cur1 = 0, cur2 = 0;
 		sort(nums1.begin(), nums1.end());
 		sort(nums2.begin(), nums2.end());
@@ -13885,7 +13886,7 @@ public:
 		}
 		return res;
 	}
-	string findLongestWord(string s, vector<string>& dictionary) {//Í¨¹ıÉ¾³ı×ÖÄ¸Æ¥Åäµ½×ÖµäÀï×î³¤µ¥´Ê
+	string findLongestWord(string s, vector<string>& dictionary) {//é€šè¿‡åˆ é™¤å­—æ¯åŒ¹é…åˆ°å­—å…¸é‡Œæœ€é•¿å•è¯
 		string res;
 		sort(dictionary.begin(), dictionary.end());
 		for (string& str : dictionary) {
@@ -13906,7 +13907,7 @@ public:
 		}
 		return cur2 == str2Len;
 	}
-	string reorganizeString(string S) {//ÖØ¹¹×Ö·û´®
+	string reorganizeString(string S) {//é‡æ„å­—ç¬¦ä¸²
 		if (S.length() < 2) {
 			return S;
 		}
@@ -13939,7 +13940,7 @@ public:
 		}
 		return reorganizeArray;
 	}
-	bool isAlienSorted(vector<string>& words, string order) {//ÑéÖ¤ÍâĞÇÓï´Êµä
+	bool isAlienSorted(vector<string>& words, string order) {//éªŒè¯å¤–æ˜Ÿè¯­è¯å…¸
 		if (words.size() < 2) {
 			return true;
 		}
@@ -13973,7 +13974,7 @@ public:
 		}
 		return cur1 == str1Len;
 	}
-	int largestPerimeter(vector<int>& nums) {//Èı½ÇĞÎµÄ×î´óÖÜ³¤
+	int largestPerimeter(vector<int>& nums) {//ä¸‰è§’å½¢çš„æœ€å¤§å‘¨é•¿
 		int numsLen = nums.size();
 		if (numsLen < 3) {
 			return 0;
@@ -13987,7 +13988,7 @@ public:
 		}
 		return 0;
 	}
-	int largestSumAfterKNegations(vector<int>& nums, int k) {//K ´ÎÈ¡·´ºó×î´ó»¯µÄÊı×éºÍ
+	int largestSumAfterKNegations(vector<int>& nums, int k) {//K æ¬¡å–ååæœ€å¤§åŒ–çš„æ•°ç»„å’Œ
 		sort(nums.begin(), nums.end());
 		int cur = 0, numsLen = nums.size();
 		while (cur < numsLen && nums[cur] < 0 && k > 0) {
@@ -14005,7 +14006,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> allCellsDistOrder(int R, int C, int r0, int c0) {//¾àÀëË³ĞòÅÅÁĞ¾ØÕóµ¥Ôª¸ñ
+	vector<vector<int>> allCellsDistOrder(int R, int C, int r0, int c0) {//è·ç¦»é¡ºåºæ’åˆ—çŸ©é˜µå•å…ƒæ ¼
 		vector<vector<int>> tmp;
 		for (int i = 0; i < R; i++) {
 			for (int j = 0; j < C; j++) {
@@ -14022,7 +14023,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> rearrangeBarcodes(vector<int>& nums) {//¾àÀëÏàµÈµÄÌõĞÎÂë
+	vector<int> rearrangeBarcodes(vector<int>& nums) {//è·ç¦»ç›¸ç­‰çš„æ¡å½¢ç 
 		int numsLen = nums.size();
 		if (numsLen < 3) {
 			return nums;
@@ -14035,7 +14036,7 @@ public:
 		//sort(numMap.begin(), numMap.end());
 		int oddCur = 1, evenCur = 0;
 		for (int i = 0; i < numMap.size(); i++) {
-			//ÏÈÌîÈëÆæÊı£¬ºóÌîÈëÅ¼Êı
+			//å…ˆå¡«å…¥å¥‡æ•°ï¼Œåå¡«å…¥å¶æ•°
 			while (numMap[i] > 0 && numMap[i] <= numsLen / 2 && oddCur < numsLen) {
 				res[oddCur] = i;
 				numMap[i]--;
@@ -14049,7 +14050,7 @@ public:
 		}
 		return res;
 	}
-	vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {//×î½Ó½üÔ­µãµÄ K ¸öµã
+	vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {//æœ€æ¥è¿‘åŸç‚¹çš„ K ä¸ªç‚¹
 		sort(points.begin(), points.end(), [](vector<int>& vtr1, vector<int>& vtr2) {
 			double d1 = 0.0 + sqrt(vtr1[0] * vtr1[0] + vtr1[1] * vtr1[1]);
 			double d2 = 0.0 + sqrt(vtr2[0] * vtr2[0] + vtr2[1] * vtr2[1]);
@@ -14058,7 +14059,7 @@ public:
 		vector<vector<int>> res(points.begin(), points.begin() + k);
 		return res;
 	}
-	vector<int> getAllElements(TreeNode* root1, TreeNode* root2) {//Á½¿Ã¶ş²æËÑË÷Ê÷ÖĞµÄËùÓĞÔªËØ
+	vector<int> getAllElements(TreeNode* root1, TreeNode* root2) {//ä¸¤æ£µäºŒå‰æœç´¢æ ‘ä¸­çš„æ‰€æœ‰å…ƒç´ 
 		vector<int> res;
 		stack<TreeNode*> stk1, stk2;
 		while ((root1 != nullptr || !stk1.empty()) && (root2 != nullptr || !stk2.empty())) {
@@ -14113,7 +14114,7 @@ public:
 		}
 		return res;
 	}
-	int carFleet(int target, vector<int>& position, vector<int>& speed) {//³µ¶Ó
+	int carFleet(int target, vector<int>& position, vector<int>& speed) {//è½¦é˜Ÿ
 		int res = 0;
 		if (position.empty() || speed.empty()) {
 			return res;
@@ -14121,7 +14122,7 @@ public:
 		int carCnt = speed.size();
 		map<int, double> reachTime;
 		for (int i = 0; i < carCnt; i++) {
-			reachTime[-position[i]] = (0.0 + target - position[i]) / speed[i];//×îÏÈµ½µÄÅÅÇ°Ãæ
+			reachTime[-position[i]] = (0.0 + target - position[i]) / speed[i];//æœ€å…ˆåˆ°çš„æ’å‰é¢
 		}
 		double time = 0.0;
 		for (auto& it : reachTime) {
@@ -14133,7 +14134,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> pancakeSort(vector<int>& nums) {//¼å±ıÅÅĞò
+	vector<int> pancakeSort(vector<int>& nums) {//ç…é¥¼æ’åº
 		vector<int> res;
 		int numsLen = nums.size();
 		for (int i = numsLen; i > 0; i--) {
@@ -14156,7 +14157,7 @@ public:
 		}
 		return;
 	}
-	int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {//¹æ»®¼æÖ°¹¤×÷
+	int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {//è§„åˆ’å…¼èŒå·¥ä½œ
 		int jobCnt = startTime.size();
 		vector<int> job(jobCnt + 1);
 		iota(job.begin(), job.end(), 0);
@@ -14180,7 +14181,7 @@ public:
 		return dp[jobCnt];
 	}
 };
-class Solution1 {//ºÚÃûµ¥ÖĞµÄËæ»úÊı
+class Solution1 {//é»‘åå•ä¸­çš„éšæœºæ•°
 public:
 
 	unordered_map<int, int> m;
@@ -14233,7 +14234,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-Î»ÔËËã
+//cookBook-ä½è¿ç®—
 #if false
 
 class Solution {
@@ -14252,7 +14253,7 @@ public:
 		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 
 	};
-	int singleNumberII(vector<int>& nums) {//Ö»³öÏÖÒ»´ÎµÄÊı×Ö II
+	int singleNumberII(vector<int>& nums) {//åªå‡ºç°ä¸€æ¬¡çš„æ•°å­— II
 		int lowBit = 0, highBit = 0;
 		for (int& num : nums) {
 			lowBit = lowBit ^ num & ~highBit;
@@ -14260,7 +14261,7 @@ public:
 		}
 		return lowBit;
 	}
-	int rangeBitwiseAnd(int left, int right) {//Êı×Ö·¶Î§°´Î»Óë
+	int rangeBitwiseAnd(int left, int right) {//æ•°å­—èŒƒå›´æŒ‰ä½ä¸
 		if (left == 0) {
 			return 0;
 		}
@@ -14273,10 +14274,10 @@ public:
 		res = left << res;
 		return res;
 	}
-	bool isPowerOfTwo(int n) {//2µÄÃİ
+	bool isPowerOfTwo(int n) {//2çš„å¹‚
 		return n > 0 && ((n & (n - 1)) == 0);
 	}
-	bool isPowerOfFour(int n) {//4µÄÃİ
+	bool isPowerOfFour(int n) {//4çš„å¹‚
 		if (n < 1) {
 			return false;
 		}
@@ -14289,7 +14290,7 @@ public:
 		}
 		return n == 1;
 	}
-	int getSum(int a, int b) {//Á½ÕûÊıÖ®ºÍ
+	int getSum(int a, int b) {//ä¸¤æ•´æ•°ä¹‹å’Œ
 		while (b != 0) {
 			int tmp = a ^ b;
 			b = ((unsigned int)(a & b)) << 1;
@@ -14297,7 +14298,7 @@ public:
 		}
 		return a;
 	}
-	char findTheDifference(string s, string t) {//ÕÒ²»Í¬
+	char findTheDifference(string s, string t) {//æ‰¾ä¸åŒ
 		char res = 0;
 		for (char& ch : s) {
 			res ^= ch;
@@ -14307,7 +14308,7 @@ public:
 		}
 		return res;
 	}
-	int integerReplacement(int n) {//ÕûÊıÌæ»»
+	int integerReplacement(int n) {//æ•´æ•°æ›¿æ¢
 		int res = 0;
 		unsigned long long tmp = n;
 		while (tmp > 1) {
@@ -14324,7 +14325,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> countBits(int num) {//±ÈÌØÎ»¼ÆÊı
+	vector<int> countBits(int num) {//æ¯”ç‰¹ä½è®¡æ•°
 		vector<int> res(num + 1, 0);
 		int highBit = 0;
 		for (int i = 1; i <= num; i++) {
@@ -14335,7 +14336,7 @@ public:
 		}
 		return res;
 	}
-	vector<string> findRepeatedDnaSequences(string s) {//ÖØ¸´µÄDNAĞòÁĞ
+	vector<string> findRepeatedDnaSequences(string s) {//é‡å¤çš„DNAåºåˆ—
 		unordered_map<long long, int> dnaMap;
 		unordered_map<char, int> base = { {'A', 1 }, {'C', 2 }, {'G', 3 }, {'T', 4 } };
 		unordered_map<int, char> baseInv = { {1, 'A' }, {2, 'C'}, {3, 'G'}, {4, 'T'} };
@@ -14364,7 +14365,7 @@ public:
 		}
 		return res;
 	}
-	vector<int> singleNumber(vector<int>& nums) {//Ö»³öÏÖÒ»´ÎµÄÊı×Ö III
+	vector<int> singleNumber(vector<int>& nums) {//åªå‡ºç°ä¸€æ¬¡çš„æ•°å­— III
 		int res = 0;
 		for (int& num : nums) {
 			res ^= num;
@@ -14384,7 +14385,7 @@ public:
 		}
 		return { a, b };
 	}
-	int maxProduct(vector<string>& words) {//×î´óµ¥´Ê³¤¶È³Ë»ı
+	int maxProduct(vector<string>& words) {//æœ€å¤§å•è¯é•¿åº¦ä¹˜ç§¯
 		int res = 0;
 		int wordCnt = words.size();
 		vector<int> tmp(wordCnt);
@@ -14406,14 +14407,14 @@ public:
 		}
 		return res;
 	}
-	bool validUtf8(vector<int>& data) {//UTF-8 ±àÂëÑéÖ¤
+	bool validUtf8(vector<int>& data) {//UTF-8 ç¼–ç éªŒè¯
 		int availCnt = 0;
 		for (int& num : data) {
-			if (availCnt == 0) {//Ã»ÓĞ´ı´¦ÀíµÄ×Ö½Ú
-				if (num < 128) {//µ±Ç°×Ö½ÚÎªµ¥×Ö½Ú
+			if (availCnt == 0) {//æ²¡æœ‰å¾…å¤„ç†çš„å­—èŠ‚
+				if (num < 128) {//å½“å‰å­—èŠ‚ä¸ºå•å­—èŠ‚
 					continue;
 				}
-				if (num < 192) {//¶àÓà×Ö½Ú
+				if (num < 192) {//å¤šä½™å­—èŠ‚
 					return false;
 				}
 				int cur = 255;
@@ -14422,7 +14423,7 @@ public:
 					cur = (cur << 1) & 255;
 					availCnt--;
 				}
-				if (availCnt > 3) {//¹ı³¤×Ö½Ú
+				if (availCnt > 3) {//è¿‡é•¿å­—èŠ‚
 					return false;
 				}
 			}
@@ -14435,7 +14436,7 @@ public:
 		}
 		return availCnt == 0;
 	}
-	vector<string> readBinaryWatch(int num) {//¶ş½øÖÆÊÖ±í
+	vector<string> readBinaryWatch(int num) {//äºŒè¿›åˆ¶æ‰‹è¡¨
 		vector<string> res;
 		for (int i = 0; i < 1024; i++) {
 			if (readBinaryWatchSub(i, num)) {
@@ -14461,7 +14462,7 @@ public:
 		}
 		return target == cnt;
 	}
-	string toHex(int num) {//Êı×Ö×ª»»ÎªÊ®Áù½øÖÆÊı
+	string toHex(int num) {//æ•°å­—è½¬æ¢ä¸ºåå…­è¿›åˆ¶æ•°
 		if (num == 0) {
 			return "0";
 		}
@@ -14479,7 +14480,7 @@ public:
 		}
 		return res;
 	}
-	int findComplement(int num) {//Êı×ÖµÄ²¹Êı
+	int findComplement(int num) {//æ•°å­—çš„è¡¥æ•°
 		unsigned int cur = 1;
 		unsigned int curr = (unsigned int)num;
 		while (cur <= curr) {
@@ -14488,7 +14489,7 @@ public:
 		cur -= curr + 1;
 		return cur;
 	}
-	int totalHammingDistance(vector<int>& nums) {//ººÃ÷¾àÀë×ÜºÍ
+	int totalHammingDistance(vector<int>& nums) {//æ±‰æ˜è·ç¦»æ€»å’Œ
 		int numsLen = nums.size(), res = 0;
 		if (numsLen == 0) {
 			return 0;
@@ -14507,7 +14508,7 @@ public:
 		}
 		return res;
 	}
-	bool hasAlternatingBits(int n) {//½»ÌæÎ»¶ş½øÖÆÊı
+	bool hasAlternatingBits(int n) {//äº¤æ›¿ä½äºŒè¿›åˆ¶æ•°
 		bool status = (n & 1) != 0;
 		n >>= 1;
 		while (n != 0) {
@@ -14519,7 +14520,7 @@ public:
 		}
 		return true;
 	}
-	int countPrimeSetBits(int L, int R) {//¶ş½øÖÆ±íÊ¾ÖĞÖÊÊı¸ö¼ÆËãÖÃÎ»
+	int countPrimeSetBits(int L, int R) {//äºŒè¿›åˆ¶è¡¨ç¤ºä¸­è´¨æ•°ä¸ªè®¡ç®—ç½®ä½
 		unordered_set<int> uniq = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31 };
 		int res = 0;
 		for (int i = L; i <= R; i++) {
@@ -14537,7 +14538,7 @@ public:
 		}
 		return res;
 	}
-	int subarrayBitwiseORs(vector<int>& nums) {//×ÓÊı×é°´Î»»ò²Ù×÷
+	int subarrayBitwiseORs(vector<int>& nums) {//å­æ•°ç»„æŒ‰ä½æˆ–æ“ä½œ
 		int numsLen = nums.size();
 		unordered_set<int> res;
 		vector<int> dp(nums);
@@ -14584,7 +14585,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-²¢²é¼¯
+//cookBook-å¹¶æŸ¥é›†
 #if false
 
 class Solution {
@@ -14602,7 +14603,7 @@ public:
 		TreeNode* right;
 		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 	};
-	int longestConsecutive(vector<int>& nums) {//×î³¤Á¬ĞøĞòÁĞ
+	int longestConsecutive(vector<int>& nums) {//æœ€é•¿è¿ç»­åºåˆ—
 		unordered_set<int> numSet;
 		for (int& num : nums) {
 			numSet.insert(num);
@@ -14622,7 +14623,7 @@ public:
 	}
 	class UnionFind {
 	public:
-		//×Ô¼ºµÄ¸¸½ÚµãÊÇ×Ô¼º
+		//è‡ªå·±çš„çˆ¶èŠ‚ç‚¹æ˜¯è‡ªå·±
 		UnionFind(int num) {
 			for (int i = 0; i < num; i++) {
 				parent.push_back(i);
@@ -14658,10 +14659,10 @@ public:
 		vector<int> parent;
 		vector<double> weight;
 	};
-	vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {//³ı·¨ÇóÖµ
+	vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {//é™¤æ³•æ±‚å€¼
 		int eqCnt = equations.size();
 		UnionFind myUnion(2 * eqCnt);
-		//»ñÈ¡½Úµã--id¶ÔÓ¦
+		//è·å–èŠ‚ç‚¹--idå¯¹åº”
 		unordered_map<string, int> curMap;
 		int id = 0;
 		for (int i = 0; i < eqCnt; i++) {
@@ -14673,10 +14674,10 @@ public:
 			if (curMap.count(str2) < 1) {
 				curMap[str2] = id++;
 			}
-			//Á¬½ÓÓĞÏòÍ¼
+			//è¿æ¥æœ‰å‘å›¾
 			myUnion.nyUnion(curMap[str1], curMap[str2], values[i]);
 		}
-		//²éÑ¯
+		//æŸ¥è¯¢
 		int irqCnt = queries.size();
 		vector<double> res(irqCnt, -1);
 		for (int i = 0; i < irqCnt; i++) {
@@ -14708,7 +14709,7 @@ public:
 			parent[findParent(x)] = findParent(y);
 			return;
 		}
-		bool check(int x, int y) {//ÊÇ·ñ¾ßÓĞÏàÍ¬Á¬½Ó·ÖÁ¿
+		bool check(int x, int y) {//æ˜¯å¦å…·æœ‰ç›¸åŒè¿æ¥åˆ†é‡
 			int rootX = findParent(x), rootY = findParent(y);
 			if (rootX == rootY) {
 				return true;
@@ -14718,7 +14719,7 @@ public:
 	private:
 		vector<int> parent;
 	};
-	vector<int> findRedundantConnection(vector<vector<int>>& edges) {//ÈßÓàÁ¬½Ó
+	vector<int> findRedundantConnection(vector<vector<int>>& edges) {//å†—ä½™è¿æ¥
 		unordered_map<int, int> curMap;
 		int id = 0;
 		for (vector<int>& edge : edges) {
@@ -14767,10 +14768,10 @@ public:
 	private:
 		vector<int> parent;
 	};
-	vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {//ÈßÓàÁ¬½Ó II
+	vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {//å†—ä½™è¿æ¥ II
 		int edgeCnt = edges.size();
 		findRedundantDirectedConnectionSub mySub(edgeCnt + 1);
-		vector<int> parent(edgeCnt + 1);//×îºóÒ»´ÎË¢ĞÂµÄ¸¸½Úµã
+		vector<int> parent(edgeCnt + 1);//æœ€åä¸€æ¬¡åˆ·æ–°çš„çˆ¶èŠ‚ç‚¹
 		for (int i = 0; i <= edgeCnt; i++) {
 			parent[i] = i;
 		}
@@ -14778,12 +14779,12 @@ public:
 		for (int i = 0; i < edgeCnt; i++) {
 			vector<int>& edge = edges[i];
 			int node1 = edge[0], node2 = edge[1];
-			if (parent[node2] != node2) {//ÔÙ´ÎÁ¬½ÓÒÑÁ¬½Ó½Úµã(²»Ò»¶¨ÓĞ»·)
+			if (parent[node2] != node2) {//å†æ¬¡è¿æ¥å·²è¿æ¥èŠ‚ç‚¹(ä¸ä¸€å®šæœ‰ç¯)
 				conflict = i;
 			}
 			else {
 				parent[node2] = node1;
-				if (mySub.checkPatent(node1, node2)) {//Á¬½Ó³öÏÖ»·
+				if (mySub.checkPatent(node1, node2)) {//è¿æ¥å‡ºç°ç¯
 					cycle = i;
 				}
 				else {
@@ -14791,13 +14792,13 @@ public:
 				}
 			}
 		}
-		if (conflict < 0) {//»·Á¬½Óµ½¸ù½Úµã
+		if (conflict < 0) {//ç¯è¿æ¥åˆ°æ ¹èŠ‚ç‚¹
 			return edges[cycle];
 		}
-		else if (cycle >= 0) {//ÓĞ»·³öÏÖ,É¾³ı»·½ÚµãµÄ¸¸½ÚµãºÍ»·½Úµã
+		else if (cycle >= 0) {//æœ‰ç¯å‡ºç°,åˆ é™¤ç¯èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹å’Œç¯èŠ‚ç‚¹
 			return{parent[edges[conflict][1]], edges[conflict][1] };
 		}
-		return edges[conflict];//ÎŞ»·³öÏÖ
+		return edges[conflict];//æ— ç¯å‡ºç°
 	}
 	class findCircleNumSub {
 	public:
@@ -14814,7 +14815,7 @@ public:
 			}
 			return parent[x];
 		}
-		void addToTree(int x, int y) {//°ÑxÌí¼Óµ½y
+		void addToTree(int x, int y) {//æŠŠxæ·»åŠ åˆ°y
 			parent[findParent(x)] = findParent(y);
 			return;
 		}
@@ -14829,7 +14830,7 @@ public:
 	private:
 		vector<int> parent;
 	};
-	int findCircleNum(vector<vector<int>>& isConnected) {//Ê¡·İÊıÁ¿
+	int findCircleNum(vector<vector<int>>& isConnected) {//çœä»½æ•°é‡
 		int itemCnt = isConnected.size();
 		if (itemCnt < 2) {
 			return itemCnt;
@@ -14866,10 +14867,10 @@ public:
 	private:
 		vector<int> parent;
 	};
-	vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {//ÕË»§ºÏ²¢
+	vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {//è´¦æˆ·åˆå¹¶
 		unordered_map<string, int> mailID;
 		unordered_map<string, string> mailName;
-		//·ÖÅäID
+		//åˆ†é…ID
 		int id = 0;
 		for (vector<string>& mail : accounts) {
 			int mailCnt = mail.size();
@@ -14881,7 +14882,7 @@ public:
 				}
 			}
 		}
-		//¹é²¢
+		//å½’å¹¶
 		accountsMergeSub mySub(id);
 		for (vector<string>& account : accounts) {
 			string& firstMail = account[1];
@@ -14896,7 +14897,7 @@ public:
 			int rootMail = mySub.findParent(mailID[it.first]);
 			mailCluster[rootMail].insert(it.first);
 		}
-		//Éú³É´ğ°¸
+		//ç”Ÿæˆç­”æ¡ˆ
 		for (auto& it : mailCluster) {
 			string& name = mailName[*it.second.begin()];
 			vector<string> tmp = { name };
@@ -14930,12 +14931,12 @@ public:
 	private:
 		vector<int> parent;
 	};
-	int minSwapsCouples(vector<int>& row) {//ÇéÂÂÇ£ÊÖ
+	int minSwapsCouples(vector<int>& row) {//æƒ…ä¾£ç‰µæ‰‹
 		int peopleCnt = row.size(), coupleCnt = peopleCnt / 2;
-		//Ìí¼Ó
+		//æ·»åŠ 
 		minSwapsCouplesSub uf(coupleCnt);
 		for (int i = 0; i < peopleCnt; i += 2) {
-			//ÇéÂÂ±àºÅ
+			//æƒ…ä¾£ç¼–å·
 			int left = row[i] / 2;
 			int right = row[i + 1] / 2;
 			uf.merge(left, right);
@@ -14973,7 +14974,7 @@ public:
 	private:
 		vector<int> parent;
 	};
-	int swimInWater(vector<vector<int>>& grid) {//Ë®Î»ÉÏÉıµÄÓ¾³ØÖĞÓÎÓ¾
+	int swimInWater(vector<vector<int>>& grid) {//æ°´ä½ä¸Šå‡çš„æ³³æ± ä¸­æ¸¸æ³³
 		int gridDim = grid.size();
 		swimInWaterSub uf(gridDim * gridDim);
 		vector<pair<int, int>> curMap(gridDim * gridDim);
@@ -15031,29 +15032,29 @@ public:
 	private:
 		vector<int> parent, nodeCnt;
 	};
-	vector<int> hitBricks(vector<vector<int>>& grid, vector<vector<int>>& hits) {//´ò×©¿é
+	vector<int> hitBricks(vector<vector<int>>& grid, vector<vector<int>>& hits) {//æ‰“ç –å—
 		int rolSize = grid.size(), colSize = grid[0].size();
 		int hitCnt = hits.size();
 		hitBricksSub uf(rolSize * colSize + 1);
-		//±ê¼ÇÒªÇÃµôµÄ×ª
+		//æ ‡è®°è¦æ•²æ‰çš„è½¬
 		for (vector<int>& hit : hits) {
 			if (grid[hit[0]][hit[1]] == 1) {
 				grid[hit[0]][hit[1]] = 2;
 			}
 		}
-		//Ìí¼Ó¸÷¸ö´Øµ½²¢²é¼¯
+		//æ·»åŠ å„ä¸ªç°‡åˆ°å¹¶æŸ¥é›†
 		for (int i = 0; i < rolSize; i++) {
 			for (int j = 0; j < colSize; j++) {
 				if (grid[i][j] != 1) {
 					continue;
 				}
-				if (i == 0) {//Ç½ÉÏµÄ
+				if (i == 0) {//å¢™ä¸Šçš„
 					uf.merge(rolSize * colSize, i * colSize + j);
 				}
-				if (i > 0 && grid[i - 1][j] == 1) {//ÉÏÃæÓĞ×ª
+				if (i > 0 && grid[i - 1][j] == 1) {//ä¸Šé¢æœ‰è½¬
 					uf.merge((i - 1) * colSize + j, i * colSize + j);
 				}
-				if (j > 0 && grid[i][j - 1] == 1) {//×óÃæÓĞ×©
+				if (j > 0 && grid[i][j - 1] == 1) {//å·¦é¢æœ‰ç –
 					uf.merge(i * colSize + j - 1, i * colSize + j);
 				}
 			}
@@ -15062,13 +15063,13 @@ public:
 		vector<int> res(hitCnt);
 		for (int i = hitCnt - 1; i > -1; i--) {
 			int rolCur = hits[i][0], colCur = hits[i][1];
-			if (grid[rolCur][colCur] == 0) {//Ê£ÏÂµÄÈ«ÊÇ2
+			if (grid[rolCur][colCur] == 0) {//å‰©ä¸‹çš„å…¨æ˜¯2
 				res[i] = 0;
 				continue;
 			}
 			int prev = uf.retNodeCnt(rolSize * colSize);
 			if (rolCur == 0) {
-				uf.merge(rolSize * colSize, colCur);//ÒÔ·Àµ¹Èı½ÇÀàĞÍ
+				uf.merge(rolSize * colSize, colCur);//ä»¥é˜²å€’ä¸‰è§’ç±»å‹
 			}
 			for (int j = 0; j < 4; j++) {
 				int tmpRol = rolCur + dir[j][0], tmpCol = colCur + dir[j][1];
@@ -15116,7 +15117,7 @@ public:
 	private:
 		vector<int> parent;
 	};
-	int numSimilarGroups(vector<string>& strs) {//ÏàËÆ×Ö·û´®×é
+	int numSimilarGroups(vector<string>& strs) {//ç›¸ä¼¼å­—ç¬¦ä¸²ç»„
 		unordered_map<string, int> strMap;
 		int strCnt = strs.size();
 		int id = 0;
@@ -15186,7 +15187,7 @@ public:
 		vector<int> parent;
 		vector<int> clusterCnt;
 	};
-	int minMalwareSpreadI(vector<vector<int>>& grid, vector<int>& initial) {//¾¡Á¿¼õÉÙ¶ñÒâÈí¼şµÄ´«²¥
+	int minMalwareSpreadI(vector<vector<int>>& grid, vector<int>& initial) {//å°½é‡å‡å°‘æ¶æ„è½¯ä»¶çš„ä¼ æ’­
 		int gridDim = grid.size();
 		minMalwareSpreadISub uf(gridDim);
 		for(int i = 0; i < gridDim; i++) {
@@ -15200,7 +15201,7 @@ public:
 		int initialCnt = initial.size();
 		vector<int> infected(gridDim);
 		for (int& num : initial) {
-			//±£´æÕâÒ»¸ö´ØÓÉ¼¸¸ö½Úµã¸ĞÈ¾£»
+			//ä¿å­˜è¿™ä¸€ä¸ªç°‡ç”±å‡ ä¸ªèŠ‚ç‚¹æ„ŸæŸ“ï¼›
 			infected[uf.findParent(num)]++;
 		}
 		sort(initial.begin(), initial.end());
@@ -15250,7 +15251,7 @@ public:
 		vector<int> parent;
 		vector<int> clusterCnt;
 	};
-	int minMalwareSpread(vector<vector<int>>& grid, vector<int>& initial) {//¾¡Á¿¼õÉÙ¶ñÒâÈí¼şµÄ´«²¥ II
+	int minMalwareSpread(vector<vector<int>>& grid, vector<int>& initial) {//å°½é‡å‡å°‘æ¶æ„è½¯ä»¶çš„ä¼ æ’­ II
 		int gridDim = grid.size();
 		sort(initial.begin(), initial.end());
 		int maxCnt = INT_MAX, res = initial[0];
@@ -15319,7 +15320,7 @@ public:
 	private:
 		vector<int> parent;
 	};
-	int removeStones(vector<vector<int>>& stones) {//ÒÆ³ı×î¶àµÄÍ¬ĞĞ»òÍ¬ÁĞÊ¯Í·
+	int removeStones(vector<vector<int>>& stones) {//ç§»é™¤æœ€å¤šçš„åŒè¡Œæˆ–åŒåˆ—çŸ³å¤´
 		int stoneCnt = stones.size();
 		if (stoneCnt < 2) {
 			return 0;
@@ -15374,7 +15375,7 @@ public:
 		vector<int> parent;
 		vector<int> nodeCnt;
 	};
-	int largestComponentSize(vector<int>& nums) {//°´¹«ÒòÊı¼ÆËã×î´ó×é¼ş´óĞ¡
+	int largestComponentSize(vector<int>& nums) {//æŒ‰å…¬å› æ•°è®¡ç®—æœ€å¤§ç»„ä»¶å¤§å°
 		//sort(nums.begin(), nums.end());
 		int numsLen = nums.size();
 		largestComponentSizeSub uf(numsLen + 100001);
@@ -15427,9 +15428,9 @@ public:
 	private:
 		vector<int> parent;
 	};
-	int regionsBySlashes(vector<string>& grid) {//ÓÉĞ±¸Ü»®·ÖÇøÓò
+	int regionsBySlashes(vector<string>& grid) {//ç”±æ–œæ åˆ’åˆ†åŒºåŸŸ
 		int gridDim = grid.size(), totalGrid = gridDim * gridDim;
-		//Ã¿Ò»¸ö·½¿é×î¶àÓĞÁ½ÖÖ·Ö¸î·½Ê½£¬°´ÕÕÉÏÓÒÏÂ×ó±àºÅÎª1234
+		//æ¯ä¸€ä¸ªæ–¹å—æœ€å¤šæœ‰ä¸¤ç§åˆ†å‰²æ–¹å¼ï¼ŒæŒ‰ç…§ä¸Šå³ä¸‹å·¦ç¼–å·ä¸º1234
 		regionsBySlashesSub uf(totalGrid * 4);
 		vector<vector<int>> dir = { {-1, 0}, {1, 0}, {0, 1}, {0, -1} };
 		for (int i = 0; i < gridDim; i++) {
@@ -15494,7 +15495,7 @@ public:
 	private:
 		vector<int> parent;
 	};
-	bool equationsPossible(vector<string>& equations) {//µÈÊ½·½³ÌµÄ¿ÉÂú×ãĞÔ
+	bool equationsPossible(vector<string>& equations) {//ç­‰å¼æ–¹ç¨‹çš„å¯æ»¡è¶³æ€§
 		equationsPossibleSub uf(26);
 		int id = 0;
 		unordered_map<char, int> curMap;
@@ -15557,7 +15558,7 @@ public:
 	private:
 		vector<int> parent;
 	};
-	string smallestStringWithSwaps(string s, vector<vector<int>>& pairs) {//½»»»×Ö·û´®ÖĞµÄÔªËØ
+	string smallestStringWithSwaps(string s, vector<vector<int>>& pairs) {//äº¤æ¢å­—ç¬¦ä¸²ä¸­çš„å…ƒç´ 
 		int sLen = s.size();
 		smallestStringWithSwapsSub uf(sLen);
 		for (vector<int>& pair : pairs) {
@@ -15613,7 +15614,7 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-//cookBook-Ïß¶ÎÊ÷
+//cookBook-çº¿æ®µæ ‘
 #if false
 
 class Solution {
@@ -15639,25 +15640,25 @@ public:
 			return;
 		}
 		void update(int nodeLeft, int nodeRight, int left, int right, int val, int id) {
-			//¸üĞÂÇø¼ä×î´óÖµ£¬½Úµã×óÓÒ·¶Î§£¬²éÑ¯Çø¼ä·¶Î§£¬¸üĞÂÖµ£¬½Úµãid£¨1¿ªÊ¼£©
-			if (nodeLeft >= left && nodeRight <= right) {//²éÑ¯Çø¼äÍêÈ«¸²¸Ç½Úµã
+			//æ›´æ–°åŒºé—´æœ€å¤§å€¼ï¼ŒèŠ‚ç‚¹å·¦å³èŒƒå›´ï¼ŒæŸ¥è¯¢åŒºé—´èŒƒå›´ï¼Œæ›´æ–°å€¼ï¼ŒèŠ‚ç‚¹idï¼ˆ1å¼€å§‹ï¼‰
+			if (nodeLeft >= left && nodeRight <= right) {//æŸ¥è¯¢åŒºé—´å®Œå…¨è¦†ç›–èŠ‚ç‚¹
 				lazy[id] = max(val, lazy[id]);
 				d[id] = max(lazy[id], d[id]);
 				return;
 			}
 			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
 			int sonLeft = id * 2, sonRight = id * 2 + 1;
-			if (lazy[id] && nodeLeft != nodeRight) {//ºó°ë¾äÅĞ¶ÏÊÇ²»ÊÇÒ¶×Ó½Úµã£¬ÓÉÓÚÖ»¿¼ÂÇ×î´óÖµ£¬Ö»ÓĞ¸üĞÂ
+			if (lazy[id] && nodeLeft != nodeRight) {//ååŠå¥åˆ¤æ–­æ˜¯ä¸æ˜¯å¶å­èŠ‚ç‚¹ï¼Œç”±äºåªè€ƒè™‘æœ€å¤§å€¼ï¼Œåªæœ‰æ›´æ–°
 				lazy[sonLeft] = max(lazy[sonLeft], lazy[id]);
 				lazy[sonRight] = max(lazy[sonRight], lazy[id]);
 				d[sonLeft] = max(d[sonLeft], lazy[sonLeft]);
 				d[sonRight] = max(d[sonRight], lazy[sonRight]);
 				lazy[id] = 0;
 			}
-			if (left <= nodeMid) {//¿çÇø¼äÏò×ó¸üĞÂ
+			if (left <= nodeMid) {//è·¨åŒºé—´å‘å·¦æ›´æ–°
 				update(nodeLeft, nodeMid, left, right, val, sonLeft);
 			}
-			if (right > nodeMid) {//¿çÆÚ¼äÏòÓÒ¸üĞÂ
+			if (right > nodeMid) {//è·¨æœŸé—´å‘å³æ›´æ–°
 				update(nodeMid + 1, nodeRight, left, right, val, sonRight);
 			}
 			d[id] = max(d[sonLeft], d[sonRight]);
@@ -15688,7 +15689,7 @@ public:
 	private:
 		vector<int> d, lazy;
 	};
-	vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {//Ìì¼ÊÏßÎÊÌâ
+	vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {//å¤©é™…çº¿é—®é¢˜
 		unordered_map<int, int> curMap, reverseCurMap;
 		set<int> curSet;
 		for (auto& it : buildings) {
@@ -15717,7 +15718,7 @@ public:
 		}
 		return res;
 	}
-	class NumArrayI {//ÇøÓòºÍ¼ìË÷ - Êı×é²»¿É±ä
+	class NumArrayI {//åŒºåŸŸå’Œæ£€ç´¢ - æ•°ç»„ä¸å¯å˜
 	public:
 		NumArrayI(vector<int>& nums) {
 			int numsLen = nums.size();
@@ -15735,7 +15736,7 @@ public:
 	private:
 		vector<int> data;
 	};
-	class NumArray {//ÇøÓòºÍ¼ìË÷ - Êı×é¿ÉĞŞ¸Ä
+	class NumArray {//åŒºåŸŸå’Œæ£€ç´¢ - æ•°ç»„å¯ä¿®æ”¹
 	public:
 		NumArray(vector<int>& nums) {
 			numsLen = nums.size();
@@ -15757,9 +15758,9 @@ public:
 		vector<int> data, lazy;
 		int numsLen;
 		void update(int nodeLeft, int nodeRight, int segLeft, int segRight, int val, int nodeID) {
-			if (segLeft <= nodeLeft && nodeRight <= segRight) {//¸ü¸ÄÕû¸öÇø¼äÄÚÈİ
-				data[nodeID] = (nodeRight - nodeLeft + 1) * val;//ºÍ
-				lazy[nodeID] = val;//µ¥µã
+			if (segLeft <= nodeLeft && nodeRight <= segRight) {//æ›´æ”¹æ•´ä¸ªåŒºé—´å†…å®¹
+				data[nodeID] = (nodeRight - nodeLeft + 1) * val;//å’Œ
+				lazy[nodeID] = val;//å•ç‚¹
 				return;
 			}
 			int nodeMid = nodeLeft + (nodeRight - nodeLeft) / 2;
@@ -15857,7 +15858,7 @@ public:
 		int numsLen;
 		vector<int> data, lazy;
 	};
-	vector<int> countSmaller(vector<int>& nums) {//¼ÆËãÓÒ²àĞ¡ÓÚµ±Ç°ÔªËØµÄ¸öÊı
+	vector<int> countSmaller(vector<int>& nums) {//è®¡ç®—å³ä¾§å°äºå½“å‰å…ƒç´ çš„ä¸ªæ•°
 		map<int, int> numMap;
 		int id = 1;
 		vector<int> numsCopy(nums);
@@ -15938,7 +15939,7 @@ public:
 		vector<int> data, lazy;
 		int numsLen;
 	};
-	int countRangeSum(vector<int>& nums, int lower, int upper) {//Çø¼äºÍµÄ¸öÊı
+	int countRangeSum(vector<int>& nums, int lower, int upper) {//åŒºé—´å’Œçš„ä¸ªæ•°
 		long long sum = 0;
 		vector<long long> prefix = { 0 };
 		for (int& num : nums) {
@@ -16020,7 +16021,7 @@ public:
 		vector<int> data, lazy;
 		int numsLen;
 	};
-	int reversePairs(vector<int>& nums) {//·­×ª¶Ô
+	int reversePairs(vector<int>& nums) {//ç¿»è½¬å¯¹
 		vector<long long> numsCopy;
 		for (int& num : nums) {
 			numsCopy.push_back(num);
@@ -16042,7 +16043,7 @@ public:
 		}
 		return res;
 	}
-	class fallingSquaresSub {//Ïß¶ÎÊ÷Ê±¼ä³£Êı´óÒ»Ğ©
+	class fallingSquaresSub {//çº¿æ®µæ ‘æ—¶é—´å¸¸æ•°å¤§ä¸€äº›
 	public:
 		fallingSquaresSub(int n) {
 			data.resize(4 * n);
@@ -16098,7 +16099,7 @@ public:
 		vector<long long> data, lazy;
 		int numsLen;
 	};
-	vector<int> fallingSquares(vector<vector<int>>& positions) {//µôÂäµÄ·½¿é
+	vector<int> fallingSquares(vector<vector<int>>& positions) {//æ‰è½çš„æ–¹å—
 		vector<int> pos;
 		for (vector<int>& square : positions) {
 			pos.push_back(square[0]);
@@ -16128,8 +16129,8 @@ public:
 		}
 		return res;
 	}
-	class RangeModule {//Range Ä£¿é
-	public://¿ÉÒÔÊµÏÖÊ÷µÄ¶¯Ì¬À©Õ¹£¬·Ç¹Ì¶¨½ÚµãÊıÁ¿
+	class RangeModule {//Range æ¨¡å—
+	public://å¯ä»¥å®ç°æ ‘çš„åŠ¨æ€æ‰©å±•ï¼Œéå›ºå®šèŠ‚ç‚¹æ•°é‡
 		RangeModule() {
 			segment.clear();
 			return;
@@ -16194,10 +16195,10 @@ public:
 			return;
 		}
 	private:
-		map<int, int> segment;//ÓÒ-×ó
+		map<int, int> segment;//å³-å·¦
 	};
-	class MyCalendarThree {//ÎÒµÄÈÕ³Ì°²ÅÅ±í III
-		//ĞèÒª¶¯Ì¬Ôö¼Ó½ÚµãµÄÏß¶ÎÊ÷
+	class MyCalendarThree {//æˆ‘çš„æ—¥ç¨‹å®‰æ’è¡¨ III
+		//éœ€è¦åŠ¨æ€å¢åŠ èŠ‚ç‚¹çš„çº¿æ®µæ ‘
 	public:
 		MyCalendarThree() {
 			rootNode = new segTreeNode(0, 1e9);
@@ -16220,12 +16221,12 @@ public:
 		};
 		segTreeNode* rootNode;
 		int insert(int segLeft, int segRight, segTreeNode* root) {
-			if (segLeft <= root->nodeLeft && root->nodeRight <= segRight) {//½Úµã·¶Î§ÊÇ²åÈë·¶Î§µÄ×Ó¼¯
-				//Ç·Õ®½×¶Î£¬ÕâÖÖÇé¿öÊÇÍêÈ«È·¶¨µÄ£¬¿ÉÒÔÈ·¶¨Õ®È¨
+			if (segLeft <= root->nodeLeft && root->nodeRight <= segRight) {//èŠ‚ç‚¹èŒƒå›´æ˜¯æ’å…¥èŒƒå›´çš„å­é›†
+				//æ¬ å€ºé˜¶æ®µï¼Œè¿™ç§æƒ…å†µæ˜¯å®Œå…¨ç¡®å®šçš„ï¼Œå¯ä»¥ç¡®å®šå€ºæƒ
 				root->val++;
 				root->lazy++;
 			}
-			else if (root->nodeLeft < segRight && segLeft < root->nodeRight) {//´ı²åÈëÇø¼äÓë½Úµã·¶Î§ÓĞÖØµş
+			else if (root->nodeLeft < segRight && segLeft < root->nodeRight) {//å¾…æ’å…¥åŒºé—´ä¸èŠ‚ç‚¹èŒƒå›´æœ‰é‡å 
 				int nodeMid = root->nodeLeft + (root->nodeRight - root->nodeLeft) / 2;
 				if (root->leftSon == nullptr) {
 					root->leftSon = new segTreeNode(root->nodeLeft, nodeMid);
@@ -16233,7 +16234,7 @@ public:
 				if (root->rightSon == nullptr) {
 					root->rightSon = new segTreeNode(nodeMid, root->nodeRight);
 				}
-				//»¹Õ®½×¶Î£¬ÒòÎªÕ®ÎñÊÇÔÚÍêÈ«°üº¬µÄÇé¿öÏÂÇ·µÄ£¬ËùÒÔ¿ÉÒÔÏÂ·Å
+				//è¿˜å€ºé˜¶æ®µï¼Œå› ä¸ºå€ºåŠ¡æ˜¯åœ¨å®Œå…¨åŒ…å«çš„æƒ…å†µä¸‹æ¬ çš„ï¼Œæ‰€ä»¥å¯ä»¥ä¸‹æ”¾
 				root->leftSon->val += root->lazy;
 				root->rightSon->val += root->lazy;
 				root->leftSon->lazy += root->lazy;
@@ -16246,7 +16247,7 @@ public:
 			return root->val;
 		}
 	};
-	//class rectangleAreaSub {//½ôÌù×ø±êÖáµÄ£¬Êµ¼ÊÓ¦¸ÃÊ¹ÓÃµ¥ÖáÉ¨ÂÓ
+	//class rectangleAreaSub {//ç´§è´´åæ ‡è½´çš„ï¼Œå®é™…åº”è¯¥ä½¿ç”¨å•è½´æ‰«æ 
 	//public:
 	//	rectangleAreaSub(int n) {
 	//		data.resize(4 * n);
@@ -16303,7 +16304,7 @@ public:
 	//private:
 	//	vector<int> data, lazy;
 	//};
-	//int rectangleArea(vector<vector<int>>& rectangles) {//¾ØĞÎÃæ»ı II
+	//int rectangleArea(vector<vector<int>>& rectangles) {//çŸ©å½¢é¢ç§¯ II
 	//	vector<int> pos, resPos;
 	//	for (vector<int>& rect : rectangles) {
 	//		pos.push_back(rect[0]);
@@ -16376,12 +16377,749 @@ int main(int argc, char* argv[]) {
 }
 #endif
 
-// Í¼½âËã·¨Êı¾İ½á¹¹
+// å›¾è§£ç®—æ³•æ•°æ®ç»“æ„--åŠ¨æ€è§„åˆ’
+#if false
+class Solution {
+public:
+	int fib(int n) {
+		if (n < 2){
+			return n;
+		}
+		int n_2 = 0, n_1 = 1, n_0 = 0;
+		while (--n > 0){
+			n_0 = (n_2 + n_1) % 1000000007;
+			n_2 = n_1;
+			n_1 = n_0;
+		}
+		return n_0;
+    }
+	int numWays(int n) {
+		n++;
+		if (n < 2){
+			return n;
+		}
+		int n_2 = 0, n_1 = 1, n_0 = 0;
+		while (--n > 0){
+			n_0 = (n_2 + n_1) % 1000000007;
+			n_2 = n_1;
+			n_1 = n_0;
+		}
+		return n_0;
+    }
+	bool isMatch(string s, string p) {
+		size_t sLen = s.size(), pLen = p.size(), sCur = 0, pCur = 0;
+		vector<vector<int>> dp(sLen + 1, vector<int>(pLen + 1, 0));
+		dp[0][0] = 1;
+		auto isMatch = [&](int i, int j){// å½“å‰å­—ç¬¦æ˜¯å¦åŒ¹é…
+			if (i == 0){
+				return false;
+			}
+			if (p[j - 1] == '.'){
+				return true;
+			}
+			return s[i - 1] == p[j - 1];
+		};
+		for (int i = 0; i <= sLen; i++){
+			for (int j = 1; j <= pLen; j++){
+				if (p[j - 1] == '*'){//ä»»æ„æ•°é‡åŒ¹é…
+					dp[i][j] |= dp[i][j - 2];//æ•°é‡ä¸º 0 åŒ¹é…
+					if (isMatch(i, j - 1)){// å½“å‰å­—ç¬¦åŒ¹é…
+						dp[i][j] |= dp[i - 1][j];
+					}
+				}
+				else {
+					if (isMatch(i, j)){// å½“å‰å­—ç¬¦åŒ¹é…
+						dp[i][j] |= dp[i - 1][j - 1];
+					}
+				}
+			}
+		}
+		return dp[sLen][pLen] == 1;
+    }
+	int maxSubArray(vector<int>& nums) {
+		size_t numsLen = nums.size();
+		int res = nums[0], pre = 0;
+		for (int& num : nums){
+			pre = max(pre + num, num);//å¯¹äºå•ç‹¬æ•°åˆ—
+			res = max(res, pre);//å¯¹äºæ‰€æœ‰æ•°åˆ—
+		}
+		return res;
+    }
+	int translateNum(int num) {
+		int n_1 = 1, n_2 = 1, x = 0, y = num % 10, res = 1;
+		while (num > 9){
+			num /= 10;
+			x = num % 10;
+			int tmp = x * 10 + y;
+			res = tmp > 9 && tmp < 26 ? n_1 + n_2 : n_1;
+			n_2 = n_1;
+			n_1 = res;
+			y = x;
+		}
+		return res;
+    }
+	int maxValue(vector<vector<int>>& grid) {
+		size_t rolSize = grid.size(), colSize = grid[0].size();
+		for (int i = 1; i < rolSize; i++){
+			grid[i][0] += grid[i - 1][0];
+		}
+		for (int i = 1; i < colSize; i++){
+			grid[0][i] += grid[0][i - 1];
+		}
+		for (int i = 1; i < rolSize; i++){
+			for (int j = 1; j < colSize; j++){
+				grid[i][j] += max(grid[i - 1][j], grid[i][j - 1]);
+			}
+		}
+		return grid[rolSize - 1][colSize - 1];
+    }
+	int lengthOfLongestSubstring(string s) {
+		unordered_map<char, int> chMap;
+		size_t sLen = s.size();
+		int curLeft = 0, curRight = 0;
+		int res = 0;
+		while (curRight < sLen){
+			char& ch = s[curRight];
+			if (chMap.count(ch) && chMap[ch] > 0){
+				chMap[s[curLeft++]]--;
+			}
+			else{
+				chMap[s[curRight++]]++;
+			}
+			res = max(res, curRight - curLeft);
+		}
+		res = max(res, curRight - curLeft);
+		return res;
+    }
+	int nthUglyNumber(int n) {
+		vector<int> dp(n + 1, 0);
+		dp[1] = 1;
+		int cur2 = 1, cur3 = 1, cur5 = 1;
+		for (int i = 2; i <= n; i++){
+			int num2 = dp[cur2] * 2;
+			int num3 = dp[cur3] * 3;
+			int num5 = dp[cur5] * 5;
+			dp[i] = min(min(num2, num3), num5);
+			if (dp[i] == num2){
+				cur2++;
+			}
+			if (dp[i] == num3){
+				cur3++;
+			}
+			if (dp[i] == num5){
+				cur5++;
+			}
+		}
+		return dp[n];
+    }
+	vector<double> dicesProbability(int n) {
+		vector<vector<int>> dp(n + 1, vector<int>(6 * n + 1, 0));
+		for (int i = 1; i <= 6; i++){
+			dp[1][i] = 1;
+		}
+		for (int i = 2; i <= n; i++){
+			for (int j = i; j <= 6 * i; j++){
+				for (int cur = 1; cur <= 6; cur++){
+					if (j - cur < 1){//æœ€å°é¢å€¼
+						break;
+					}
+					dp[i][j] += dp[i - 1][j - cur];
+				}
+			}
+		}
+		double base = 1.0 / pow(6, n);
+		vector<double> res(5 * n + 1, 0.0);
+		for (int i = n; i <= 6 * n; i++){
+			res[i - n] = dp[n][i] * base;
+		}
+		return res;
+    }
+	int maxProfit(vector<int>& prices) {
+		int cost = INT32_MAX, profit = 0;
+		for (int & price : prices){
+			cost = min(cost, price);
+			profit = max(profit, price - cost);
+		}
+		return profit;
+    }
+};
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "dcab";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 7,1,5,3,6,4 };
+	vector<int> inpt2 = { 2,4,1,1,3 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
+	};
+	vector<vector<int>> board = {
+		{1,0,0,0,1,0,0,0,0,0,1},
+		{0,1,0,1,0,0,0,0,0,0,0},
+		{0,0,1,0,0,0,0,1,0,0,0},
+		{0,1,0,1,0,1,0,0,0,0,0},
+		{1,0,0,0,1,0,0,0,0,0,0},
+		{0,0,0,1,0,1,0,0,1,1,0},
+		{0,0,0,0,0,0,1,1,0,0,0},
+		{0,0,1,0,0,0,1,1,0,0,0},
+		{0,0,0,0,0,1,0,0,1,0,0},
+		{0,0,0,0,0,1,0,0,0,1,0},
+		{1,0,0,0,0,0,0,0,0,0,1}
+	};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution;
+	mySolution.maxProfit(inpt1);
+	return 0;
+}
+#endif
+
+// å›¾è§£ç®—æ³•æ•°æ®ç»“æ„--æœç´¢ä¸å›æº¯ç®—æ³•
+#if false
+class Solution {
+public:
+	struct TreeNode {
+		int val;
+		TreeNode *left;
+		TreeNode *right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+	};
+	class Node {
+	public:
+		int val;
+		Node* left;
+		Node* right;
+
+		Node() {}
+
+		Node(int _val) {
+			val = _val;
+			left = NULL;
+			right = NULL;
+		}
+
+		Node(int _val, Node* _left, Node* _right) {
+			val = _val;
+			left = _left;
+			right = _right;
+		}
+	};
+	bool exist(vector<vector<char>>& board, string word) {
+		int rolSize = board.size(), colSize = board[0].size();
+		vector<vector<bool>> vist(rolSize, vector<bool>(colSize, false));
+		vector<vector<int>> dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+		for (int i = 0; i < rolSize; i++){
+			for (int j = 0; j < colSize; j++){
+				if (existSub(board, vist, i, j, word, 0, rolSize, colSize, dir)){
+					return true;
+				}
+			}
+		}
+		return false;
+    }
+	bool existSub(vector<vector<char>>& board, vector<vector<bool>>& vist, int rolCur, int colCur, string& word, int cur, int& rolSize, int& colSize, vector<vector<int>>& dir){
+		if (cur == word.size()){
+			return true;
+		}
+		if (word[cur] != board[rolCur][colCur]){
+			return false;
+		}
+		if (cur == word.size() - 1){
+			return true;
+		}
+		vist[rolCur][colCur] = true;
+		for (int i = 0; i < 4; i++){
+			int tmpRol = rolCur + dir[i][0], tmpCol = colCur + dir[i][1];
+			if (tmpCol < 0 || tmpCol >= colSize || tmpRol < 0 || tmpRol >= rolSize || vist[tmpRol][tmpCol]){
+				continue;
+			}
+			if (existSub(board, vist, tmpRol, tmpCol, word, cur + 1, rolSize, colSize, dir)){
+				return true;
+			}
+		}
+		vist[rolCur][colCur] = false;
+		return false;
+	}
+	int movingCount(int m, int n, int k) {
+		vector<vector<int>> dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+		vector<vector<bool>> vist(m, vector<bool>(n, false));
+		int res = movingCountSub(vist, 0, 0, m, n, dir, k);
+		return res;
+    }
+	int movingCountSub(vector<vector<bool>>& vist, int rolCur, int colCur, int rolSize, int colSize, vector<vector<int>>& dir, int lim){
+		if (rolCur < 0 || rolCur >= rolSize || colCur < 0 || colCur >= colSize || vist[rolCur][colCur]){
+			return 0;
+		}
+		int sum = 0, rolCopy = rolCur, colCopy = colCur;
+		while (rolCopy){
+			sum += rolCopy % 10;
+			rolCopy /= 10;
+		}
+		while (colCopy){
+			sum += colCopy % 10;
+			colCopy /= 10;
+		}
+		if (sum > lim){
+			return 0;
+		}
+		vist[rolCur][colCur] = true;
+		int res = 1;
+		for (int i = 0; i < 4; i++){
+			int tmpRol = rolCur + dir[i][0], tmpCol = colCur + dir[i][1];
+			res += movingCountSub(vist, tmpRol, tmpCol, rolSize, colSize, dir, lim);
+		}
+		// vist[rolCur][colCur] = false;
+		return res;
+	}
+	bool isSubStructure(TreeNode* A, TreeNode* B) {
+		return (A != nullptr && B != nullptr) && (isSubStructureSub(A, B) || isSubStructure(A->left, B) || isSubStructure(A->right, B));
+    }
+	bool isSubStructureSub(TreeNode* A, TreeNode* B){
+		if (B == nullptr){
+			return true;
+		}
+		if (A == nullptr || A->val != B->val){
+			return false;
+		}
+		return isSubStructureSub(A->left, B->left) && isSubStructureSub(A->right, B->right);
+	}
+	TreeNode* mirrorTree(TreeNode* root) {
+		if (root == nullptr){
+			return nullptr;
+		}
+		TreeNode* tmp = mirrorTree(root->left);
+		root->left = mirrorTree(root->right);
+		root->right = tmp;
+		return root;
+    }
+	bool isSymmetric(TreeNode* root) {
+		return root == nullptr || isSymmetricSub(root->left, root->right);
+    }
+	bool isSymmetricSub(TreeNode* left, TreeNode* right){
+		if (left == nullptr && right == nullptr){
+			return true;
+		}
+		if (left == nullptr || right == nullptr || left->val != right->val){
+			return false;
+		}
+		return isSymmetricSub(left->left, right->right) && isSymmetricSub(left->right, right->left);
+	}
+	vector<int> levelOrderI(TreeNode* root) {
+		queue<TreeNode*> que;
+		que.push(root);
+		vector<int> res;
+		while (!que.empty()){
+			root = que.front();
+			que.pop();
+			if (root == nullptr){
+				continue;
+			}
+			res.push_back(root->val);
+			que.push(root->left);
+			que.push(root->right);
+		}
+		return res;
+    }
+	vector<vector<int>> levelOrderII(TreeNode* root) {
+		vector<vector<int>> res;
+		if (root == nullptr){
+			return res;
+		}
+		queue<TreeNode*> que;
+		que.push(root);
+		while (!que.empty()){
+			int queLen = que.size();
+			vector<int> tmp;
+			while (queLen--){
+				root = que.front();
+				que.pop();
+				tmp.push_back(root->val);
+				if (root->left){
+					que.push(root->left);
+				}
+				if (root->right){
+					que.push(root->right);
+				}
+			}
+			res.push_back(tmp);
+		}
+		return res;
+    }
+	vector<vector<int>> levelOrder(TreeNode* root) {
+		vector<vector<int>> res;
+		if (root == nullptr){
+			return res;
+		}
+		queue<TreeNode*> que;
+		que.push(root);
+		bool needReverse = false;
+		while (!que.empty()){
+			int queLen = que.size();
+			vector<int> tmp;
+			while (queLen--){
+				root = que.front();
+				que.pop();
+				tmp.push_back(root->val);
+				if (root->left){
+					que.push(root->left);
+				}
+				if (root->right){
+					que.push(root->right);
+				}
+			}
+			if (needReverse){
+				reverse(tmp.begin(), tmp.end());
+			}
+			needReverse = !needReverse;
+			res.push_back(tmp);
+		}
+		return res;
+    }
+	vector<vector<int>> pathSum(TreeNode* root, int target) {
+		vector<int> tmp;
+		vector<vector<int>> res;
+		pathSumSub(root, 0, target, tmp, res);
+		return res;
+    }
+	void pathSumSub(TreeNode* root, int sum, int target, vector<int>& tmp, vector<vector<int>>& res){
+		if (root == nullptr){
+			return;
+		}
+		tmp.push_back(root->val);
+		sum += root->val;
+		if (root->left == nullptr && root->right == nullptr && sum == target){
+			res.push_back(tmp);
+		}
+		pathSumSub(root->left, sum, target, tmp, res);
+		pathSumSub(root->right, sum, target, tmp, res);
+		tmp.pop_back();
+		return;
+	}
+	Node* treeToDoublyListI(Node* root) {
+		if (root == nullptr){
+			return nullptr;
+		}
+        queue<Node*> que;
+		treeToDoublyListDFSI(root, que);
+		Node* head = que.front();
+		Node* cur = head;
+		while (!que.empty()){
+			cur->right = que.front();
+			que.front()->left = cur;
+			cur = que.front();
+			que.pop();
+		}
+		cur->right = head;
+		head->left = cur;
+		return head;
+    }
+	void treeToDoublyListDFSI(Node* root, queue<Node*>& que){
+		if (root == nullptr){
+			return;
+		}
+		treeToDoublyListDFSI(root->left, que);
+		que.push(root);
+		treeToDoublyListDFSI(root->right, que);
+		return;
+	}
+	Node* treeToDoublyList(Node* root) {
+		if (root == nullptr)   {
+			return nullptr;
+		}
+		Node* head = nullptr;
+		Node* pre = nullptr;
+		treeToDoublyListDFS(root, head, pre);
+		head->left = pre;
+		pre->right = head;
+		return head;
+    }
+	void treeToDoublyListDFS(Node* root, Node*& head, Node*& pre){
+		if (root == nullptr){
+			return;
+		}
+		treeToDoublyListDFS(root->left, head, pre);
+		if (pre != nullptr){
+			pre->right = root;
+		}
+		else {
+			head = root;
+		}
+		root->left = pre;
+		pre = root;
+		treeToDoublyListDFS(root->right, head, pre);
+		return;
+	}
+	string serialize(TreeNode* root) {
+        string res;
+		queue<TreeNode*> que;
+		que.push(root);
+		while (!que.empty()){
+			int queLen = que.size();
+			while(queLen--){
+				TreeNode* cur = que.front();
+				que.pop();
+				if (cur == nullptr){
+					res += "null,";
+				}
+				else {
+					res = res + to_string(cur->val) + ",";
+					que.push(cur->left);
+					que.push(cur->right);
+				}
+			}
+		}
+		return res;
+    }
+	TreeNode* deserialize(string data) {
+        queue<int>* que = dataStrDecode(data);
+		if (que->size() == 0 || que->front() == -8964){
+			return nullptr;
+		}
+		queue<TreeNode*> nodeQue;
+		TreeNode* head = new TreeNode(que->front());
+		TreeNode* cur = nullptr;
+		que->pop();
+		nodeQue.push(head);
+		while (!nodeQue.empty()){
+			int queLen = nodeQue.size();
+			while (queLen--){
+				cur = nodeQue.front();
+				nodeQue.pop();
+				if (cur == nullptr){
+					continue;
+				}
+				int val = -8964;
+				if (!que->empty()){
+					val = que->front();
+					que->pop();
+				}
+				if (val != -8964){
+					cur->left = new TreeNode(val);
+				}
+				nodeQue.push(cur->left);
+				val = -8964;
+				if (!que->empty()){
+					val = que->front();
+					que->pop();
+				}
+				if (val != -8964){
+					cur->right = new TreeNode(val);
+				}
+				nodeQue.push(cur->right);
+			}
+		}
+		delete que;
+		return head;
+    }
+	queue<int>* dataStrDecode(string& data){
+		queue<int>* que = new queue<int>;
+		int dataLen = data.size(), cur = 0;
+		while (cur < dataLen){
+			if (data[cur] == ',' || data[cur] == '[' || data[cur] == ']'){
+				cur++;
+				continue;
+			}
+			if (data[cur] == 'n'){
+				que->push(-8964);
+				cur += 4;
+				continue;
+			}
+			int sign = 1, tmpVal = 0;
+			while (cur < dataLen && data[cur] != ',' && data[cur] != ']'){
+				if (data[cur] == '-'){
+					sign = -1;
+					cur++;
+					continue;
+				}
+				tmpVal = tmpVal * 10 +  data[cur] - '0';
+				cur++;
+			}
+			que->push(tmpVal * sign);
+		}
+		return que;
+	}
+	vector<string> permutation(string s) {
+		string tmp;
+		unordered_set<string> stringSet;
+		int sLen = s.size();
+		vector<bool> vist(sLen, false);
+		permutationSub(s, tmp, stringSet, vist, sLen);
+		vector<string> res;
+		for (auto& it : stringSet){
+			res.push_back(it);
+		}
+		return res;
+    }
+	void permutationSub(string& s, string& tmp, unordered_set<string>& stringSet, vector<bool>& vist, int sLen){
+		if (tmp.size() == sLen){
+			stringSet.emplace(tmp);
+			return;
+		}
+		for (int i = 0; i < sLen; i++){
+			if (vist[i]){
+				continue;
+			}
+			vist[i] = true;
+			tmp.push_back(s[i]);
+			permutationSub(s, tmp, stringSet, vist, sLen);
+			tmp.pop_back();
+			vist[i] = false;
+		}
+		return;
+	}
+	int kthLargest(TreeNode* root, int k) {
+		int res = 0;
+		kthLargestSub(root, res, k);
+		return res;
+    }
+	void kthLargestSub(TreeNode* root, int& res, int& k){
+		if (root == nullptr){
+			return;
+		}
+		kthLargestSub(root->right, res, k);
+		if (k == 0){
+			return;
+		}
+		if (--k == 0){
+			res = root->val;
+			return;
+		}
+		kthLargestSub(root->left, res, k);
+	}
+	int maxDepth(TreeNode* root) {
+		if (root == nullptr){
+			return 0;
+		}
+		return max(maxDepth(root->left), maxDepth(root->right)) + 1;
+    }
+	bool isBalanced(TreeNode* root) {
+		bool valid = true;
+		isBalanced(root, valid);
+		return valid;
+    }
+	int isBalanced(TreeNode* root, bool& valid){
+		if (root == nullptr || !valid){
+			return 0;
+		}
+		int left = isBalanced(root->left, valid);
+		int right = isBalanced(root->right, valid);
+		if (abs(left - right) > 1){
+			valid = false;
+			return 0;
+		}
+		return max(left, right) + 1;
+	}
+	int sumNums(int n) {
+		n && (n += sumNums(n - 1));
+		return n;
+    }
+	TreeNode* lowestCommonAncestorI(TreeNode* root, TreeNode* p, TreeNode* q) {
+		if (root == nullptr){
+			return nullptr;
+		}
+		if (p->val < root->val && q->val < root->val){
+			return lowestCommonAncestorI(root->left, p, q);
+		}
+		else if (p->val > root->val && q->val > root->val){
+			return lowestCommonAncestorI(root->right, p, q);
+		}
+		return root;
+    }
+	TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        TreeNode* res = nullptr;
+		lowestCommonAncestorSub(root, p, q, res);
+		return res;
+    }
+	bool lowestCommonAncestorSub(TreeNode* root, TreeNode* p, TreeNode* q, TreeNode*& res){
+		if (root == nullptr || res != nullptr){
+			return false;
+		}
+		bool inLeft = lowestCommonAncestorSub(root->left, p, q, res);
+		bool inRight = lowestCommonAncestorSub(root->right, p, q, res);
+		if (inLeft && inRight || ((root->val == p->val || root->val == q->val) && (inLeft || inRight))){
+			res = root;
+		}
+		return inLeft || inRight || (root->val == p->val || root->val == q->val);
+	}
+};
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "abs";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 7,1,5,3,6,4 };
+	vector<int> inpt2 = { 2,4,1,1,3 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
+	};
+	vector<vector<char>> board = {{'a'}};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution.permutation(a);
+	return 0;
+}
+#endif
+
+// å›¾è§£ç®—æ³•æ•°æ®ç»“æ„--åˆ†æ²»
 #if true
 class Solution {
 public:
+	struct TreeNode {
+		int val;
+		TreeNode *left;
+		TreeNode *right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+	};
+	class Node {
+	public:
+		int val;
+		Node* left;
+		Node* right;
+
+		Node() {}
+
+		Node(int _val) {
+			val = _val;
+			left = NULL;
+			right = NULL;
+		}
+
+		Node(int _val, Node* _left, Node* _right) {
+			val = _val;
+			left = _left;
+			right = _right;
+		}
+	};
 };
 int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "abs";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 7,1,5,3,6,4 };
+	vector<int> inpt2 = { 2,4,1,1,3 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
+	};
+	vector<vector<char>> board = {{'a'}};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution;
 	return 0;
 }
 #endif

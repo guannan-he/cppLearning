@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/lasis/ROS/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/lasis/ROS/src/lasis_autonomous_vehicle/ackermann_cmd_mux/include/**",
+        "/home/lasis/ROS/src/lasis_autonomous_vehicle/lasis_launch/include/**",
+        "/home/lasis/ROS/src/my_global_planner_plugin/include/**",
+        "/home/lasis/ROS/src/my_local_planner_plugin/include/**",
+        "/home/lasis/ROS/src/my_nodelet_learning/include/**",
+        "/home/lasis/ROS/src/my_pluginlib_learning/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}
