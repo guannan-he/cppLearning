@@ -17071,9 +17071,732 @@ int main(int argc, char* argv[]) {
 #endif
 
 // 图解算法数据结构--分治
+#if false
+class Solution {
+public:
+	struct TreeNode {
+		int val;
+		TreeNode *left;
+		TreeNode *right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+	};
+	class Node {
+	public:
+		int val;
+		Node* left;
+		Node* right;
+
+		Node() {}
+
+		Node(int _val) {
+			val = _val;
+			left = NULL;
+			right = NULL;
+		}
+
+		Node(int _val, Node* _left, Node* _right) {
+			val = _val;
+			left = _left;
+			right = _right;
+		}
+	};
+	TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+		int curPos = preorder.size() - 1;
+		return buildTreeSub(preorder, inorder, 0, curPos, 0, curPos);
+    }
+	TreeNode* buildTreeSub(vector<int>& preorder, vector<int>& inorder, int preLeft, int preRight, int inLeft, int inRight){
+		if (preLeft > preRight){
+			return nullptr;
+		}
+		TreeNode* root = new TreeNode(preorder[preLeft]);
+		int i = 0;
+		for (i = 0; i < inRight - inLeft; i++){
+			if (inorder[i + inLeft] == preorder[preLeft]){
+				break;
+			}
+		}
+		root->left = buildTreeSub(preorder, inorder, preLeft + 1, preLeft + i, inLeft, inLeft + i - 1);
+		root->right = buildTreeSub(preorder, inorder, preLeft + i + 1, preRight, inLeft + i + 1, inRight);
+		return root;
+	}
+	double myPow(double x, int n) {
+		bool isNeg = n < 0 ? true : false;
+		if (n == 0x7fffffff) {
+			if (x == 1.0 || x == -1.0) {
+				return x;
+			}
+		}
+		int i = 31;
+		double res = 1.0, tmp = x;
+		while (n != 0) {
+			if (n % 2) {
+				res *= tmp;
+			}
+			tmp *= tmp;
+			n = n / 2;
+		}
+		if (isNeg) {
+			res = 1 / res;
+		}
+		return res;
+	}
+	vector<int> printNumbers(int n) {
+		int hi = pow(10, n) - 1;
+		int lo = 1;
+		vector<int> res(hi - lo + 1);
+		for (int i = lo; i <= hi; i++){
+			res[i - lo] = i;
+		}
+		return res;
+    }
+	bool verifyPostorderI(vector<int>& postorder) {
+		return verifyPostorderSub(postorder, 0, postorder.size() - 1);
+    }
+	bool verifyPostorderSub(vector<int>& postorder, int leftCur, int rightCur){
+		if (leftCur >= rightCur){
+			return true;
+		}
+		int cur = leftCur;
+		while (cur < rightCur && postorder[cur] < postorder[rightCur]){
+			cur++;
+		}
+		for (int i = cur; i < rightCur; i++){
+			if (postorder[i] < postorder[rightCur]){
+				return false;
+			}
+		}
+		return verifyPostorderSub(postorder, leftCur, cur - 1) && verifyPostorderSub(postorder, cur, rightCur - 1);
+	}
+	bool verifyPostorder(vector<int>& postorder) {
+		stack<int> stk;
+		int root = INT32_MAX;
+		for (int i = postorder.size() - 1; i >= 0; i--){
+			if (postorder[i] > root){
+				return false;
+			}
+			while (!stk.empty() && stk.top() > postorder[i]){
+				root = stk.top();
+				stk.pop();
+			}
+			stk.push(postorder[i]);
+		}
+		return true;
+    }
+	int reversePairs(vector<int>& nums) {
+		vector<int> tmp(nums);
+		return reversePairsSub(nums, tmp, 0, nums.size() - 1);
+    }
+	int reversePairsSub(vector<int>& nums, vector<int>& tmp, int leftCur, int rightCur){
+		if (leftCur >= rightCur){
+			return 0;
+		}
+		int mid = (leftCur + rightCur) / 2;
+        int res = reversePairsSub(nums, tmp, leftCur, mid) + reversePairsSub(nums, tmp, mid + 1, rightCur);
+        // 合并阶段
+        int i = leftCur, j = mid + 1;
+        for (int k = leftCur; k <= rightCur; k++)
+            tmp[k] = nums[k];
+        for (int k = leftCur; k <= rightCur; k++) {
+            if (i == mid + 1)
+                nums[k] = tmp[j++];
+            else if (j == rightCur + 1 || tmp[i] <= tmp[j])
+                nums[k] = tmp[i++];
+            else {
+                nums[k] = tmp[j++];
+                res += mid - i + 1; // 统计逆序对
+            }
+        }
+        return res;
+	}
+	vector<int> getLeastNumbers(vector<int>& arr, int k) {
+		vector<int> res(k, 0);
+		getLeastNumbersSub(arr, 0, arr.size() - 1);
+		for (int i = 0; i < k; i++){
+			res[i] = arr[i];
+		}
+		return res;
+    }
+	void getLeastNumbersSub(vector<int>& arr, int leftCur, int rightCur){
+		if (leftCur >= rightCur){
+			return;
+		}
+		int pivot = arr[leftCur];
+		int left = leftCur, right = rightCur;
+		while (left < right){
+			while (left < right && arr[right] >= pivot){
+				right--;
+			}
+			while (left < right && arr[left] <= pivot){
+				left++;
+			}
+			swap(arr[left], arr[right]);
+		}
+		swap(arr[leftCur], arr[left]);
+		getLeastNumbersSub(arr, leftCur, left - 1);
+		getLeastNumbersSub(arr, left + 1, rightCur);
+		return;
+	}
+	string minNumber(vector<int>& nums) {
+		minNumberSub(nums, 0, nums.size() - 1);
+		string res;
+		for (int& num : nums){
+			res += to_string(num);
+		}
+		return res;
+    }
+	bool minNumberSub1(int num1, int num2){
+		string str1 = to_string(num1) + to_string(num2);
+		string str2 = to_string(num2) + to_string(num1);
+		return str1 <= str2;
+	}
+	void minNumberSub(vector<int>& nums, int leftCur, int rightCur){
+		if (leftCur >= rightCur){
+			return;
+		}
+		int pivot = nums[leftCur];
+		int left = leftCur, right = rightCur;
+		while (left < right){
+			while (left < right && minNumberSub1(pivot, nums[right])){
+				right--;
+			}
+			while (left < right && minNumberSub1(nums[left], pivot)){
+				left++;
+			}
+			swap(nums[left], nums[right]);
+		}
+		swap(nums[leftCur], nums[left]);
+		minNumberSub(nums, leftCur, left - 1);
+		minNumberSub(nums, left + 1, rightCur);
+		return;
+	}
+	bool isStraight(vector<int>& nums) {
+		isStraightSub(nums, 0, nums.size() - 1);
+		int zeroCnt = 0;
+		for (int i = 0; i < 4; i++){
+			if (nums[i] == 0){
+				zeroCnt++;
+				continue;
+			}
+			int diff = nums[i + 1] - nums[i] - 1;
+			if (diff < 0){
+				return false;
+			}
+			zeroCnt -= diff;
+		}
+		return zeroCnt >= 0;
+    }
+	void isStraightSub(vector<int>& nums, int leftCur, int rightCur){
+		if (leftCur >= rightCur){
+			return;
+		}
+		int pivot = nums[leftCur];
+		int left = leftCur, right = rightCur;
+		while (left < right){
+			while (left < right && nums[right] >= pivot){
+				right--;
+			}
+			while (left < right && nums[left] <= pivot){
+				left++;
+			}
+			swap(nums[left], nums[right]);
+		}
+		swap(nums[left], nums[leftCur]);
+		isStraightSub(nums, leftCur, left - 1);
+		isStraightSub(nums, left + 1, rightCur);
+		return;
+	}
+};
+class MedianFinder {
+public:
+    /** initialize your data structure here. */
+    MedianFinder() {
+
+    }
+    priority_queue<int, vector<int>, less<int>> maxHeap;//栈顶元素大， 所以叫大顶堆
+	priority_queue<int, vector<int>, greater<int>> minHeap;//栈顶元素小， 所以叫小顶堆
+    void addNum(int num) {
+		if (minHeap.size() == maxHeap.size()){
+			minHeap.push(num);
+			maxHeap.push(minHeap.top());
+			minHeap.pop();
+		}
+		else{
+			maxHeap.push(num);
+			minHeap.push(maxHeap.top());
+			maxHeap.pop();
+		}
+    }
+    
+    double findMedian() {
+		if (maxHeap.size() == minHeap.size()){
+			return 0.5 * (maxHeap.top() + minHeap.top());
+		}
+		return 1.0 * maxHeap.top();
+    }
+};
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "abs";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 11, 8, 12, 8, 10 };
+	vector<int> inpt2 = { 2,4,1,1,3 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
+	};
+	vector<vector<char>> board = {{'a'}};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution.isStraight(inpt1);
+	return 0;
+}
+#endif
+
+// 图解算法数据结构--查找算法
+#if false
+class Solution {
+public:
+	struct TreeNode {
+		int val;
+		TreeNode *left;
+		TreeNode *right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+	};
+	class Node {
+	public:
+		int val;
+		Node* left;
+		Node* right;
+
+		Node() {}
+
+		Node(int _val) {
+			val = _val;
+			left = NULL;
+			right = NULL;
+		}
+
+		Node(int _val, Node* _left, Node* _right) {
+			val = _val;
+			left = _left;
+			right = _right;
+		}
+	};
+	int findRepeatNumber(vector<int>& nums) {
+		unordered_set<int> numSet;
+		for (int& num : nums){
+			if (numSet.count(num)){
+				return num;
+			}
+			numSet.emplace(num);
+		}
+		return -1;
+    }
+	bool findNumberIn2DArray(vector<vector<int>>& matrix, int target) {
+		if (matrix.size() == 0 || matrix[0].size() == 0){
+			return false;
+		}
+		int rolSize = matrix.size(), colSize = matrix[0].size();
+		int rolCur = rolSize - 1, colCur = 0;
+		while (rolCur >= 0 && rolCur < rolSize && colCur >= 0 && colCur < colSize){
+			if (matrix[rolCur][colCur] == target){
+				return true;
+			}
+			else if (matrix[rolCur][colCur] < target){
+				colCur++;
+			}
+			else {
+				rolCur--;
+			}
+		}
+		return false;
+    }
+	int minArray(vector<int>& nums) {
+		int left = 0, right = nums.size() - 1, mid = 0;
+		while (left < right){
+			mid = left + (right - left) / 2;
+			if (nums[mid] > nums[right]){
+				left = mid + 1;
+			}
+			else if (nums[mid] < nums[right]){
+				right = mid;
+			}
+			else {
+				right--;
+			}
+		}
+		return nums[left];
+    }
+	char firstUniqChar(string s) {
+		unordered_map<char, int> chMap;
+		for (char& ch : s){
+			chMap[ch]++;
+		}
+		for (char& ch : s){
+			if (chMap[ch] == 1){
+				return ch;
+			}
+		}
+		return ' ';
+    }
+	int search(vector<int>& nums, int target) {
+		if (nums.size() == 0){
+			return 0;
+		}
+		int left = 0, right = nums.size() - 1, lo = 0, hi = 0;
+		while (left <= right){
+			hi = left + (right - left) / 2;
+			if (nums[hi] <= target){
+				left = hi + 1;
+			}
+			else {
+				right = hi - 1;
+			}
+		}
+		hi = left;
+		if (right >= 0 && nums[right] != target){
+			return 0;
+		}
+		left = 0, right = nums.size() - 1;
+		while (left <= right){
+			lo = left + (right - left) / 2;
+			if (nums[lo] >= target){
+				right = lo - 1;
+			}
+			else {
+				left = lo + 1;
+			}
+		}
+		lo = right;
+		return hi - lo - 1;
+    }
+	int missingNumber(vector<int>& nums) {
+		int res = 0, numsLen = nums.size();
+		for (int i = 0; i < numsLen; i++){
+			res ^= nums[i];
+			res ^= i;
+		}
+		res ^= numsLen;
+		return res;
+    }
+};
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "abs";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 0,1,2,3,4,5,6,7,9 };
+	vector<int> inpt2 = { 2, 2, 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
+	};
+	vector<vector<char>> board = {{'a'}};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution.missingNumber(inpt1);
+	return 0;
+}
+#endif
+
+// 图解算法数据结构--双指针
+#if false
+class Solution {
+public:
+	struct ListNode {
+		int val;
+		ListNode *next;
+		ListNode(int x) : val(x), next(NULL) {}
+	};
+	struct TreeNode {
+		int val;
+		TreeNode *left;
+		TreeNode *right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+	};
+	class Node {
+	public:
+		int val;
+		Node* left;
+		Node* right;
+
+		Node() {}
+
+		Node(int _val) {
+			val = _val;
+			left = NULL;
+			right = NULL;
+		}
+
+		Node(int _val, Node* _left, Node* _right) {
+			val = _val;
+			left = _left;
+			right = _right;
+		}
+	};
+	ListNode* deleteNode(ListNode* head, int val) {
+		ListNode* root = new ListNode(-1);
+		root->next = head;
+		ListNode* cur = root;
+		while (cur->next != nullptr){
+			if (cur->next->val == val){
+				cur->next = cur->next->next;
+				break;
+			}
+			cur = cur->next;
+		}
+		cur = root->next;
+		delete root;
+		return cur;
+    }
+	vector<int> exchange(vector<int>& nums) {
+		vector<int> res(nums);
+		int leftCur = 0, rightCur = nums.size() - 1, numsLen = nums.size();
+		for (int i = 0; i < numsLen; i++){
+			if (nums[i] & 1){
+				res[leftCur++] = nums[i];
+			}
+			else {
+				res[rightCur--] = nums[i];
+			}
+		}
+		return res;
+    }
+	ListNode* getKthFromEnd(ListNode* head, int k) {
+		ListNode* root = new ListNode(-1);
+		root->next = head;
+		ListNode* fastCur = root;
+		ListNode* slowCur = head;
+		while (k--){
+			fastCur = fastCur->next;
+		}
+		while (fastCur->next != nullptr){
+			slowCur = slowCur->next;
+			fastCur = fastCur->next;
+		}
+		return slowCur;
+    }
+	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+		ListNode* root = new ListNode(-1);
+		ListNode* cur = root;
+		while (l1 != nullptr || l2 != nullptr){
+			if (l1 == nullptr){
+				cur->next = l2;
+				cur = cur->next;
+				l2 = l2->next;
+			}
+			else if (l2 == nullptr){
+				cur->next = l1;
+				cur = cur->next;
+				l1 = l1->next;
+			}
+			else if (l1->val <= l2->val){
+				cur->next = l1;
+				cur = cur->next;
+				l1 = l1->next;
+			}
+			else {
+				cur->next = l2;
+				cur = cur->next;
+				l2 = l2->next;
+			}
+		}
+		return root->next;
+    }
+	ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode* aCur = headA;
+		ListNode* bCur = headB;
+		while (aCur != bCur){
+			aCur = aCur == nullptr ? headB : aCur->next;
+			bCur = bCur == nullptr ? headA : bCur->next;
+		}
+		return aCur;
+    }
+	vector<int> twoSum(vector<int>& nums, int target) {
+		int numsLen = nums.size();
+		int leftCur = 0, rightCur = numsLen - 1;
+		while (leftCur < rightCur){
+			int sum = nums[leftCur] + nums[rightCur];
+			if (sum > target){
+				rightCur--;
+			}
+			else if (sum < target){
+				leftCur++;
+			}
+			else {
+				return {nums[leftCur], nums[rightCur]};
+			}
+		}
+		return {};
+    }
+	string reverseWords(string s) {
+		string res;
+		int sLen = s.size();
+		int left = 0, right = 0;
+		while (sLen > 0 && s[sLen - 1] == ' '){
+			sLen--;
+		}
+		while (right < sLen){
+			while (right < sLen && s[right] == ' '){
+				right++;
+			}
+			left = right;
+			while (right < sLen && s[right] != ' '){
+				right++;
+			}
+			res = s.substr(left, right - left) + ' ' + res;
+		}
+		res.pop_back();
+		return res;
+    }
+};
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "abs";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 0,1,2,3,4,5,6,7,9 };
+	vector<int> inpt2 = { 2, 2, 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
+	};
+	vector<vector<char>> board = {{'a'}};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution.reverseWords("    ");
+	return 0;
+}
+#endif
+
+// 图解算法数据结构--位运算
+#if false
+class Solution {
+public:
+	struct ListNode {
+		int val;
+		ListNode *next;
+		ListNode(int x) : val(x), next(NULL) {}
+	};
+	struct TreeNode {
+		int val;
+		TreeNode *left;
+		TreeNode *right;
+		TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+	};
+	class Node {
+	public:
+		int val;
+		Node* left;
+		Node* right;
+
+		Node() {}
+
+		Node(int _val) {
+			val = _val;
+			left = NULL;
+			right = NULL;
+		}
+
+		Node(int _val, Node* _left, Node* _right) {
+			val = _val;
+			left = _left;
+			right = _right;
+		}
+	};
+	int hammingWeight(uint32_t n) {
+		int res = 0;
+		uint32_t cur = 1;
+		for (int i = 0; i < 32; i++){
+			if (cur & n){
+				res++;
+			}
+			cur <<= 1;
+		}
+		return res;
+    }
+	vector<int> singleNumbers(vector<int>& nums) {
+		int tmp = 0;
+		for (int& num : nums){
+			tmp ^= num;
+		}
+		int x = 0, y = 0;
+		int cur = 1;
+		while ((cur & tmp) == 0){
+			cur <<= 1;
+		}
+		for (int& num : nums){
+			if (num & cur){
+				x ^= num;
+			}
+			else{
+				y ^= num;
+			}
+		}
+		return {x, y};
+    }
+	int singleNumber(vector<int>& nums) {
+		int lo = 0, hi = 0;
+		for (int& num : nums){
+			lo = lo ^ num & ~hi;
+			hi = hi ^ num & ~lo;
+		}
+		return lo;
+    }
+	int add(int a, int b) {
+		while (b != 0){
+			int c = (unsigned int)(a & b) << 1;
+			a ^= b;
+			b = c;
+		}
+		return a;
+    }
+};
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "abs";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 0,1,2,3,4,5,6,7,9 };
+	vector<int> inpt2 = { 2, 2, 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
+	};
+	vector<vector<char>> board = {{'a'}};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution;
+	return 0;
+}
+#endif
+
+// 图解算法数据结构--数学
 #if true
 class Solution {
 public:
+	struct ListNode {
+		int val;
+		ListNode *next;
+		ListNode(int x) : val(x), next(NULL) {}
+	};
 	struct TreeNode {
 		int val;
 		TreeNode *left;
@@ -17105,8 +17828,8 @@ int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "abs";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 7,1,5,3,6,4 };
-	vector<int> inpt2 = { 2,4,1,1,3 };
+	vector<int> inpt1 = { 0,1,2,3,4,5,6,7,9 };
+	vector<int> inpt2 = { 2, 2, 2 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
 		{2, 9, 10},
