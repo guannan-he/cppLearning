@@ -17789,7 +17789,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 // 图解算法数据结构--数学
-#if true
+#if false
 class Solution {
 public:
 	struct ListNode {
@@ -17823,12 +17823,124 @@ public:
 			right = _right;
 		}
 	};
+	int cuttingRopeI(int n) {
+		vector<int> dp(n + 1, 0);
+		dp[1] = 1;
+		for (int i = 2; i <= n; i++){
+			for (int j = 1; j < i; j++){
+				dp[i] = max(max(dp[i], dp[j] * (i - j)), (i - j) * j);
+			}
+		}
+		return dp[n];
+    }
+	int cuttingRope(int n) {
+		if (n < 4){
+			return n - 1;
+		}
+		int b = n % 3, mod = 1000000007;
+		long rem = 1, x = 3;
+		for (int a = n / 3 - 1; a > 0; a /= 2){
+			if (a & 1){
+				rem = (rem * x) % mod;
+			}
+			x = x * x % mod;
+		}
+		if (b == 0){
+			return (int)(rem * 3 % mod);
+		}
+		if (b == 1){
+			return (int)(rem * 4 % mod);
+		}
+		return (int)(rem * 6 % mod);
+    }
+	int majorityElement(vector<int>& nums) {
+		int cnt = 0, res = -1;
+		for (int& num : nums){
+			if (cnt == 0 || res == num){
+				res = num;
+				cnt++;
+			}
+			else{
+				cnt--;
+			}
+		}
+		return res;
+    }
+	int countDigitOne(int n) {
+		int countr = 0;
+		for (long long i = 1; i <= n; i *= 10) {
+			long long divider = i * 10;
+			countr += (n / divider) * i + min(max(n % divider - i + 1, 0LL), i);
+		}
+		return countr;
+	}
+	int findNthDigit(int n) {
+		int digit = 1;
+		long start = 1, cnt = 9;
+		while (n > cnt){
+			n -= cnt;
+			start *= 10;
+			digit++;
+			cnt = digit * start * 9;
+		}
+		long num = start + (n - 1) / digit;
+		return to_string(num)[(n - 1) % digit] - '0';
+    }
+	vector<vector<int>> findContinuousSequence(int target) {
+		int leftCur = 1, rightCur = 1, sum = 0;
+		vector<vector<int>> res;
+		while (leftCur + rightCur <= target + 1){
+			if (sum < target){
+				sum += rightCur++;
+			}
+			else if (sum > target){
+				sum -= leftCur++;
+			}
+			else {
+				vector<int> tmp(rightCur - leftCur, 0);
+				for (int i = leftCur; i < rightCur; i++){
+					tmp[i - leftCur] = i;
+				}
+				res.push_back(tmp);
+				sum += rightCur++;
+			}
+		}
+		return res;
+    }
+	int lastRemaining(int n, int m) {
+        int x = 0;
+        for (int i = 2; i <= n; i++) {
+            x = (x + m) % i;
+        }
+        return x;
+    }
+	vector<int> constructArr(vector<int>& nums) {
+		int numsLen = nums.size();
+		if (numsLen == 1){
+			return {0};
+		}
+		if (numsLen == 0){
+			return {};
+		}
+		vector<int> res(numsLen, 0);
+		vector<int> left(nums), right(nums);
+		for (int i = 1; i < numsLen; i++){
+			left[i] *= left[i - 1];
+			right[numsLen - i - 1] *= right[numsLen - i];
+		}
+		for (int i = 0; i < numsLen; i++){
+			int leftVal = i == 0 ? 1 : left[i - 1];
+			int rightVal = i == numsLen - 1 ? 1 : right[i + 1];
+			res[i] = leftVal * rightVal;
+		}
+		return res;
+    }
 };
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "abs";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 0,1,2,3,4,5,6,7,9 };
+	vector<int> inpt1 = { 1, 2, 3, 4, 5 };
 	vector<int> inpt2 = { 2, 2, 2 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
@@ -17842,7 +17954,97 @@ int main(int argc, char* argv[]) {
 	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
 	vector<double> val = { 2.0, 3.0 };
 	vector<string> qur = { " /","/ " };
-	mySolution;
+	mySolution.constructArr(inpt1);
+	return 0;
+}
+#endif
+
+// 图解算法数据结构--模拟
+#if true
+class Solution {
+public:
+	vector<int> spiralOrder(vector<vector<int>>& matrix) {
+		int rolSize = matrix.size();
+		if (rolSize == 0){
+			return {};
+		}
+		int colSize = matrix[0].size();
+		if (colSize == 0){
+			return {};
+		}
+		int cnt = rolSize * colSize;
+		int rolZero = 0, colZero = 0, rolCur = 0, colCur = 0;
+		vector<int> res(cnt, 0);
+		int cur = 0;
+		while (cur < cnt){
+			while (cur < cnt && colCur < colSize){
+				res[cur++] = matrix[rolCur][colCur++];
+			}
+			rolZero++;
+			rolCur = rolZero;
+			colCur = colSize - 1;
+			while (cur < cnt && rolCur < rolSize){
+				res[cur++] = matrix[rolCur++][colCur];
+			}
+			colSize--;
+			rolCur = rolSize - 1;
+			colCur = colSize - 1;
+			while (cur < cnt && colCur >= colZero){
+				res[cur++] = matrix[rolCur][colCur--];
+			}
+			rolSize--;
+			rolCur = rolSize - 1;
+			colCur = colZero;
+			while (cur < cnt && rolCur >= rolZero){
+				res[cur++] = matrix[rolCur--][colCur];
+			}
+			colZero++;
+			rolCur = rolZero;
+			colCur = colZero;
+		}
+		return res;
+    }
+	bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+		int numsLen = pushed.size();
+		if (numsLen == 0){
+			return true;
+		}
+		stack<int> stk;
+		int pushCur = 0, popCur = 0;
+		while (popCur < numsLen){
+			while (stk.empty() || (pushCur < numsLen && stk.top() != popped[popCur])){
+				stk.push(pushed[pushCur++]);
+			}
+			while (!stk.empty() && stk.top() == popped[popCur]){
+				stk.pop();
+				popCur++;
+			}
+			if (!stk.empty() && pushCur == numsLen && popCur != numsLen){
+				return false;
+			}
+		}
+		return true;
+    }
+};
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "abs";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { 1, 2, 3, 4, 5 };
+	vector<int> inpt2 = { 4, 3, 5, 1, 2 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{2, 9, 10},
+		{3, 7, 15},
+		{5, 12, 12},
+		{15, 20, 10},
+		{19, 24, 8}
+	};
+	vector<vector<char>> board = {{'a'}};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution.validateStackSequences(inpt1, inpt2);
 	return 0;
 }
 #endif
