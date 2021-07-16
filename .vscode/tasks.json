@@ -8,7 +8,9 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-lgtest",
+                "-lpthread"
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -21,7 +23,16 @@
                 "isDefault": true
             },
             "detail": "调试器生成的任务。"
-        }
+        },
+        {
+            "label": "Activate Test Explorer",
+            "type": "shell",
+            "command": "echo ${command:test-explorer.reload}",
+            "problemMatcher": [],
+            "runOptions": {
+              "runOn": "folderOpen" // This will cause the triggering. Have to run manually once!
+            }
+          }
     ],
     "version": "2.0.0"
 }

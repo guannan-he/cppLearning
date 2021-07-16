@@ -25,21 +25,22 @@
             {
                 "scope": "googletest.failed",
                 "settings": {
-                    "foreground": "#f00"
-                }
+                    "foreground": "#f00",
+                },
             },
             {
                 "scope": "googletest.passed",
                 "settings": {
                     "foreground": "#0f0"
-                }
+                },
             },
             {
                 "scope": "googletest.run",
                 "settings": {
                     "foreground": "#0f0"
-                }
-            }
-        ]
+                },
+            },
+        ],
     },
+    "testMate.cpp.test.executables": "{*}/**/*{test,Test,TEST}*"
 }
