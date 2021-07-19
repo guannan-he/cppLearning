@@ -146,7 +146,7 @@ class isPrimeParamTest : public testing::TestWithParam<int>{// 一个代参数�
     public:
     virtual void SetUp(){
         isprime_ = new isPrimeClass;
-        std::cout << "new instance" << std::endl;
+        // std::cout << "new instance" << std::endl;
         return;
     }
     virtual void TearDown(){
@@ -169,6 +169,10 @@ TEST(functional, fibTestCase){// 函数级别测试
     EXPECT_EQ(fib(2),2);
     EXPECT_EQ(fib(3),3);
     EXPECT_EQ(fib(8),34);
+}
+
+TEST(functional, FooDeathTest){// 死亡测试
+    EXPECT_DEATH(Foo(), "");
 }
 
 TEST_F(testSuite_addClass, normal){// test suite 级别测试，一个类共享一个实例
@@ -232,9 +236,6 @@ INSTANTIATE_TEST_CASE_P(trueCondition, isPrimeParamTest, testing::Range(0, 10, 1
 // testing::Combine  只在提供了<tr1/tuple>头的系统中有效.
 
 
-TEST(FooDeathTest, Demo){// 死亡测试
-    EXPECT_DEATH(Foo(), "");
-}
 
 int main(int argc, char* argv[]){
     testEnv* env = nullptr;

@@ -18025,12 +18025,38 @@ public:
 		}
 		return true;
     }
+	struct ListNode {
+        int val;
+        ListNode *next;
+        ListNode(int x) : val(x), next(nullptr) {}
+    };
+	void destoryList(ListNode*& root){
+        if (root == nullptr){
+            return;
+        }
+        destoryList(root->next);
+        delete root;
+        root = nullptr;
+        return;
+    }
+	ListNode* vectorToListNode(std::vector<int>& nums){
+        ListNode* head = new ListNode(0);
+        ListNode* cur = head;
+        for (int& num : nums){
+            cur->next = new ListNode(num);
+            cur = cur->next;
+        }
+        cur = head->next;
+        delete head;
+        head = nullptr;
+        return cur;
+    }
 };
 int main(int argc, char* argv[]) {
 	Solution mySolution;
 	string a = "abs";
 	string b = "this apple is sour";
-	vector<int> inpt1 = { 1, 2, 3, 4, 5 };
+	vector<int> inpt1 = { 0, 2, 5, 7, 9 };
 	vector<int> inpt2 = { 4, 3, 5, 1, 2 };
 	vector<int> inpt3 = { 1, 2, 1 };
 	vector<vector<int>> nums = {
@@ -18044,7 +18070,14 @@ int main(int argc, char* argv[]) {
 	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
 	vector<double> val = { 2.0, 3.0 };
 	vector<string> qur = { " /","/ " };
-	mySolution.validateStackSequences(inpt1, inpt2);
+	Solution::ListNode* node = mySolution.vectorToListNode(inpt1);
+	mySolution.destoryList(node);
+	try {
+		mySolution.validateStackSequences(inpt1, inpt2);
+	}
+	catch (int err){
+		;
+	}
 	return 0;
 }
 #endif

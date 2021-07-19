@@ -95,5 +95,6 @@
             },
         ],
     },
-    "testMate.cpp.test.executables": "{*}/**/*{test,Test,TEST}*"
+    "testMate.cpp.test.executables": "{*}/**/*{test,Test,TEST}*",
+    "testMate.cpp.debug.configTemplate": "gtest带so"
 }
