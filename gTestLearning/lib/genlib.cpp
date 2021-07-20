@@ -1,8 +1,6 @@
 #include <vector>
 #include "genlib.h"
 
-
-
 namespace genlib{
     ListNode* mergeListClass::mergeTwoLists(ListNode* l1, ListNode* l2) {
         ListNode* root = new ListNode(-1);

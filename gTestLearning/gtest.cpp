@@ -2,8 +2,6 @@
 #include <string>
 #include <vector>
 
-// using namespace std;
-
 int add(int a,int b){// 一个函数
     return a+b;
 }
@@ -63,6 +61,18 @@ class isPrimeClass{
     bool isPrime(int n){
         return n % 2 != 0;
     }
+};
+
+class myStruct {
+    public:
+    myStruct(int a, int b) : a_(a), b_(b){
+        return;
+    }
+    myStruct(){
+        return;
+    }
+    int a_;
+    int b_;
 };
 
 class testEnv : public testing::Environment{// 全局类事件
@@ -158,6 +168,11 @@ class isPrimeParamTest : public testing::TestWithParam<int>{// 一个代参数�
     isPrimeClass* isprime_ = nullptr;
 };
 
+class structParamAdd : public testing::TestWithParam<myStruct>, public addClass{
+    ;
+};
+
+
 TEST(functional, addTestCase){// 函数级别测试
     EXPECT_EQ(add(2,6),8);
     EXPECT_EQ(add(2,3),5);
@@ -227,8 +242,17 @@ TEST_P(isPrimeParamTest, trueReturn){// 参数化测试
     EXPECT_EQ(isprime_->isPrime(n), n % 2 != 0);
 }
 
-
 INSTANTIATE_TEST_CASE_P(trueCondition, isPrimeParamTest, testing::Range(0, 10, 1));
+
+TEST_P(structParamAdd, structAsParam){
+    myStruct param = GetParam();
+    this->setA(param.a_);
+    this->setB(param.b_);
+    EXPECT_EQ(this->exec(), param.a_ + param.b_);
+}
+
+INSTANTIATE_TEST_CASE_P(structAsParam, structParamAdd, testing::Values(myStruct(1, 2), myStruct(3, 4)));
+
 
 // testing::Values
 // testing::ValuesIn stl迭代器中取值

@@ -4,7 +4,6 @@
 class mergeListTestSuite : public testing::Test{
     public:
     void setNums1(std::vector<int>& nums){
-        genlib::ListNode* tmp = genlib::vectorToListNode(nums);
         list1_ = genlib::vectorToListNode(nums);
         return;
     }
@@ -16,7 +15,7 @@ class mergeListTestSuite : public testing::Test{
         res_ = func_->mergeTwoLists(list1_, list2_);
         return res_;
     }
-    void deleteList(genlib::ListNode*& list){
+    void deleteList(genlib::ListNode*& list){// 别释放两次指针
         if (list == nullptr){
             return;
         }
@@ -31,6 +30,8 @@ class mergeListTestSuite : public testing::Test{
     virtual void TearDown(){
         if (res_ != nullptr){
             deleteList(res_);
+            list1_ = nullptr;
+            list2_ = nullptr;
         }
         else{
             deleteList(list1_);
