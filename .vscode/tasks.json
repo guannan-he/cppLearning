@@ -81,7 +81,7 @@
                 "-I${fileDirname}/lib",// 自定义源文件目录
                 "-L${fileDirname}/lib",// 自定义库目录
                 "-Wl,-rpath=${fileDirname}/lib",// 指定操作系统寻找so
-                "-lgenlib",// 自定义库名称
+                "-lfactoryModelib",// 自定义库名称
                 "-lgtest",
                 "-lpthread"
             ],
