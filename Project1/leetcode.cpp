@@ -17960,7 +17960,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 // 图解算法数据结构--模拟
-#if true
+#if false
 class Solution {
 public:
 	vector<int> spiralOrder(vector<vector<int>>& matrix) {
@@ -18078,6 +18078,672 @@ int main(int argc, char* argv[]) {
 	catch (int err){
 		;
 	}
+	return 0;
+}
+#endif
+
+// 腾讯
+#if true
+class Solution {
+public:
+	struct ListNode {
+		int val;
+		ListNode *next;
+		ListNode() : val(0), next(nullptr) {}
+		ListNode(int x) : val(x), next(nullptr) {}
+		ListNode(int x, ListNode *next) : val(x), next(next) {}
+	};
+	vector<int> twoSum(vector<int>& nums, int target) {
+		vector<int> res(2);
+		unordered_map<int, int> numSet;
+		for (int i = 0; i < nums.size(); i++){
+			int& it = nums[i];
+			if (numSet.count(target - it)){
+				res[0] = i;
+				res[1] = numSet[target - it];
+				return res;
+			}
+			numSet[it] = i;
+		}
+		return {};
+    }
+	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+		int numsLen1 = nums1.size(), numsLen2 = nums2.size();
+		int cnt = (numsLen1 + numsLen2) / 2;
+		int nums1Cur = 0, nums2Cur = 0;
+		int tmp = 0;
+		while (nums1Cur + nums2Cur < cnt){
+			if (nums1Cur == numsLen1){
+				tmp = nums2[nums2Cur++];
+			}
+			else if (nums2Cur == numsLen2){
+				tmp = nums1[nums1Cur++];
+			}
+			else{
+				if (nums1[nums1Cur] <= nums2[nums2Cur]){
+					tmp = nums1[nums1Cur++];
+				}
+				else{
+					tmp = nums2[nums2Cur++];
+				}
+			}
+		}
+		int tmp2 = 0;
+		if (nums1Cur == numsLen1){
+			tmp2 = nums2[nums2Cur++];
+		}
+		else if (nums2Cur == numsLen2){
+			tmp2 = nums1[nums1Cur++];
+		}
+		else{
+			if (nums1[nums1Cur] <= nums2[nums2Cur]){
+				tmp2 = nums1[nums1Cur++];
+			}
+			else{
+				tmp2 = nums2[nums2Cur++];
+			}
+		}
+		if ((numsLen1 + numsLen2) % 2 == 1){
+			return (double)tmp2;
+		}
+		return 0.5 * (tmp + tmp2);
+    }
+	string longestPalindrome(string s) {
+		int sLen = s.size();
+		int begin = 0, end = 0;
+		for (int i = 0; i < sLen; i++){
+			pair<int, int> tmp = longestPalindromeSub(s, i, i);
+			if (tmp.second - tmp.first > end - begin){
+				begin = tmp.first;
+				end = tmp.second;
+			}
+			tmp = longestPalindromeSub(s, i, i + 1);
+			if (tmp.second - tmp.first > end - begin){
+				begin = tmp.first;
+				end = tmp.second;
+			}
+		}
+		return s.substr(begin, end - begin + 1);
+    }
+	pair<int, int> longestPalindromeSub(string& s, int left, int right){
+		while (left >= 0 && right < s.size() && s[left] == s[right]){
+			left--;
+			right++;
+		}
+		return {left + 1, right - 1};
+	}
+	int myAtoi(string s) {
+		int sLen = s.size();
+		bool init = false;
+		long long res = 0;
+		int  sign = 1;
+		for(char& ch : s){
+			if(!init){
+				if (ch == ' '){
+					continue;
+				}
+				if (ch == '-'){
+					sign = -1;
+				}
+				else if (isalpha(ch)){
+					return 0;
+				}
+				else if (isdigit(ch)){
+					res = ch - '0';
+				}
+				else if (ch == '+'){
+					sign = 1;
+				}
+				else {
+					return 0;
+				}
+				init = true;
+				continue;
+			}
+			if(!isdigit(ch)){
+				break;
+			}
+			res *= 10;
+			res += ch - '0';
+			if (sign > 0 && res > INT32_MAX){
+				return INT32_MAX;
+			}
+			if (sign < 0 && res - 1 > INT32_MAX){
+				return INT32_MIN;
+			}
+		}
+		return sign * res;
+    }
+	string longestCommonPrefix(vector<string>& strs) {
+		if (strs.size() == 0){
+			return "";
+		}
+		int lim = INT32_MAX;
+		int cur = 0;
+		for (int i = 0; i < strs.size(); i++){
+			string& str = strs[i];
+			if (str.size() < lim){
+				lim = str.size();
+				cur = i;
+			}
+		}
+		string res;
+		for (int i = 0; i < lim; i++){
+			char ch = strs[cur][i];
+			res.push_back(ch);
+			for (string& str : strs){
+				if (str[i] != ch){
+					res.pop_back();
+					return res;
+				}
+			}
+		}
+		return res;
+    }
+	vector<vector<int>> threeSum(vector<int>& nums) {
+		vector<vector<int>> res;
+		sort(nums.begin(), nums.end());
+		size_t numsLen = nums.size();
+        if (numsLen < 3){
+            return res;
+        }
+		for (size_t i = 0; i < numsLen - 2; i++) {
+			if (i > 0 && nums[i] == nums[i - 1]) {
+				continue;
+			}
+			size_t k = numsLen - 1;
+			for (size_t j = i + 1; j < numsLen - 1; j++) {
+				if (j > i + 1 && nums[j] == nums[j - 1]) {
+					continue;
+				}
+				while (k > j && nums[i] + nums[j] + nums[k] > 0) {
+					k--;
+				}
+				if (j == k) {
+					break;
+				}
+				if (nums[i] + nums[j] + nums[k] == 0) {
+					res.emplace_back(vector<int>({ nums[i], nums[j], nums[k] }));
+				}
+			}
+		}
+		return res;
+	}
+	int threeSumClosest(vector<int>& nums, int target) {//最接近的三数之和
+		size_t numsLen = nums.size();
+		sort(nums.begin(), nums.end());
+		int diff = INT32_MAX;
+		int res = -1;
+		for (size_t i = 0; i < numsLen; i++) {
+			if (i > 0 && nums[i] == nums[i - 1]) {
+				continue;
+			}
+			size_t leftCur = i + 1, rightCur = numsLen - 1;
+			while (leftCur < rightCur) {
+				int sum = nums[i] + nums[leftCur] + nums[rightCur];
+				if (sum == target) {
+					return target;
+				}
+				if (abs(sum - target) < diff) {
+					diff = abs(sum - target);
+					res = sum;
+				}
+				if (sum > target) {
+					size_t rightCurBak = rightCur - 1;
+					while (rightCurBak > leftCur && nums[rightCur] == nums[rightCurBak]) {
+						rightCurBak--;
+					}
+					rightCur = rightCurBak;
+				}
+				else {
+					size_t leftCurBak = leftCur + 1;
+					while (leftCurBak < rightCur && nums[leftCur] == nums[leftCurBak]) {
+						leftCurBak++;
+					}
+					leftCur = leftCurBak;
+				}
+			}
+		}
+		return res;
+	}
+	bool isValid(string s) {
+		stack<char> stk;
+		for (char& ch : s){
+			if (ch == '(' || ch == '[' || ch == '{'){
+				stk.push(ch);
+				continue;
+			}
+			if (stk.empty()){
+				return false;
+			}
+			char top = stk.top();
+			if (top == '[' && ch == ']'){
+				stk.pop();
+				continue;
+			}
+			if (top == '(' && ch == ')'){
+				stk.pop();
+				continue;
+			}
+			if (top == '{' && ch == '}'){
+				stk.pop();
+				continue;
+			}
+			return false;
+		}
+		return stk.empty();
+    }
+	int removeDuplicates(vector<int>& nums) {
+		if (nums.empty()){
+            return 0;
+        }
+		sort(nums.begin(), nums.end());
+		size_t left = 1, right = 1;
+		while (right < nums.size()){
+			if (nums[right] == nums[right - 1]){
+				right++;
+				continue;
+			}
+			nums[left++] = nums[right++];
+		}
+		nums = vector<int>(nums.begin(), nums.begin() + left);
+		return left;
+    }
+	int maxArea(vector<int>& height) {
+		int left = 0, right = height.size() - 1;
+		int res = 0;
+		while (left < right){
+			res = max(res, (right - left) * min(height[left], height[right]));
+			if (height[left] < height[right]){
+				left++;
+			}
+			else{
+				right--;
+			}
+		}
+		return res;
+    }
+	string multiply(string num1, string num2) {
+		if (num1 == "0" || num2 == "0"){
+			return "0";
+		}
+		int cur1 = num1.size() - 1, cur2 = num2.size() - 1;
+		unordered_map<int, string> chMap;
+		for (char& ch : num2){
+			int num = ch - '0';
+			if (chMap.count(num) < 1 && num != 0 && num != 1){
+				chMap[num] = multiplyMUL(num1, num);
+			}
+		}
+		string subfix = "", res;
+		while(cur2 > -1){
+			string tmp;
+			if (chMap.count(num2[cur2] - '0') > 0){
+				tmp = chMap[num2[cur2] - '0'] + subfix;
+			}
+			else if (num2[cur2] == '0'){
+				subfix.push_back('0');
+				cur2--;
+				continue;
+			}
+			else{
+				tmp = num1 + subfix;
+			}
+			res = multiplyADD(res, tmp);
+			subfix.push_back('0');
+			cur2--;
+		}
+		return res.size() == 0 ? "0" : res;
+    }
+	string multiplyADD(string& str1, string& str2){
+		string res;
+		int cur1 = str1.size() - 1, cur2 = str2.size() - 1;
+		int remain = 0;
+		while (cur1 > -1 || cur2 > -1){
+			int digit1 = cur1 < 0 ? 0 : str1[cur1] - '0';
+			int digit2 = cur2 < 0 ? 0 : str2[cur2] - '0';
+			res.push_back((digit1 + digit2 + remain) % 10 + '0');
+			remain = (digit1 + digit2 + remain) / 10;
+			cur1--;
+			cur2--;
+		}
+		if (remain != 0){
+			res.push_back('0' + remain);
+		}
+		// reverse(res.begin(), res.end());
+		return res;
+	}
+	string multiplyMUL(string str, int n){
+		int cur = str.size() - 1;
+		int remain = 0;
+		while (cur > -1){
+			int digit = str[cur] - '0';
+			str[cur] = '0' + (digit * n + remain) % 10;
+			remain = (digit * n + remain) / 10;
+			cur--;
+		}
+		if (remain != 0){
+			str.insert(str.begin(), '0' + remain);
+		}
+		return str;
+	}
+	void reverseString(vector<char>& s) {
+		int left = 0, right = s.size() - 1;
+		while(left < right){
+			swap(s[left++], s[right--]);
+		}
+		return;
+    }
+	string reverseWords(string s) {
+		stringstream ss(s);
+		string res, tmp;
+		while(ss >> tmp){
+			reverseWordsSub(tmp);
+			res = res + tmp + ' ';
+		}
+		res.pop_back();
+		return res;
+    }
+	void reverseWordsSub(string& s) {
+		int left = 0, right = s.size() - 1;
+		while(left < right){
+			swap(s[left++], s[right--]);
+		}
+		return;
+    }
+	vector<int> productExceptSelf(vector<int>& nums) {
+		int numsLen = nums.size();
+		vector<int> left(numsLen, 1), right(numsLen, 1), res(numsLen, 0);
+		for (int i = 1; i < numsLen; i++){
+			left[i] = left[i - 1] * nums[i - 1];
+			right[numsLen - i - 1] = right[numsLen - i] * nums[numsLen - i];
+		}
+		for (int i = 0; i < numsLen; i++){
+			res[i] = left[i] * right[i];
+		}
+		return res;
+    }
+	bool containsDuplicate(vector<int>& nums) {
+		unordered_set<int> numSet;
+		for (int& num : nums){
+			if (numSet.count(num) > 0){
+				return true;
+			}
+			numSet.emplace(num);
+		}
+		return false;
+    }
+	vector<int> spiralOrder(vector<vector<int>>& matrix) {
+		int rolSize = matrix.size();
+		if (rolSize == 0){
+			return {};
+		}
+		int colSize = matrix[0].size();
+		if (colSize == 0){
+			return {};
+		}
+		int cnt = rolSize * colSize;
+		int rolZero = 0, colZero = 0, rolCur = 0, colCur = 0;
+		vector<int> res(cnt, 0);
+		int cur = 0;
+		while (cur < cnt){
+			while (cur < cnt && colCur < colSize){
+				res[cur++] = matrix[rolCur][colCur++];
+			}
+			rolZero++;
+			rolCur = rolZero;
+			colCur = colSize - 1;
+			while (cur < cnt && rolCur < rolSize){
+				res[cur++] = matrix[rolCur++][colCur];
+			}
+			colSize--;
+			rolCur = rolSize - 1;
+			colCur = colSize - 1;
+			while (cur < cnt && colCur >= colZero){
+				res[cur++] = matrix[rolCur][colCur--];
+			}
+			rolSize--;
+			rolCur = rolSize - 1;
+			colCur = colZero;
+			while (cur < cnt && rolCur >= rolZero){
+				res[cur++] = matrix[rolCur--][colCur];
+			}
+			colZero++;
+			rolCur = rolZero;
+			colCur = colZero;
+		}
+		return res;
+    }
+	vector<vector<int>> generateMatrix(int n) {
+		vector<vector<int>> res(n, vector<int>(n, 0));
+		int rolSize = n, colSize = n, rolZero = 0, colZero = 0;
+		int rolCur = 0, colCur = 0;
+		int num = 0;
+		while (num < n * n){
+			while (num < n * n && colCur < colSize){
+				res[rolCur][colCur++] = ++num;
+			}
+			rolZero++;
+			rolCur = rolZero;
+			colCur = colSize - 1;
+			while (num < n * n && rolCur < rolSize){
+				res[rolCur++][colCur] = ++num;
+			}
+			colSize--;
+			rolCur = rolSize - 1;
+			colCur = colSize - 1;
+			while (num < n * n && colCur >= colZero){
+				res[rolCur][colCur--] = ++num;
+			}
+			rolSize--;
+			rolCur = rolSize - 1;
+			colCur = colZero;
+			while (num < n * n && rolCur >= rolZero){
+				res[rolCur--][colCur] = ++num;
+			}
+			colZero++;
+			rolCur = rolZero;
+			colCur = colZero;
+		}
+		return res;
+    }
+	void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+		vector<int> res(nums1);
+		int cur1 = 0, cur2 = 0, cur = 0;
+		while (cur1 < m || cur2 < n){
+			if (cur1 == m){
+				res[cur++] = nums2[cur2++];
+			}
+			else if (cur2 == n){
+				res[cur++] = nums1[cur1++];
+			}
+			else if (nums1[cur1] < nums2[cur2]){
+				res[cur++] = nums1[cur1++];
+			}
+			else{
+				res[cur++] = nums2[cur2++];
+			}
+		}
+		nums1 = res;
+		return;
+    }
+	ListNode* reverseList(ListNode* head) {
+		if (head == nullptr || head->next == nullptr){
+			return head;
+		}
+		ListNode* newHead = reverseList(head->next);
+		head->next->next = head;
+		head->next = nullptr;
+		return newHead;
+    }
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+		ListNode* head = new ListNode;
+		ListNode* cur = head;
+		int remain = 0;
+		while (l1 != nullptr || l2 != nullptr || remain != 0){
+			int num1 = l1 == nullptr ? 0 : l1->val;
+			int num2 = l2 == nullptr ? 0 : l2->val;
+			l1 = l1 == nullptr ? nullptr : l1->next;
+			l2 = l2 == nullptr ? nullptr : l2->next;
+			cur->next = new ListNode;
+			cur = cur->next;
+			cur->val = (num1 + num2 + remain) % 10;
+			remain = (num1 + num2 + remain) / 10;
+		}
+		return head->next;
+    }
+	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+		ListNode* head = new ListNode;
+		ListNode* cur = head;
+		while (l1 !=nullptr || l2 != nullptr){
+			if (l1 == nullptr){
+				cur->next = l2;
+				l2 = l2->next;
+				break;
+			}
+			else if(l2 == nullptr){
+				cur->next = l1;
+				l1 = l1->next;
+				break;
+			}
+			else if (l1->val < l2->val){
+				cur->next = l1;
+				l1 = l1->next;
+			}
+			else{
+				cur->next = l2;
+				l2 = l2->next;
+			}
+			cur = cur->next;
+			cur->next = nullptr;
+		}
+		return head->next;
+    }
+	ListNode* mergeKLists(vector<ListNode*>& lists) {
+		if (lists.size() == 0){
+			return nullptr;
+		}
+		vector<ListNode*> tmp;
+		while(lists.size() > 1){
+			tmp.clear();
+			for (int i = 0; i < lists.size(); i += 2){
+				ListNode* l1 = lists[i];
+				ListNode* l2 = i + 1 < lists.size() ? lists[i + 1] : nullptr;
+				tmp.emplace_back(mergeTwoLists(l1, l2));
+			}
+			lists = tmp;
+		}
+		return lists[0];
+    }
+	ListNode* rotateRight(ListNode* head, int k) {
+        if (!head || !k){
+            return head;
+        }
+        int cnt = 0;
+        ListNode* cur = head;
+        ListNode* tail = head;
+        while(cur){//找结点数量
+            cnt++;
+            tail = cur;
+            cur = cur->next;
+        }
+        if (cnt == 1){
+            return head;
+        }
+        k = k % cnt;
+        if (k == 0){
+            return head;
+        }
+        cnt = cnt - k;
+        cur = head;
+        ListNode* last = cur;
+        for(int i = 0; i<cnt; i++){
+            last = cur;
+            cur = cur->next;
+        }
+        last->next = 0;
+        tail->next = head;
+        return cur;
+    }
+	bool hasCycle(ListNode *head) {
+		ListNode* slowCur = head;
+		ListNode* fastCur = head;
+		while (fastCur != nullptr && fastCur->next != nullptr){
+			slowCur = slowCur->next;
+			fastCur = fastCur->next->next;
+			if (slowCur == fastCur){
+				return true;
+			}
+		}
+		return false;
+    }
+	ListNode *detectCycle(ListNode *head) {
+        ListNode* slow, * fast;
+        slow = fast = head;
+        int num = 0;
+        while(slow&&fast&&fast->next){
+            slow = slow->next;
+            fast = fast->next->next;
+            num++;
+            if (slow == fast){//获取到了链长
+                slow = fast = head;
+                for(int i = 0; i<num; i++){
+                        fast = fast->next;
+                    }
+                while(1){
+                    if(slow == fast){
+                        break;
+                    }
+                    slow = slow->next;
+                    fast = fast->next;
+                }
+                return slow;
+            }
+        }
+        return NULL;
+    }
+	ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode* curA = headA;
+		ListNode* curB = headB;
+		while (curA !=  curB){
+			curA = curA == nullptr ? headB : curA->next;
+			curB = curB == nullptr ? headA : curB->next;
+		}
+		return curA;
+    }
+	void deleteNode(ListNode* node) {
+        ListNode* cur = node;
+		ListNode* last = node;
+		while (cur->next != nullptr){
+			cur->val = cur->next->val;
+			last = cur;
+			cur = cur->next;
+		}
+		last->next = nullptr;
+		delete cur;
+		return;
+    }
+	bool canWinNim(int n) {//Nim 游戏
+		return n % 4 != 0;
+    }
+};
+int main(int argc, char* argv[]) {
+	Solution mySolution;
+	string a = "abs";
+	string b = "this apple is sour";
+	vector<int> inpt1 = { -1, 0, 1, 2, -1, -4 };
+	vector<int> inpt2 = { 2, 4 };
+	vector<int> inpt3 = { 1, 2, 1 };
+	vector<vector<int>> nums = {
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9}
+	};
+	vector<vector<char>> board = {{'a'}};
+	vector<vector<int>> equations = { {9, 7}, {1, 9}, {3, 1} };
+	vector<double> val = { 2.0, 3.0 };
+	vector<string> qur = { " /","/ " };
+	mySolution;
 	return 0;
 }
 #endif
